@@ -1,0 +1,34 @@
+<?php $type = $this->getComponentType(); ?>
+
+<?php if (Mvo\ContaoGroupWidget\Group\Group::TYPE_START === $type):?>
+  <h3><?php echo $this->generateLabel().$this->xlabel ?></h3>
+  <?php if ($this->description): ?><p class="widget-group-help tl_help tl_tip"><?php echo $this->description; ?></p><?php endif; ?>
+</div><?php /* close DC_Table div.widget */ ?>
+
+<div class="widget-group" data-min="<?php echo $this->getMinElements(); ?>" data-max="<?php echo $this->getMaxElements(); ?>">
+<div><?php /* dummy (will be closed by DC_Table) */ ?>
+
+<?php elseif (Mvo\ContaoGroupWidget\Group\Group::TYPE_ELEMENT_START === $type):?>
+</div><?php /* close DC_Table div.widget */ ?>
+<div class="widget-group-el" data-id="<?php echo $this->getElementId(); ?>">
+<div class="controls controls-side">
+  <button data-up title="<?php echo $this->trans('MSC.move_up.1'); ?>"></button>
+  <button data-down title="<?php echo $this->trans('MSC.move_down.1'); ?>"></button>
+  <button data-remove title="<?php echo $this->trans('MSC.delete'); ?>"></button>
+</div>
+<div><?php /* dummy (will be closed by DC_Table) */ ?>
+
+<?php elseif (Mvo\ContaoGroupWidget\Group\Group::TYPE_ELEMENT_END === $type):?>
+</div><?php /* close DC_Table div.widget */ ?>
+</div><?php /* end of "widget-group-el" */ ?>
+<div><?php /* dummy (will be closed by DC_Table) */ ?>
+
+<?php else:?>
+</div><?php /* close DC_Table div.widget */ ?>
+<div class="controls controls-bottom">
+  <input data-order type="hidden" name="widget-group__<?php echo $this->getGroupName(); ?>">
+  <button data-add title="<?php echo $this->trans('DCA.new.1'); ?>"></button>
+</div>
+</div><?php /* end of "widget-group" */ ?>
+<div><?php /* dummy (will be closed by DC_Table) */ ?>
+<?php endif; ?>

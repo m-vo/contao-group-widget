@@ -1,0 +1,9 @@
+services:
+  Mvo\ContaoGroupWidget\Group\GroupFactory:
+    arguments:
+      - '@database_connection'
+
+  Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener:
+    arguments:
+      - '@request_stack'
+      - '@Mvo\ContaoGroupWidget\Group\GroupFactory'

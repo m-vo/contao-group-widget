@@ -1,0 +1,57 @@
+{
+  "name": "mvo/contao-group-widget",
+  "type": "contao-bundle",
+  "description": "Adds a new group widget that allows repeating a set of DCA fields.",
+  "keywords": [
+    "contao",
+    "widget",
+    "group",
+    "DCA",
+    "repeat",
+    "multi"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Moritz Vondano",
+      "homepage": "https://github.com/m-vo/contao-group-widget"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "contao/core-bundle": "^4.9"
+  },
+  "require-dev": {
+    "contao/manager-plugin": "^2.0",
+    "bamarni/composer-bin-plugin": "^1.4",
+    "phpunit/phpunit": "^8.5"
+  },
+  "conflict": {
+    "contao/manager-plugin": "<2.0 || >=3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mvo\\ContaoGroupWidget\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mvo\\ContaoGroupWidget\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "contao-manager-plugin": "Mvo\\ContaoGroupWidget\\ContaoManager\\Plugin",
+    "bamarni-bin": {
+      "bin-links": false
+    }
+  },
+  "scripts": {
+    "cs": [
+      "vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi",
+      "vendor-bin/ecs/vendor/bin/ecs check contao/templates --config vendor-bin/ecs/vendor/contao/easy-coding-standard/config/template.php --fix --ansi"
+    ],
+    "psalm" : [
+      "vendor-bin/psalm/vendor/bin/psalm --no-suggestions"
+    ]
+  }
+}

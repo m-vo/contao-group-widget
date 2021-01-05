@@ -1,0 +1,54 @@
+.widget-group {
+  counter-reset: element;
+  display: flex;
+  flex-direction: column; }
+  .widget-group > :not(.widget-group-el) {
+    display: none; }
+  .widget-group .widget-group-el {
+    position: relative;
+    min-height: 112px;
+    margin-top: 18px;
+    margin-right: 12px;
+    margin-left: 36px;
+    margin-bottom: 6px;
+    padding-bottom: 12px;
+    background-color: #f9f9f9;
+    border: 1px solid #d0d0d2;
+    border-radius: 4px; }
+  .widget-group .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center; }
+  .widget-group .controls-side {
+    position: absolute;
+    top: 4px;
+    left: -30px;
+    padding-right: 2px;
+    padding-left: 2px; }
+  .widget-group .controls-bottom {
+    margin-top: 18px; }
+  .widget-group button {
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    background: none no-repeat center;
+    border: none;
+    border-radius: 50%;
+    transition: all .1s; }
+    .widget-group button:hover {
+      background-color: #f9f9f9;
+      box-shadow: #d0d0d2 0 0 1px 1px; }
+    .widget-group button[data-up] {
+      background-image: url("../../../system/themes/flexible/icons/up.svg"); }
+    .widget-group button[data-down] {
+      background-image: url("../../../system/themes/flexible/icons/down.svg"); }
+    .widget-group button[data-remove] {
+      background-image: url("../../../system/themes/flexible/icons/delete.svg"); }
+    .widget-group button[data-add] {
+      background-size: 18px 18px;
+      background-image: url("../../../system/themes/flexible/icons/new.svg"); }
+    .widget-group button:disabled {
+      filter: grayscale(100%) opacity(0.5); }
+
+.widget-group-help {
+  margin-top: 2px; }
