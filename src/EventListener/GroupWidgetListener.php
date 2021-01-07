@@ -11,18 +11,18 @@ namespace Mvo\ContaoGroupWidget\EventListener;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\DataContainer;
-use Mvo\ContaoGroupWidget\Group\GroupFactory;
+use Mvo\ContaoGroupWidget\Group\Registry;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class GroupWidgetListener
+final class GroupWidgetListener
 {
     private RequestStack $requestStack;
-    private GroupFactory $groupFactory;
+    private Registry $registry;
 
-    public function __construct(RequestStack $requestStack, GroupFactory $groupFactory)
+    public function __construct(RequestStack $requestStack, Registry $registry)
     {
         $this->requestStack = $requestStack;
-        $this->groupFactory = $groupFactory;
+        $this->registry = $registry;
     }
 
     /**
@@ -30,11 +30,15 @@ class GroupWidgetListener
      */
     public function initializeGroups(string $table): void
     {
-        if (null === $this->requestStack->getMasterRequest() || empty($this->groupFactory->getGroupFields($table))) {
+        if (null === $this->requestStack->getMasterRequest() || empty($this->registry->getGroupFields($table))) {
             return;
         }
 
         $GLOBALS['TL_DCA'][$table]['config']['onload_callback'][] = [self::class, 'onLoadDataContainer'];
+        $GLOBALS['TL_DCA'][$table]['config']['onsubmit_callback'][] = [self::class, 'onSubmitDataContainer'];
+
+        $GLOBALS['TL_JAVASCRIPT']['mvo-group-widget'] = 'bundles/mvocontaogroupwidget/backend.min.js';
+        $GLOBALS['TL_CSS']['mvo-group-widget'] = 'bundles/mvocontaogroupwidget/backend.min.css';
     }
 
     /**
@@ -46,7 +50,7 @@ class GroupWidgetListener
     public function onLoadDataContainer(DataContainer $dc): void
     {
         $table = $dc->table;
-        $groupFields = $this->groupFactory->getGroupFields($table);
+        $groupFields = $this->registry->getGroupFields($table);
 
         foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $paletteName => $palette) {
             if (!\is_string($palette)) {
@@ -61,18 +65,18 @@ class GroupWidgetListener
             );
 
             foreach ($groupNames as $groupName) {
-                $group = $this->groupFactory->create($table, (int) $dc->id, $groupName);
+                $group = $this->registry->getGroup($table, (int) $dc->id, $groupName);
 
                 if (
                     null !== ($request = $this->requestStack->getMasterRequest())
                     && null !== ($post = $request->request->get("widget-group__$groupName"))
                 ) {
-                    $idMapping = array_map(
+                    $ids = array_map(
                         'intval',
                         explode(',', $post)
                     );
 
-                    $group->updateData($idMapping);
+                    $group->getStorage()->setElements($ids);
                 }
 
                 $group->expand($paletteName);
@@ -81,33 +85,47 @@ class GroupWidgetListener
     }
 
     /**
-     * Listener for the virtual field's save_callback that get registered dynamically.
+     * Listener for the DCA onsubmit_callback that gets registered dynamically.
+     *
+     * Persists changes for all groups that were loaded.
+     */
+    public function onSubmitDataContainer(): void
+    {
+        foreach ($this->registry->getAllInitializedGroups() as $group) {
+            $group->getStorage()->persist();
+        }
+    }
+
+    /**
+     * Listener for a virtual field's save_callback that gets registered dynamically.
      *
      * Persists changes to the virtual fields.
      *
      * @return mixed
      */
-    public function onLoadGroupElement($_, DataContainer $dc)
+    public function onLoadGroupField($_, DataContainer $dc)
     {
         [$group, $field, $id] = explode('__', $dc->field);
 
-        return $this->groupFactory
-            ->create($dc->table, (int) $dc->id, $group)
+        return $this->registry
+            ->getGroup($dc->table, (int) $dc->id, $group)
+            ->getStorage()
             ->getField((int) $id, $field)
         ;
     }
 
     /**
-     * Listener for the virtual field's save_callback that get registered dynamically.
+     * Listener for a virtual field's save_callback that gets registered dynamically.
      *
      * Retrieves values for the virtual fields.
      */
-    public function onStoreGroupElement($value, DataContainer $dc): ?int
+    public function onStoreGroupField($value, DataContainer $dc): ?int
     {
         [$group, $field, $id] = explode('__', $dc->field);
 
-        $this->groupFactory
-            ->create($dc->table, (int) $dc->id, $group)
+        $this->registry
+            ->getGroup($dc->table, (int) $dc->id, $group)
+            ->getStorage()
             ->setField((int) $id, $field, $value)
         ;
 

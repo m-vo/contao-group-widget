@@ -15,7 +15,7 @@ use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Mvo\ContaoGroupWidget\MvoContaoGroupWidgetBundle;
 
-class Plugin implements BundlePluginInterface
+final class Plugin implements BundlePluginInterface
 {
     public function getBundles(ParserInterface $parser): array
     {

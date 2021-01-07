@@ -1,0 +1,19 @@
+{% if type =='start' %}
+    <div class="widget widget-group">
+        <div class="widget-group--header">
+            <h3>{{ group.definition.label }}</h3>
+            {% if group.definition.description %}
+                <p class="tl_help tl_tip">{{ group.definition.description }}</p>
+            {% endif %}
+        </div>
+        <div class="widget-group--container" data-min="{{ group.definition.minElements }}" data-max="{{ group.definition.maxElements }}">
+{% else %}
+        </div>
+        <div class="widget-group--footer">
+            <div class="controls">
+                <input data-order type="hidden" name="widget-group__{{ group.name }}">
+                <button disabled="disabled" data-add title="{{ 'DCA.new.1'|trans({}, 'contao_default') }}"></button>
+            </div>
+        </div>
+    </div>
+{% endif %}

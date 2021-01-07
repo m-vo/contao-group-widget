@@ -18,11 +18,4 @@
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
         <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin"/>
     </plugins>
-    <issueHandlers>
-        <PossiblyNullReference>
-            <errorLevel type="suppress">
-                <file name="src/Widget/GroupWidget.php"/>
-            </errorLevel>
-        </PossiblyNullReference>
-    </issueHandlers>
 </psalm>

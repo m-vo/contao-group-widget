@@ -19,7 +19,9 @@
   ],
   "require": {
     "php": ">=7.4",
-    "contao/core-bundle": "^4.9"
+    "contao/core-bundle": "^4.9",
+    "twig/twig": "^2.7 || ^3.0",
+    "doctrine/dbal": "^2.12 || ^3.0"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.0",
@@ -47,8 +49,7 @@
   },
   "scripts": {
     "cs": [
-      "vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi",
-      "vendor-bin/ecs/vendor/bin/ecs check contao/templates --config vendor-bin/ecs/vendor/contao/easy-coding-standard/config/template.php --fix --ansi"
+      "vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi"
     ],
     "psalm" : [
       "vendor-bin/psalm/vendor/bin/psalm --no-suggestions"

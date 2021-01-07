@@ -1,9 +1,10 @@
 services:
-  Mvo\ContaoGroupWidget\Group\GroupFactory:
+  Mvo\ContaoGroupWidget\Group\Registry:
     arguments:
+      - '@twig'
       - '@database_connection'
 
   Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener:
     arguments:
       - '@request_stack'
-      - '@Mvo\ContaoGroupWidget\Group\GroupFactory'
+      - '@Mvo\ContaoGroupWidget\Group\Registry'

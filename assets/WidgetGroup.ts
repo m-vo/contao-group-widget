@@ -1,22 +1,22 @@
 import './WidgetGroup.scss'
 
 export class WidgetGroup {
-    private readonly container: HTMLElement
     private readonly elements: HTMLElement[]
-    private readonly controlsContainer: HTMLElement;
-    private readonly orderTarget: HTMLInputElement;
+    private readonly footerContainer: HTMLElement;
+    private readonly orderField: HTMLInputElement;
 
     private readonly min: number;
     private readonly max: number;
 
     constructor(container: HTMLElement) {
-        this.container = container;
-        this.elements = Array.from(container.querySelectorAll('.widget-group-el'));
-        this.controlsContainer = container.querySelector('.controls-bottom');
-        this.orderTarget = this.controlsContainer.querySelector('input[data-order]');
+        const elementsContainer = container.querySelector('.widget-group--container');
+        this.min = Number.parseInt(elementsContainer.getAttribute('data-min'));
+        this.max = Number.parseInt(elementsContainer.getAttribute('data-max'));
+        this.elements = Array.from(elementsContainer.querySelectorAll('.widget-group--element'));
 
-        this.min = Number.parseInt(container.getAttribute('data-min'));
-        this.max = Number.parseInt(container.getAttribute('data-max'));
+        this.footerContainer = container.querySelector('.widget-group--footer .controls');
+
+        this.orderField = this.footerContainer.querySelector('input[data-order]');
     }
 
     private static setPosition(el: HTMLElement, position: number): void {
@@ -38,16 +38,6 @@ export class WidgetGroup {
     }
 
     init(): void {
-        // Cleanup dummy divs
-        Array.from(this.container.children).forEach((child: HTMLElement) => {
-            if (!this.elements.includes(child) && child !== this.controlsContainer) {
-                child.remove();
-            }
-        })
-
-        // Set initial position
-        WidgetGroup.setPosition(this.controlsContainer, this.elements.length);
-
         this.updateElementStates();
 
         this.elements.forEach(el => {
@@ -88,7 +78,7 @@ export class WidgetGroup {
             el.querySelector('button[data-up]'),
             el.querySelector('button[data-down]'),
             el.querySelector('button[data-remove]'),
-            this.controlsContainer.querySelector('button[data-add]'),
+            this.footerContainer.querySelector('button[data-add]'),
         ];
     }
 
@@ -115,7 +105,7 @@ export class WidgetGroup {
             indices.push(0);
         }
 
-        this.orderTarget.value = indices.join(',');
+        this.orderField.value = indices.join(',');
     }
 
     private swap(a: number, b: number) {
