@@ -2,11 +2,15 @@
 
 # contao-group-widget
 
-This Contao CMS extension provides a simple widget type `group` that allows
+This Contao CMS extension provides a simple widget type<sup>1)</sup> `group` that allows
 repeatable groups of fields in the backend. The resulting data is either
 stored as a serialized array (`blob`) or in a custom entity relationship.
 
 ![](docs/group-widget.png)
+
+*<sup>1)</sup> Actually, it's not using a `\Contao\Widget` at all behind the
+scenes but replaces a field with this `inputType` with a series of virtual 
+group fields at runtime and handles storing them for you.*
 
 #### Design + Limitations
 The group widget does not alter the rendering and state of the displayed child
