@@ -1,8 +1,7 @@
 services:
   Mvo\ContaoGroupWidget\Group\Registry:
     arguments:
-      - '@twig'
-      - '@database_connection'
+      - '@Psr\Container\ContainerInterface'
 
   Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener:
     arguments:

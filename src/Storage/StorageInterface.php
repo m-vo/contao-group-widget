@@ -19,22 +19,31 @@ interface StorageInterface
     public function getElements(): array;
 
     /**
-     * Defines the contained elements and their order by setting an array of
-     * element IDs.
+     * Creates a new element and returns its ID.
+     */
+    public function createElement(): int;
+
+    /**
+     * Removes an element.
+     */
+    public function removeElement(int $elementId): void;
+
+    /**
+     * Adjust order of elements.
      *
      * @param array<int> $elementIds
      */
-    public function setElements(array $elementIds): void;
+    public function orderElements(array $elementIds): void;
 
     /**
-     * Get the value of an element's field.
+     * Returns the value of an element's field.
      *
      * @return mixed
      */
     public function getField(int $elementId, string $field);
 
     /**
-     * Set the value of an element's field.
+     * Sets the value of an element's field.
      *
      * @param mixed $value
      */

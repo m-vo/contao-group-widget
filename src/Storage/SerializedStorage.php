@@ -12,24 +12,23 @@ namespace Mvo\ContaoGroupWidget\Storage;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Group\Group;
-use Mvo\ContaoGroupWidget\Util\ArrayUtil;
-use Mvo\ContaoGroupWidget\Util\ElementId;
+use Psr\Container\ContainerInterface;
 
 /**
- * Storage adapter to store element data into a DCA table's blob field.
+ * Storage adapter to store group/element data into a DCA table's blob field.
  */
 final class SerializedStorage implements StorageInterface
 {
-    private Connection $connection;
+    private ContainerInterface $locator;
 
     private Group $group;
 
     private ?string $originalData = null;
     private ?array $data = null;
 
-    public function __construct(Connection $connection, Group $group)
+    public function __construct(ContainerInterface $locator, Group $group)
     {
-        $this->connection = $connection;
+        $this->locator = $locator;
         $this->group = $group;
     }
 
@@ -38,17 +37,42 @@ final class SerializedStorage implements StorageInterface
         return array_keys($this->getData());
     }
 
-    public function setElements(array $elementIds): void
+    public function createElement(): int
     {
-        // Generate a new ID for special value 0
-        if (false !== ($position = array_search(0, $elementIds, true))) {
-            $elementIds[$position] = ElementId::getNextId($elementIds);
-        }
+        $getNextId = static function ($keys) {
+            if (empty($keys)) {
+                return 1;
+            }
 
-        // Reorder/remove/add elements
-        $data = ArrayUtil::normalizeKeys($this->getData(), $elementIds);
+            return max(...$keys) + 1;
+        };
+
+        $data = $this->getData();
+
+        $elementId = $getNextId(array_keys($data));
+        $data[$elementId] = null;
 
         $this->data = $this->normalizeGroupData($data);
+
+        return $elementId;
+    }
+
+    public function removeElement(int $elementId): void
+    {
+        $data = $this->getData();
+
+        if (!\array_key_exists($elementId, $data)) {
+            throw new \InvalidArgumentException("Element '$elementId' does not exist.");
+        }
+
+        unset($data[$elementId]);
+
+        $this->data = $this->normalizeGroupData($data);
+    }
+
+    public function orderElements(array $elementIds): void
+    {
+        $this->data = $this->normalizeKeys($this->getData(), $elementIds);
     }
 
     public function getField(int $elementId, string $field)
@@ -93,9 +117,11 @@ final class SerializedStorage implements StorageInterface
         }
 
         // Store blob to DCA table
-        $name = $this->connection->quoteIdentifier($this->group->getName());
+        $connection = $this->connection();
 
-        $this->connection->update(
+        $name = $connection->quoteIdentifier($this->group->getName());
+
+        $connection->update(
             $this->group->getTable(),
             [$name => $serialized],
             ['id' => $this->group->getRowId()]
@@ -111,10 +137,12 @@ final class SerializedStorage implements StorageInterface
         }
 
         // Fetch blob from DCA table
-        $name = $this->connection->quoteIdentifier($this->group->getName());
-        $table = $this->connection->quoteIdentifier($this->group->getTable());
+        $connection = $this->connection();
 
-        $this->originalData = $this->connection->fetchOne(
+        $name = $connection->quoteIdentifier($this->group->getName());
+        $table = $connection->quoteIdentifier($this->group->getTable());
+
+        $this->originalData = $connection->fetchOne(
             "SELECT $name from $table WHERE id = ?",
             [$this->group->getRowId()]
         );
@@ -143,51 +171,62 @@ final class SerializedStorage implements StorageInterface
      *
      *  - Data under invalid element IDs is removed.
      *  - Field keys will be constrained to $fields.
-     *  - If specified, the size of the first dimension will be constrained to
-     *    a minimum/maximum of elements. Missing elements will be appended
-     *    following the normalizations from above.
      */
     private function normalizeGroupData(array $data): array
     {
+        $isValidId = static fn ($id) => \is_int($id) && 0 !== $id;
+
         $keys = array_keys($data);
 
         // Make sure we're dealing with valid IDs
         foreach ($keys as $i => $key) {
-            if (!ElementId::validate($key)) {
+            if (!$isValidId($key)) {
                 unset($keys[$i]);
             }
         }
 
-        // Apply min/max constraints
-        $definition = $this->group->getDefinition();
-
-        $minElements = $definition->getMinElements();
-        $maxElements = $definition->getMaxElements();
-        $size = \count($keys);
-
-        if ($minElements > 0 && $size < $minElements) {
-            for ($i = 0; $i < $minElements - $size; ++$i) {
-                $keys[] = ElementId::getNextId($keys);
-            }
-        }
-
-        if ($maxElements > 0 && $size > $maxElements) {
-            $keys = \array_slice($keys, 0, $maxElements);
-        }
-
         // Apply normalization
-        $data = ArrayUtil::normalizeKeys($data, $keys);
+        $data = $this->normalizeKeys($data, $keys);
 
         // Constrain fields
-        $fields = $definition->getFields();
+        $fields = $this->group->getFields();
 
         foreach ($data as $key => $fieldsData) {
-            $data[$key] = ArrayUtil::normalizeKeys(
+            $data[$key] = $this->normalizeKeys(
                 \is_array($fieldsData) ? $fieldsData : [],
                 $fields
             );
         }
 
         return $data;
+    }
+
+    /**
+     * The output will only contain those keys of $array that are specified
+     * in $keys, missing keys are added with the specified $fallbackValue.
+     * The order of the resulting array matches that of $keys.
+     *
+     * Example:
+     *   $array = ['foo' => 'foo', 'bar' => 2, 'other' => true]
+     *   $keys = ['a', 'bar', 'foo']
+     *
+     *   ==>
+     *
+     *  ['a' => null, 'bar' => 2, 'foo' => 'foo]
+     */
+    private function normalizeKeys(array $array, array $keys, $fallbackValue = null): array
+    {
+        $result = [];
+
+        foreach ($keys as $key) {
+            $result[$key] = $array[$key] ?? $fallbackValue;
+        }
+
+        return $result;
+    }
+
+    private function connection(): Connection
+    {
+        return $this->locator->get('database_connection');
     }
 }

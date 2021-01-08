@@ -10,55 +10,82 @@ declare(strict_types=1);
 namespace Mvo\ContaoGroupWidget\Group;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
-use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
+use Mvo\ContaoGroupWidget\Storage\EntityStorage;
 use Mvo\ContaoGroupWidget\Storage\SerializedStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
+use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
 final class Group
 {
+    private ContainerInterface $locator;
+
     private string $name;
     private string $table;
     private int $rowId;
+    private string $label;
+    private string $description;
+    private array $fields;
+    private int $min;
+    private int $max;
 
-    private Definition $definition;
     private StorageInterface $storage;
-
-    private Environment $twig;
 
     /**
      * @internal
      */
-    public function __construct(Environment $twig, Connection $connection, string $table, int $rowId, string $name)
+    public function __construct(ContainerInterface $locator, string $table, int $rowId, string $name)
     {
-        $this->twig = $twig;
-
-        $this->definition = new Definition($GLOBALS['TL_DCA'][$table]['fields'][$name]);
-
-        switch ($this->definition->getStorageType()) {
-            default:
-                $this->storage = new SerializedStorage($connection, $this);
-        }
+        $this->locator = $locator;
 
         $this->name = $name;
         $this->table = $table;
         $this->rowId = $rowId;
+
+        $definition = &$GLOBALS['TL_DCA'][$table]['fields'][$name];
+
+        $this->label = $definition['label'][0] ?? '';
+        $this->description = $definition['label'][1] ?? '';
+        $this->fields = $definition['palette'] ?? [];
+        $this->min = $definition['min'] ?? 0;
+        $this->max = $definition['max'] ?? 0;
+
+        if (empty($this->fields)) {
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'palette' cannot be empty.");
+        }
+
+        if ($this->min < 0) {
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'min' cannot be less than 0.");
+        }
+
+        if (0 !== $this->max && $this->max < $this->min) {
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'max' cannot be less than 'min'.");
+        }
+
+        switch ($definition['storage'] ?? 'serialized') {
+            case 'serialized':
+                $this->storage = new SerializedStorage($locator, $this);
+                break;
+
+            case 'entity':
+                $entity = $definition['entity'] ?? '';
+
+                if (!class_exists($entity)) {
+                    throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'entity' must point to a valid entity class.");
+                }
+
+                $this->storage = new EntityStorage($locator, $entity, $this);
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Invalid definition for group '$name': Unknown storage type.");
+        }
     }
 
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getDefinition(): Definition
-    {
-        return $this->definition;
-    }
-
-    public function getStorage(): StorageInterface
-    {
-        return $this->storage;
     }
 
     public function getTable(): string
@@ -69,6 +96,103 @@ final class Group
     public function getRowId(): int
     {
         return $this->rowId;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getMinElements(): int
+    {
+        return $this->min;
+    }
+
+    public function getMaxElements(): int
+    {
+        return $this->max;
+    }
+
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Returns the value of an element's field.
+     *
+     * (Delegate to storage engine.)
+     *
+     * @return mixed
+     */
+    public function getField(int $elementId, string $field)
+    {
+        return $this->storage->getField($elementId, $field);
+    }
+
+    /**
+     * Sets the value of an element's field.
+     *
+     * (Delegate to storage engine.)
+     */
+    public function setField(int $elementId, string $field, $value): self
+    {
+        $this->storage->setField($elementId, $field, $value);
+
+        return $this;
+    }
+
+    /**
+     * Defines the contained elements and their order by setting an array of
+     * element IDs.
+     *
+     * (Delegate to storage engine.)
+     */
+    public function setElements(array $newElementIds): self
+    {
+        $existingElementIds = $this->storage->getElements();
+
+        // Synchronize elements
+        foreach ($newElementIds as $key => $id) {
+            // Generate new elements for special value 0
+            if (0 === $id) {
+                $newElementIds[$key] = $this->storage->createElement();
+                continue;
+            }
+
+            if (!\in_array($id, $existingElementIds, true)) {
+                throw new \InvalidArgumentException("Element ID '$id' could not be located.");
+            }
+        }
+
+        foreach (array_diff($existingElementIds, $newElementIds) as $id) {
+            $this->storage->removeElement($id);
+        }
+
+        // Constrain element counts
+        $this->applyMinMaxConstraints();
+
+        // Adjust order
+        $this->storage->orderElements($newElementIds);
+
+        return $this;
+    }
+
+    /**
+     * Persist changes.
+     *
+     * (Delegate to storage engine.)
+     */
+    public function persist(): self
+    {
+        $this->storage->persist();
+
+        return $this;
     }
 
     /**
@@ -86,14 +210,17 @@ final class Group
      */
     public function expand(string $palette): self
     {
-        $newPaletteItems = [];
+        // Get elements
+        $this->applyMinMaxConstraints();
+        $elements = $this->storage->getElements();
 
-        $newPaletteItems[] = $this->addGroupField(true);
+        // Build virtual fields
+        $newPaletteItems = [$this->addGroupField(true)];
 
-        foreach ($this->storage->getElements() as $id) {
+        foreach ($elements as $id) {
             $newPaletteItems[] = $this->addGroupElementField(true, $id);
 
-            foreach ($this->definition->getFields() as $field) {
+            foreach ($this->fields as $field) {
                 $newPaletteItems[] = $this->addVirtualField($field, $id);
             }
 
@@ -111,13 +238,32 @@ final class Group
         return $this;
     }
 
+    private function applyMinMaxConstraints(): void
+    {
+        // Apply min/max constraints
+        $existingElementIds = $this->storage->getElements();
+        $size = \count($existingElementIds);
+
+        if ($this->min > 0 && $size < $this->min) {
+            for ($i = 0; $i < $this->min - $size; ++$i) {
+                $this->storage->createElement();
+            }
+        }
+
+        if ($this->max > 0 && $size > $this->max) {
+            for ($i = $this->max; $i < $size; ++$i) {
+                $this->storage->removeElement($existingElementIds[$i]);
+            }
+        }
+    }
+
     private function addGroupField(bool $start): string
     {
         $type = $start ? 'start' : 'end';
         $newName = "{$this->name}__({$type})";
 
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = [
-            'input_field_callback' => fn () => $this->twig->render(
+            'input_field_callback' => fn () => $this->twig()->render(
                 '@MvoContaoGroupWidget/widget_group.html.twig',
                 [
                     'group' => $this,
@@ -135,7 +281,7 @@ final class Group
         $newName = "{$this->name}__({$type})__{$id}";
 
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = [
-            'input_field_callback' => fn () => $this->twig->render(
+            'input_field_callback' => fn () => $this->twig()->render(
                 '@MvoContaoGroupWidget/widget_group_element.html.twig',
                 [
                     'group' => $this,
@@ -166,5 +312,10 @@ final class Group
         );
 
         return $newName;
+    }
+
+    private function twig(): Environment
+    {
+        return $this->locator->get('twig');
     }
 }

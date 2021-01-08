@@ -76,7 +76,7 @@ final class GroupWidgetListener
                         explode(',', $post)
                     );
 
-                    $group->getStorage()->setElements($ids);
+                    $group->setElements($ids);
                 }
 
                 $group->expand($paletteName);
@@ -92,7 +92,7 @@ final class GroupWidgetListener
     public function onSubmitDataContainer(): void
     {
         foreach ($this->registry->getAllInitializedGroups() as $group) {
-            $group->getStorage()->persist();
+            $group->persist();
         }
     }
 
@@ -109,7 +109,6 @@ final class GroupWidgetListener
 
         return $this->registry
             ->getGroup($dc->table, (int) $dc->id, $group)
-            ->getStorage()
             ->getField((int) $id, $field)
         ;
     }
@@ -125,7 +124,6 @@ final class GroupWidgetListener
 
         $this->registry
             ->getGroup($dc->table, (int) $dc->id, $group)
-            ->getStorage()
             ->setField((int) $id, $field, $value)
         ;
 
