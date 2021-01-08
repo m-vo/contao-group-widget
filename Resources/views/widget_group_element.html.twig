@@ -2,10 +2,10 @@
     <div class="widget-group--element" data-id="{{ id }}">
         <div class="drop-area"></div>
         <div class="controls">
-            <button disabled="disabled" data-up title="{{ 'MSC.move_up.1'|trans({}, 'contao_default') }}"></button>
-            <div draggable="false" data-drag title="{{ 'MSC.dragItemsHint'|trans({}, 'contao_default') }}"></div>
-            <button disabled="disabled" data-down title="{{ 'MSC.move_down.1'|trans({}, 'contao_default') }}"></button>
-            <button disabled="disabled" data-remove title="{{ 'MSC.delete'|trans({}, 'contao_default') }}"></button>
+            <button disabled="disabled" data-up aria-label="{{ 'MSC.move_up.1'|trans({}, 'contao_default') }}"></button>
+            <div draggable="false" data-drag aria-label="{{ 'MSC.dragItemsHint'|trans({}, 'contao_default') }}"></div>
+            <button disabled="disabled" data-down aria-label="{{ 'MSC.move_down.1'|trans({}, 'contao_default') }}"></button>
+            <button disabled="disabled" data-remove aria-label="{{ 'MSC.delete'|trans({}, 'contao_default') }}"></button>
         </div>
 {% else %}
     </div>

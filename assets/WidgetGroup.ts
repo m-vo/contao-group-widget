@@ -43,11 +43,13 @@ export class WidgetGroup {
         this.elements.forEach(el => {
             const [up, down, remove, add, drag] = this.getControls(el);
 
+            // Move one with arrow buttons
             up.addEventListener('click', event => {
                 event.preventDefault();
 
                 const position = WidgetGroup.getPosition(el);
                 this.swap(position, position - 1);
+                up.blur();
             });
 
             down.addEventListener('click', event => {
@@ -55,15 +57,19 @@ export class WidgetGroup {
 
                 const position = WidgetGroup.getPosition(el);
                 this.swap(position, position + 1);
+                down.blur();
             });
 
+            // Delete
             remove.addEventListener('click', event => {
                 event.preventDefault();
 
                 const position = WidgetGroup.getPosition(el);
                 this.remove(position);
+                remove.blur();
             });
 
+            // Add
             add.addEventListener('click', event => {
                 event.preventDefault();
 
