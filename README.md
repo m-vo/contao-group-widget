@@ -88,7 +88,7 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
     // …  other settings like above
     
     'storage' => 'entity',
-    'entitiy' => \App\Entity\MyGroup::class
+    'entity' => \App\Entity\MyGroup::class
 ];
 ```
 
