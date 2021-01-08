@@ -6,7 +6,7 @@ This Contao CMS extension provides a simple widget type<sup>1)</sup> `group` tha
 repeatable groups of fields in the backend. The resulting data is either
 stored as a serialized array (`blob`) or in a custom entity relationship.
 
-![](docs/group-widget.png)
+![](docs/widget.png)
 
 *<sup>1)</sup> Actually, it's not using a `\Contao\Widget` at all behind the
 scenes but replaces a field with this `inputType` with a series of virtual 
