@@ -44,7 +44,7 @@ final class SerializedStorage implements StorageInterface
                 return 1;
             }
 
-            return max(...$keys) + 1;
+            return max(1, ...$keys) + 1;
         };
 
         $data = $this->getData();

@@ -44,11 +44,16 @@ final class Registry
         return array_values($this->groupCache);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getGroupFields(string $table): array
     {
-        return array_filter(
-            $GLOBALS['TL_DCA'][$table]['fields'] ?? [],
-            static fn (array $definition): bool => 'group' === ($definition['inputType'] ?? null)
+        return array_keys(
+            array_filter(
+                $GLOBALS['TL_DCA'][$table]['fields'] ?? [],
+                static fn (array $definition): bool => 'group' === ($definition['inputType'] ?? null)
+            )
         );
     }
 

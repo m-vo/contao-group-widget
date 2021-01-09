@@ -50,26 +50,27 @@ final class GroupWidgetListener
     public function onLoadDataContainer(DataContainer $dc): void
     {
         $table = $dc->table;
-        $groupFields = $this->registry->getGroupFields($table);
+        $availableGroupFields = $this->registry->getGroupFields($table);
 
         foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $paletteName => $palette) {
             if (!\is_string($palette)) {
                 continue;
             }
 
-            $groupNames = array_filter(
+            // Search palettes for group fields
+            $groupFields = array_filter(
                 preg_split('/[,;]/', $palette),
-                static function (string $name) use ($groupFields): bool {
-                    return isset($groupFields[$name]);
+                static function (string $name) use ($availableGroupFields): bool {
+                    return \in_array($name, $availableGroupFields, true);
                 }
             );
 
-            foreach ($groupNames as $groupName) {
-                $group = $this->registry->getGroup($table, (int) $dc->id, $groupName);
+            foreach ($groupFields as $name) {
+                $group = $this->registry->getGroup($table, (int) $dc->id, $name);
 
                 if (
                     null !== ($request = $this->requestStack->getMasterRequest())
-                    && null !== ($post = $request->request->get("widget-group__$groupName"))
+                    && null !== ($post = $request->request->get("widget-group__$name"))
                 ) {
                     $ids = array_map(
                         'intval',

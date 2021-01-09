@@ -54,6 +54,9 @@
     ],
     "psalm" : [
       "vendor-bin/psalm/vendor/bin/psalm --no-suggestions"
+    ],
+    "tests": [
+      "vendor/bin/phpunit --colors=always"
     ]
   }
 }

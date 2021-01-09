@@ -49,9 +49,9 @@ final class Group
         $definition = &$GLOBALS['TL_DCA'][$table]['fields'][$name];
 
         $fields = $definition['fields'] ?? [];
-        $palette = $definition['palette'] ?? array_keys($fields) ?? null;
+        $palette = $definition['palette'] ?? array_keys($fields) ?? [];
 
-        if (null === $palette) {
+        if (empty($palette)) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
         }
 
@@ -87,7 +87,9 @@ final class Group
         }
 
         // Storage backend
-        switch ($definition['storage'] ?? 'serialized') {
+        $storage = $definition['storage'] ?? 'serialized';
+
+        switch ($storage) {
             case 'serialized':
                 $this->storage = new SerializedStorage($locator, $this);
                 break;
@@ -103,7 +105,7 @@ final class Group
                 break;
 
             default:
-                throw new \InvalidArgumentException("Invalid definition for group '$name': Unknown storage type.");
+                throw new \InvalidArgumentException("Invalid definition for group '$name': Unknown storage type '$storage'.");
         }
     }
 

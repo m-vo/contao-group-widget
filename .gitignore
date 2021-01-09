@@ -3,5 +3,6 @@
 /vendor/
 /vendor-bin/*/vendor
 /vendor-bin/*/composer.lock
+.phpunit.result.cache
 composer.lock
 yarn.lock
