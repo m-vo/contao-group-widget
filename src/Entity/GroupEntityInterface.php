@@ -21,6 +21,9 @@ interface GroupEntityInterface
 
     public function setSourceId(int $sourceId);
 
+    /**
+     * @return Collection<int, GroupElementEntityInterface>
+     */
     public function getElements(): Collection;
 
     public function addElement(GroupElementEntityInterface $element);

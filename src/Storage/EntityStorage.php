@@ -99,7 +99,13 @@ final class EntityStorage implements StorageInterface
         $manager->persist($element);
         $manager->flush();
 
-        return $element->getId();
+        $id = $element->getId();
+
+        if (null === $id) {
+            throw new \RuntimeException('New element ID could not be retrieved.');
+        }
+
+        return $id;
     }
 
     public function removeElement(int $elementId): void
@@ -124,7 +130,7 @@ final class EntityStorage implements StorageInterface
 
         /** @var GroupElementEntityInterface $element */
         foreach ($this->getGroupEntity()->getElements() as $element) {
-            $elementsById[$element->getId()] = $element;
+            $elementsById[$element->getId() ?? -1] = $element;
         }
 
         foreach (array_reverse($elementIds) as $position => $id) {

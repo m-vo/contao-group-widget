@@ -73,9 +73,6 @@ abstract class AbstractGroupEntity implements GroupEntityInterface
         $this->sourceId = $sourceId;
     }
 
-    /**
-     * @return Collection|array<GroupElementEntityInterface>
-     */
     public function getElements(): Collection
     {
         return $this->elements;
