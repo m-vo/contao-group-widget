@@ -37,19 +37,30 @@ be specified.
 $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
     'inputType' => 'group',
     
-     // reference fields from the 'fields' key (see below) or other fields from
-     // this DCA that should be included in your group (defaults to elements of
-     // 'fields' key if not specified)
-    'palette' => ['title', 'element_select', 'singleSRC'],
-    
-    // optionally inline some additional field definitions
+    // optionally inline some additional field definitions; please note that the
+    // definitions provided here will be merged with any of the same name in this
+    // DCA - this allows adjusting attributes for the use inside the group
     'fields' => [
         'static_element' => [
-            // your usual DCA definition
+            // new inline DCA definition
             'inputType' => 'select',
             'options' => ['Text Blocks', 'Hero Image', 'Foobar'],
-        ],       
+        ],
+        'title' => [
+            // set some values, but take the rest from the existing definition
+            // under '$GLOBALS['TL_DCA']['tl_my_dca']['fields']['title']'
+            'eval' => ['mandatory' => false]
+        ]   
     ],   
+    
+     // reference fields from the 'fields' key (see above) or other fields from
+     // this DCA that should be included in your group (defaults to elements of
+     // 'fields' key if not specified)
+    'palette' => [
+        'title',            // 1st group element (merged inline + sibling definition)
+        'static_element',   // 2nd group element (inline definition)
+        'singleSRC'         // 3rd group element (sibling definition)
+    ],
     
     // minimum/maximum number of group elements (both default to 0 = no restriction) 
     'min' => 1,
