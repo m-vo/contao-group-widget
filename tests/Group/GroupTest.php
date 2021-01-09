@@ -28,6 +28,7 @@ class GroupTest extends TestCase
             'my_group' => $definition,
             'foo' => [
                 'inputType' => 'text',
+                'eval' => ['tl_class' => 'w50', 'mandatory' => true],
             ],
         ];
 
@@ -108,6 +109,26 @@ class GroupTest extends TestCase
             ],
             static function (Group $group): void {
                 self::assertEquals(['foo', 'bar'], $group->getFields());
+            },
+        ];
+
+        yield 'merged fields' => [
+            [
+                'fields' => [
+                    'foo' => [
+                        'eval' => ['mandatory' => false],
+                    ],
+                ],
+            ],
+            static function (Group $group): void {
+                self::assertEquals(['foo'], $group->getFields());
+                self::assertEquals([
+                    'inputType' => 'text',
+                    'eval' => [
+                        'tl_class' => 'w50',
+                        'mandatory' => false,
+                    ],
+                ], $group->getFieldDefinition('foo'));
             },
         ];
     }

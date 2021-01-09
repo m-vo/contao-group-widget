@@ -24,5 +24,15 @@
                 <directory name="tests" />
             </errorLevel>
         </InvalidArrayOffset>
+        <InternalClass>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </InternalClass>
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </InternalMethod>
     </issueHandlers>
 </psalm>

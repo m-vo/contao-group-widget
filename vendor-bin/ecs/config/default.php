@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Contao\EasyCodingStandard\Sniffs\ContaoFrameworkClassAliasSniff;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestCaseStaticMethodCallsFixer;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -23,4 +24,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'call_type' => 'self',
         ]])
     ;
+
+    $services
+        ->set(ContaoFrameworkClassAliasSniff::class, \stdClass::class);
 };
