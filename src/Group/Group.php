@@ -55,7 +55,7 @@ final class Group
             throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
         }
 
-        foreach ($definition['palette'] ?? [] as $field) {
+        foreach ($palette as $field) {
             // Prefer inlined field definition
             if (\array_key_exists($field, $fields)) {
                 $this->fields[$field] = $fields[$field];
