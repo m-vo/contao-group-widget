@@ -14,6 +14,7 @@ use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Storage\EntityStorage;
 use Mvo\ContaoGroupWidget\Storage\SerializedStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
+use Mvo\ContaoGroupWidget\Util\ArrayUtil;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
@@ -56,21 +57,16 @@ final class Group
         }
 
         foreach ($palette as $field) {
-            // Prefer inlined field definition
-            if (\array_key_exists($field, $fields)) {
-                $this->fields[$field] = $fields[$field];
+            $fieldDefinition = ArrayUtil::mergePropertiesRecursive(
+                $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? [],
+                $fields[$field] ?? []
+            );
 
-                continue;
+            if (empty($fieldDefinition)) {
+                throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
             }
 
-            // Use field reference
-            if (\array_key_exists($field, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
-                $this->fields[$field] = &$GLOBALS['TL_DCA'][$this->table]['fields'][$field];
-
-                continue;
-            }
-
-            throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
+            $this->fields[$field] = $fieldDefinition;
         }
 
         $this->label = $definition['label'][0] ?? '';
@@ -171,6 +167,14 @@ final class Group
     public function getFields(): array
     {
         return array_keys($this->fields);
+    }
+
+    /**
+     * @internal
+     */
+    public function getFieldDefinition(string $field): ?array
+    {
+        return $this->fields[$field] ?? null;
     }
 
     /**
@@ -343,7 +347,7 @@ final class Group
     {
         $newName = "{$this->name}__{$name}__{$id}";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge_recursive(
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = ArrayUtil::mergePropertiesRecursive(
             $definition,
             [
                 'label' => &$GLOBALS['TL_LANG'][$this->table][$name],
