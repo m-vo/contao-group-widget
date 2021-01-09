@@ -24,9 +24,10 @@ final class Group
     private string $name;
     private string $table;
     private int $rowId;
+
+    private array $fields;
     private string $label;
     private string $description;
-    private array $fields;
     private int $min;
     private int $max;
 
@@ -39,21 +40,43 @@ final class Group
     {
         $this->locator = $locator;
 
+        // Object metadata
         $this->name = $name;
         $this->table = $table;
         $this->rowId = $rowId;
 
+        // DCA definition
         $definition = &$GLOBALS['TL_DCA'][$table]['fields'][$name];
+
+        $fields = $definition['fields'] ?? [];
+        $palette = $definition['palette'] ?? array_keys($fields) ?? null;
+
+        if (null === $palette) {
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
+        }
+
+        foreach($definition['palette'] ?? [] as $field) {
+            // Prefer inlined field definition
+            if(array_key_exists($field, $fields)) {
+                $this->fields[$field] = $fields[$field];
+
+                continue;
+            }
+
+            // Use field reference
+            if(array_key_exists($field, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
+                $this->fields[$field] = &$GLOBALS['TL_DCA'][$this->table]['fields'][$field];
+
+                continue;
+            }
+
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
+        }
 
         $this->label = $definition['label'][0] ?? '';
         $this->description = $definition['label'][1] ?? '';
-        $this->fields = $definition['palette'] ?? [];
         $this->min = $definition['min'] ?? 0;
         $this->max = $definition['max'] ?? 0;
-
-        if (empty($this->fields)) {
-            throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'palette' cannot be empty.");
-        }
 
         if ($this->min < 0) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'min' cannot be less than 0.");
@@ -63,6 +86,7 @@ final class Group
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'max' cannot be less than 'min'.");
         }
 
+        // Storage backend
         switch ($definition['storage'] ?? 'serialized') {
             case 'serialized':
                 $this->storage = new SerializedStorage($locator, $this);
@@ -120,7 +144,7 @@ final class Group
 
     public function getFields(): array
     {
-        return $this->fields;
+        return array_keys($this->fields);
     }
 
     /**
@@ -220,8 +244,8 @@ final class Group
         foreach ($elements as $id) {
             $newPaletteItems[] = $this->addGroupElementField(true, $id);
 
-            foreach ($this->fields as $field) {
-                $newPaletteItems[] = $this->addVirtualField($field, $id);
+            foreach ($this->fields as $name => $definition) {
+                $newPaletteItems[] = $this->addVirtualField($name, $definition, $id);
             }
 
             $newPaletteItems[] = $this->addGroupElementField(false, $id);
