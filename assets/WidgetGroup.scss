@@ -28,6 +28,7 @@
 
       &[data-drag] {
         background-image: url('../../../system/themes/flexible/icons/drag.svg');
+        cursor: move;
       }
 
       &[data-remove] {
@@ -59,6 +60,8 @@
   }
 
   .widget-group--header {
+    margin-bottom: -4px;
+
     p {
       margin-top: 2px;
     }
@@ -71,12 +74,12 @@
 
   .widget-group--element {
     position: relative;
-    min-height: 112px;
+    min-height: 94px;
 
-    margin-top: 18px;
+    margin-top: 24px;
     margin-right: 12px;
-    margin-left: 36px;
-    margin-bottom: 6px;
+    margin-left: 26px;
+    margin-bottom: 0;
     padding-bottom: 12px;
 
     background-color: #f9f9f9;
@@ -86,13 +89,13 @@
     .controls {
       position: absolute;
       top: 4px;
-      left: -30px;
+      left: -32px;
 
       padding-right: 2px;
       padding-left: 2px;
     }
 
-    &.drag {
+    &.drag > *:not(.drop-area) {
       opacity: .5;
       transition: opacity .2s;
     }
@@ -101,19 +104,14 @@
       position: absolute;
       top: -25px;
       height: 25px;
-      left: -36px;
+      left: -26px;
       right: -1px;
     }
   }
 
   .widget-group--footer {
     .controls {
-      margin-top: 12px;
-    }
-
-    .drop-area {
-      padding-bottom: 6px;
-      margin-top: -6px;
+      margin-top: 4px;
     }
   }
 }

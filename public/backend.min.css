@@ -18,7 +18,8 @@
     .widget-group .controls > *[data-down] {
       background-image: url("../../../system/themes/flexible/icons/down.svg"); }
     .widget-group .controls > *[data-drag] {
-      background-image: url("../../../system/themes/flexible/icons/drag.svg"); }
+      background-image: url("../../../system/themes/flexible/icons/drag.svg");
+      cursor: move; }
     .widget-group .controls > *[data-remove] {
       background-image: url("../../../system/themes/flexible/icons/delete.svg"); }
     .widget-group .controls > *[data-add] {
@@ -36,8 +37,10 @@
 .widget-group .drop-area.dropping::after {
   border-color: #0f1c26; }
 
-.widget-group .widget-group--header p {
-  margin-top: 2px; }
+.widget-group .widget-group--header {
+  margin-bottom: -4px; }
+  .widget-group .widget-group--header p {
+    margin-top: 2px; }
 
 .widget-group .widget-group--container {
   display: flex;
@@ -45,11 +48,11 @@
 
 .widget-group .widget-group--element {
   position: relative;
-  min-height: 112px;
-  margin-top: 18px;
+  min-height: 94px;
+  margin-top: 24px;
   margin-right: 12px;
-  margin-left: 36px;
-  margin-bottom: 6px;
+  margin-left: 26px;
+  margin-bottom: 0;
   padding-bottom: 12px;
   background-color: #f9f9f9;
   border: 1px solid #d0d0d2;
@@ -57,22 +60,18 @@
   .widget-group .widget-group--element .controls {
     position: absolute;
     top: 4px;
-    left: -30px;
+    left: -32px;
     padding-right: 2px;
     padding-left: 2px; }
-  .widget-group .widget-group--element.drag {
+  .widget-group .widget-group--element.drag > *:not(.drop-area) {
     opacity: .5;
     transition: opacity .2s; }
   .widget-group .widget-group--element .drop-area {
     position: absolute;
     top: -25px;
     height: 25px;
-    left: -36px;
+    left: -26px;
     right: -1px; }
 
 .widget-group .widget-group--footer .controls {
-  margin-top: 12px; }
-
-.widget-group .widget-group--footer .drop-area {
-  padding-bottom: 6px;
-  margin-top: -6px; }
+  margin-top: 4px; }
