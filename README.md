@@ -1,8 +1,6 @@
-*This is an early version, changes are likely. Use with caution.*
-
 # contao-group-widget
 
-This Contao CMS extension provides a simple widget type<sup>1)</sup> `group` that allows
+This Contao CMS extension provides a widget type<sup>1)</sup> `group` that allows
 repeatable groups of fields in the backend. The resulting data is either
 stored as a serialized array (`blob`) or in a custom entity relationship.
 
@@ -12,7 +10,7 @@ stored as a serialized array (`blob`) or in a custom entity relationship.
 scenes but replaces a field with this `inputType` with a series of virtual 
 group fields at runtime and handles storing them for you.*
 
-#### Design + Limitations
+#### Design decisions / Limitations
 The group widget does not alter the rendering and state of the displayed child
 widgets for the sake of a broader compatibility. As a result, adding new
 elements via the *plus* button will submit the current state to render + add a
@@ -39,10 +37,21 @@ be specified.
 $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
     'inputType' => 'group',
     
-     // reference other fields of this DCA to include in your group
+     // reference fields from the 'fields' key (see below) or other fields from
+     // this DCA that should be included in your group (defaults to elements of
+     // 'fields' key if not specified)
     'palette' => ['title', 'element_select', 'singleSRC'],
     
-    // minimum/maximum number of group elements (both default to 0 = no limit) 
+    // optionally inline some additional field definitions
+    'fields' => [
+        'static_element' => [
+            // your usual DCA definition
+            'inputType' => 'select',
+            'options' => ['Text Blocks', 'Hero Image', 'Foobar'],
+        ],       
+    ],   
+    
+    // minimum/maximum number of group elements (both default to 0 = no restriction) 
     'min' => 1,
     'max' => 5,
     
@@ -63,13 +72,18 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['title'] = [
 // …
 ```
 
+If you're reusing definitions across multiple groups or are using additional
+field callbacks, you should prefer referencing fields from the DCA instead of
+inlining them. This way you won't repeat yourself, and you can still use option
+`@Callback` annotations (because you know your field's name).
+
 #### Accessing data
 ```php
 $group = \Contao\StringUtil::deserialize($myGroupField, true);
 
 foreach ($group as $element) {
     $title = $element['title'];
-    $select = $element['element_select'];
+    $select = $element['static_element'];
     $src = $element['singleSRC'];
     
     // …
@@ -81,7 +95,8 @@ instead.
 
 ### Using the entity storage engine
 You can also set the storage engine to `entity` and reference a group entity class
-instead of providing a `blob`. Your data will then be stored via Doctrine ORM.
+instead of providing a `blob` field. Your data will then be stored in *your* entities
+via Doctrine ORM.
 
 ```php
 $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
@@ -111,7 +126,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MyGroup extends AbstractGroupEntity
 {
-    // Adjust the "targetEntity" to your element entity
+    // Adjust the "targetEntity" property to match your element entity
 
     /**
      * @ORM\OneToMany(targetEntity=MyGroupElement::class, mappedBy="parent", orphanRemoval=true)
@@ -129,7 +144,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MyGroupElement extends AbstractGroupElementEntity
 {
-    // Adjust the "targetEntity" to your group entity
+    // Adjust the "targetEntity" property to match your group entity
 
     /**
      * @ORM\ManyToOne(targetEntity=MyGroup::class, inversedBy="elements")
