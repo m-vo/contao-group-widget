@@ -55,16 +55,16 @@ final class Group
             throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
         }
 
-        foreach($definition['palette'] ?? [] as $field) {
+        foreach ($definition['palette'] ?? [] as $field) {
             // Prefer inlined field definition
-            if(array_key_exists($field, $fields)) {
+            if (\array_key_exists($field, $fields)) {
                 $this->fields[$field] = $fields[$field];
 
                 continue;
             }
 
             // Use field reference
-            if(array_key_exists($field, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
+            if (\array_key_exists($field, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
                 $this->fields[$field] = &$GLOBALS['TL_DCA'][$this->table]['fields'][$field];
 
                 continue;
@@ -107,41 +107,65 @@ final class Group
         }
     }
 
+    /**
+     * @internal
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @internal
+     */
     public function getTable(): string
     {
         return $this->table;
     }
 
+    /**
+     * @internal
+     */
     public function getRowId(): int
     {
         return $this->rowId;
     }
 
+    /**
+     * @internal
+     */
     public function getLabel(): string
     {
         return $this->label;
     }
 
+    /**
+     * @internal
+     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
+    /**
+     * @internal
+     */
     public function getMinElements(): int
     {
         return $this->min;
     }
 
+    /**
+     * @internal
+     */
     public function getMaxElements(): int
     {
         return $this->max;
     }
 
+    /**
+     * @internal
+     */
     public function getFields(): array
     {
         return array_keys($this->fields);
