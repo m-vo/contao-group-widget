@@ -318,14 +318,14 @@ final class Group
         return $newName;
     }
 
-    private function addVirtualField(string $field, int $id): string
+    private function addVirtualField(string $name, array $definition, int $id): string
     {
-        $newName = "{$this->name}__{$field}__{$id}";
+        $newName = "{$this->name}__{$name}__{$id}";
 
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge_recursive(
-            $GLOBALS['TL_DCA'][$this->table]['fields'][$field],
+            $definition,
             [
-                'label' => &$GLOBALS['TL_LANG'][$this->table][$field],
+                'label' => &$GLOBALS['TL_LANG'][$this->table][$name],
                 'eval' => [
                     'doNotSaveEmpty' => true,
                 ],
