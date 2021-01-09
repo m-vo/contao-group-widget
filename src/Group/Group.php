@@ -212,11 +212,6 @@ final class Group
             // Generate new elements for special value 0
             if (0 === $id) {
                 $newElementIds[$key] = $this->storage->createElement();
-                continue;
-            }
-
-            if (!\in_array($id, $existingElementIds, true)) {
-                throw new \InvalidArgumentException("Element ID '$id' could not be located.");
             }
         }
 
