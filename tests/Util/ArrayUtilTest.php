@@ -43,5 +43,27 @@ class ArrayUtilTest extends TestCase
             ['foo' => 'other', 'foobar' => true],
             ['foo' => 'other', 'bar' => 2, 'foobar' => true],
         ];
+
+        yield 'merge multi dimensional' => [
+            [
+                'label' => ['foo', 'bar'],
+                'eval' => [
+                    'mandatory' => true,
+                    'tl_class' => 'w50',
+                ],
+            ],
+            [
+                'eval' => [
+                    'mandatory' => false,
+                ],
+            ],
+            [
+                'label' => ['foo', 'bar'],
+                'eval' => [
+                    'mandatory' => false,
+                    'tl_class' => 'w50',
+                ],
+            ],
+        ];
     }
 }
