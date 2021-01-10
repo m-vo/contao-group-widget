@@ -213,8 +213,8 @@ final class Group
 
         // Synchronize elements
         foreach ($newElementIds as $key => $id) {
-            // Generate new elements for special value 0
-            if (0 === $id) {
+            // Generate new elements for special value -1
+            if (-1 === $id) {
                 $newElementIds[$key] = $this->storage->createElement();
             }
         }
@@ -240,6 +240,18 @@ final class Group
     public function persist(): self
     {
         $this->storage->persist();
+
+        return $this;
+    }
+
+    /**
+     * Remove this group.
+     *
+     * (Delegate to storage engine.)
+     */
+    public function remove(): self
+    {
+        $this->storage->remove();
 
         return $this;
     }

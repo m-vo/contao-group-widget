@@ -1,22 +1,29 @@
 import './WidgetGroup.scss'
 
 export class WidgetGroup {
-    private readonly elements: HTMLElement[]
-    private readonly footerContainer: HTMLElement;
-    private readonly orderField: HTMLInputElement;
+    private readonly form: HTMLFormElement;
 
+    private readonly elements: HTMLElement[]
     private readonly min: number;
     private readonly max: number;
 
+    // Footer elements
+    private readonly orderField: HTMLInputElement;
+    private readonly addButton: HTMLElement;
+    private readonly footerDropArea: HTMLElement;
+
     constructor(container: HTMLElement) {
+        this.form = container.closest('form');
+
         const elementsContainer = container.querySelector('.widget-group--container');
         this.min = Number.parseInt(elementsContainer.getAttribute('data-min'));
         this.max = Number.parseInt(elementsContainer.getAttribute('data-max'));
         this.elements = Array.from(elementsContainer.querySelectorAll('.widget-group--element'));
 
-        this.footerContainer = container.querySelector('.widget-group--footer');
-
-        this.orderField = this.footerContainer.querySelector('input[data-order]');
+        const footerContainer = container.querySelector('.widget-group--footer');
+        this.orderField = footerContainer.querySelector('input[data-order]');
+        this.addButton =  footerContainer.querySelector('button[data-add]');
+        this.footerDropArea = footerContainer.querySelector<HTMLElement>('.drop-area');
     }
 
     private static setPosition(el: HTMLElement, position: number): void {
@@ -37,11 +44,20 @@ export class WidgetGroup {
         el.removeAttribute(attribute);
     }
 
+    private static getControls(el: HTMLElement): [HTMLElement, HTMLElement, HTMLElement, HTMLElement] {
+        return [
+            el.querySelector('button[data-up]'),
+            el.querySelector('button[data-down]'),
+            el.querySelector('button[data-remove]'),
+            el.querySelector('*[data-drag]'),
+        ];
+    }
+
     init(): void {
         this.updateElementStates();
 
         this.elements.forEach(el => {
-            const [up, down, remove, add, drag] = this.getControls(el);
+            const [up, down, remove, drag] = WidgetGroup.getControls(el);
 
             // Move one with arrow buttons
             up.addEventListener('click', event => {
@@ -69,14 +85,6 @@ export class WidgetGroup {
                 remove.blur();
             });
 
-            // Add
-            add.addEventListener('click', event => {
-                event.preventDefault();
-
-                this.updateOrderTarget(true);
-                el.closest('form').submit();
-            });
-
             // Drag & drop
             drag.addEventListener('dragstart', event => {
                 event.dataTransfer.setData('text/plain', WidgetGroup.getPosition(el).toString());
@@ -100,7 +108,7 @@ export class WidgetGroup {
         })
 
         this.makeDroppable(
-            this.footerContainer.querySelector<HTMLElement>('.drop-area'),
+            this.footerDropArea,
             event => {
                 this.move(
                     Number.parseInt(event.dataTransfer.getData('text/plain')),
@@ -108,35 +116,36 @@ export class WidgetGroup {
                 );
             }
         );
-    }
 
-    private getControls(el: HTMLElement): [HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement] {
-        return [
-            el.querySelector('button[data-up]'),
-            el.querySelector('button[data-down]'),
-            el.querySelector('button[data-remove]'),
-            this.footerContainer.querySelector('button[data-add]'),
-            el.querySelector('*[data-drag]'),
-        ];
+        // Add
+        this.addButton.addEventListener('click', event => {
+            event.preventDefault();
+
+            this.updateOrderTarget(true);
+            this.form.submit();
+        });
     }
 
     private updateElementStates(): void {
+        const numElements = this.elements.length;
+
         this.elements.forEach((el, index) => {
             WidgetGroup.setPosition(el, index);
 
-            const [up, down, remove, add, drag] = this.getControls(el);
-            const numElements = this.elements.length;
+            const [up, down, remove, drag] = WidgetGroup.getControls(el);
 
             WidgetGroup.toggleAttribute('disabled', up, 0 === index);
             WidgetGroup.toggleAttribute('disabled', down, numElements - 1 === index);
+            console.log(numElements, this.min);
             WidgetGroup.toggleAttribute('disabled', remove, isNaN(this.min) || numElements === this.min);
-            WidgetGroup.toggleAttribute('disabled', add, isNaN(this.max) || numElements === this.max);
 
             const allowDrag = numElements > 1;
             WidgetGroup.toggleAttribute('draggable', drag, allowDrag);
             drag.classList.toggle('disabled', !allowDrag);
 
         });
+
+        WidgetGroup.toggleAttribute('disabled', this.addButton, isNaN(this.max) || numElements === this.max);
 
         this.updateOrderTarget();
     }
@@ -145,7 +154,7 @@ export class WidgetGroup {
         const indices = this.elements.map(el => Number.parseInt(el.getAttribute('data-id')));
 
         if (insertNew) {
-            indices.push(0);
+            indices.push(-1);
         }
 
         this.orderField.value = indices.join(',');

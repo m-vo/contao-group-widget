@@ -130,7 +130,11 @@ final class EntityStorage implements StorageInterface
 
         /** @var GroupElementEntityInterface $element */
         foreach ($this->getGroupEntity()->getElements() as $element) {
-            $elementsById[$element->getId() ?? -1] = $element;
+            $id = $element->getId();
+
+            if (null !== $id) {
+                $elementsById[$id] = $element;
+            }
         }
 
         foreach (array_reverse($elementIds) as $position => $id) {
