@@ -74,7 +74,7 @@ final class GroupWidgetListener
                 ) {
                     $ids = array_map(
                         'intval',
-                        explode(',', $post)
+                        array_filter(explode(',', $post))
                     );
 
                     $group->setElements($ids);
