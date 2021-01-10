@@ -34,7 +34,11 @@ final class GroupWidgetListener
      */
     public function initializeGroups(string $table): void
     {
-        if (null === $this->requestStack->getMasterRequest() || empty($this->registry->getGroupFields($table))) {
+        if (
+            null === ($request = $this->requestStack->getMasterRequest()) ||
+            'edit' !== $request->get('act', '') ||
+            empty($this->registry->getGroupFields($table))
+        ) {
             return;
         }
 
