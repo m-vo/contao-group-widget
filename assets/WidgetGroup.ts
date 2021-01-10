@@ -4,8 +4,8 @@ export class WidgetGroup {
     private readonly form: HTMLFormElement;
 
     private readonly elements: HTMLElement[]
-    private readonly min: number;
-    private readonly max: number;
+    private readonly min: number = NaN;
+    private readonly max: number = NaN;
 
     // Footer elements
     private readonly orderField: HTMLInputElement;
@@ -16,9 +16,15 @@ export class WidgetGroup {
         this.form = container.closest('form');
 
         const elementsContainer = container.querySelector('.widget-group--container');
-        this.min = Number.parseInt(elementsContainer.getAttribute('data-min'));
-        this.max = Number.parseInt(elementsContainer.getAttribute('data-max'));
         this.elements = Array.from(elementsContainer.querySelectorAll('.widget-group--element'));
+
+        ['min', 'max'].forEach(v => {
+            const value = Number.parseInt(elementsContainer.getAttribute(`data-${v}`));
+
+            if(value > 0) {
+                this[v] = value;
+            }
+        });
 
         const footerContainer = container.querySelector('.widget-group--footer');
         this.orderField = footerContainer.querySelector('input[data-order]');
@@ -136,8 +142,7 @@ export class WidgetGroup {
 
             WidgetGroup.toggleAttribute('disabled', up, 0 === index);
             WidgetGroup.toggleAttribute('disabled', down, numElements - 1 === index);
-            console.log(numElements, this.min);
-            WidgetGroup.toggleAttribute('disabled', remove, isNaN(this.min) || numElements === this.min);
+            WidgetGroup.toggleAttribute('disabled', remove, !isNaN(this.min) && numElements === this.min);
 
             const allowDrag = numElements > 1;
             WidgetGroup.toggleAttribute('draggable', drag, allowDrag);
@@ -145,7 +150,7 @@ export class WidgetGroup {
 
         });
 
-        WidgetGroup.toggleAttribute('disabled', this.addButton, isNaN(this.max) || numElements === this.max);
+        WidgetGroup.toggleAttribute('disabled', this.addButton, !isNaN(this.max) && numElements === this.max);
 
         this.updateOrderTarget();
     }
