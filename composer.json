@@ -57,6 +57,9 @@
     ],
     "tests": [
       "vendor/bin/phpunit --colors=always"
+    ],
+    "chain" : [
+      "@cs", "@psalm", "@tests"
     ]
   }
 }
