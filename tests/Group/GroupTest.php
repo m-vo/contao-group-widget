@@ -257,24 +257,24 @@ class GroupTest extends TestCase
 
         $expectedFooDefinition = [
             'inputType' => 'text',
-            'label' => null,
             'eval' => [
                 'doNotSaveEmpty' => true,
             ],
             'load_callback' => [[GroupWidgetListener::class, 'onLoadGroupField']],
             'save_callback' => [[GroupWidgetListener::class, 'onStoreGroupField']],
             'sql' => null,
+            'label' => null,
         ];
 
         $expectedBarDefinition = [
             'inputType' => 'random',
-            'label' => null,
             'eval' => [
                 'doNotSaveEmpty' => true,
             ],
             'load_callback' => [[GroupWidgetListener::class, 'onLoadGroupField']],
             'save_callback' => [[GroupWidgetListener::class, 'onStoreGroupField']],
             'sql' => null,
+            'label' => null,
         ];
 
         $expectedFields = [

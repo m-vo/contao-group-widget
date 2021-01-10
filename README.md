@@ -88,6 +88,17 @@ field callbacks, you should prefer referencing fields from the DCA instead of
 inlining them. This way you won't repeat yourself, and you can still use option
 `@Callback` annotations (because you know your field's name).
 
+#### Group field translations
+The translation key of all group elements will have the same default value as
+if the field was part of the DCA. To add translations for your group field
+`foo_field` in DCA `tl_bar` you would define a translation like so:
+
+```php
+$GLOBALS['TL_LANG']['tl_bar']['foo_field'] = ['Foo', 'Add some foo'];
+```
+
+If you want to deviate from this, just define your own 'label' key like usual.
+
 #### Accessing data
 ```php
 $group = \Contao\StringUtil::deserialize($myGroupField, true);

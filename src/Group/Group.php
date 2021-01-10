@@ -359,10 +359,9 @@ final class Group
     {
         $newName = "{$this->name}__{$name}__{$id}";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = ArrayUtil::mergePropertiesRecursive(
+        $definition = ArrayUtil::mergePropertiesRecursive(
             $definition,
             [
-                'label' => &$GLOBALS['TL_LANG'][$this->table][$name],
                 'eval' => [
                     'doNotSaveEmpty' => true,
                 ],
@@ -371,6 +370,12 @@ final class Group
                 'sql' => null,
             ]
         );
+
+        if (!\array_key_exists('label', $definition)) {
+            $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
+        }
+
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = $definition;
 
         return $newName;
     }
