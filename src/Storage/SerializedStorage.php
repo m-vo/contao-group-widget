@@ -150,7 +150,7 @@ final class SerializedStorage implements StorageInterface
         $this->originalData = $connection->fetchOne(
             "SELECT $name from $table WHERE id = ?",
             [$this->group->getRowId()]
-        );
+        ) ?: '';
 
         // Deserialize and normalize it
         /** @var array $deserialized */
