@@ -39,9 +39,14 @@ final class Registry
         return $this->groupCache[$cacheKey] = new Group($this->locator, $table, $rowId, $name);
     }
 
-    public function getAllInitializedGroups(): array
+    public function getInitializedGroups(string $table, int $rowId): array
     {
-        return array_values($this->groupCache);
+        return array_values(
+            array_filter(
+                $this->groupCache,
+                static fn (Group $group): bool => $table === $group->getTable() && $rowId === $group->getRowId()
+            )
+        );
     }
 
     /**

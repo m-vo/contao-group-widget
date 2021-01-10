@@ -36,9 +36,12 @@ final class GroupWidgetListener
     {
         if (
             null === ($request = $this->requestStack->getMasterRequest()) ||
-            'edit' !== $request->get('act', '') ||
             empty($this->registry->getGroupFields($table))
         ) {
+            return;
+        }
+
+        if (!\in_array($action = $request->get('act', ''), ['edit', 'delete'], true)) {
             return;
         }
 
@@ -99,10 +102,10 @@ final class GroupWidgetListener
      *
      * Persists changes for all groups that were loaded.
      */
-    public function onSubmitDataContainer(): void
+    public function onSubmitDataContainer(DataContainer $dc): void
     {
         /** @var Group $group */
-        foreach ($this->registry->getAllInitializedGroups() as $group) {
+        foreach ($this->registry->getInitializedGroups($dc->table, (int) $dc->id) as $group) {
             $group->persist();
         }
     }
@@ -112,10 +115,10 @@ final class GroupWidgetListener
      *
      * Removes all groups that were loaded.
      */
-    public function onDeleteDataContainer(): void
+    public function onDeleteDataContainer(DataContainer $dc): void
     {
         /** @var Group $group */
-        foreach ($this->registry->getAllInitializedGroups() as $group) {
+        foreach ($this->registry->getInitializedGroups($dc->table, (int) $dc->id) as $group) {
             $group->remove();
         }
     }

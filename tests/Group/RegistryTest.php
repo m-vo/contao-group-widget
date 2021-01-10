@@ -65,7 +65,7 @@ class RegistryTest extends TestCase
         self::assertSame($group, $group2);
 
         // Test contains initialized instances exactly once
-        $groups = $registry->getAllInitializedGroups();
+        $groups = $registry->getInitializedGroups('tl_foo', 123);
 
         self::assertCount(1, $groups);
         self::assertSame($group, $groups[0]);
