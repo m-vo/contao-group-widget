@@ -11,9 +11,13 @@ namespace Mvo\ContaoGroupWidget\EventListener;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\DataContainer;
+use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * @internal
+ */
 final class GroupWidgetListener
 {
     private RequestStack $requestStack;
@@ -36,6 +40,7 @@ final class GroupWidgetListener
 
         $GLOBALS['TL_DCA'][$table]['config']['onload_callback'][] = [self::class, 'onLoadDataContainer'];
         $GLOBALS['TL_DCA'][$table]['config']['onsubmit_callback'][] = [self::class, 'onSubmitDataContainer'];
+        $GLOBALS['TL_DCA'][$table]['config']['ondelete_callback'][] = [self::class, 'onDeleteDataContainer'];
 
         $GLOBALS['TL_JAVASCRIPT']['mvo-group-widget'] = 'bundles/mvocontaogroupwidget/backend.min.js';
         $GLOBALS['TL_CSS']['mvo-group-widget'] = 'bundles/mvocontaogroupwidget/backend.min.css';
@@ -92,8 +97,22 @@ final class GroupWidgetListener
      */
     public function onSubmitDataContainer(): void
     {
+        /** @var Group $group */
         foreach ($this->registry->getAllInitializedGroups() as $group) {
             $group->persist();
+        }
+    }
+
+    /**
+     * Listener for the DCA ondelete_callback that gets registered dynamically.
+     *
+     * Removes all groups that were loaded.
+     */
+    public function onDeleteDataContainer(): void
+    {
+        /** @var Group $group */
+        foreach ($this->registry->getAllInitializedGroups() as $group) {
+            $group->remove();
         }
     }
 

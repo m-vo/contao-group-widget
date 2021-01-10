@@ -173,6 +173,15 @@ final class EntityStorage implements StorageInterface
         $this->entityManager()->flush();
     }
 
+    public function remove(): void
+    {
+        $manager = $this->entityManager();
+
+        $manager->remove($this->getGroupEntity());
+
+        $manager->flush();
+    }
+
     private function getGroupEntity(): GroupEntityInterface
     {
         if (null !== $this->groupEntity) {

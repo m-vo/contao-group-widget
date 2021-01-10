@@ -130,6 +130,11 @@ final class SerializedStorage implements StorageInterface
         $this->originalData = $serialized;
     }
 
+    public function remove(): void
+    {
+        // Storage is part of the row that gets deleted by DC_Table
+    }
+
     private function getData(): array
     {
         if (null !== $this->data) {

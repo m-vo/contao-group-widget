@@ -50,7 +50,12 @@ interface StorageInterface
     public function setField(int $elementId, string $field, $value): void;
 
     /**
-     * Persist changes.
+     * Persist changes to elements.
      */
     public function persist(): void;
+
+    /**
+     * Remove the whole dataset.
+     */
+    public function remove(): void;
 }
