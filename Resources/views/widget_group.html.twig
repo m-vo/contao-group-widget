@@ -1,9 +1,11 @@
 {% if type =='start' %}
     <div class="widget widget-group">
         <div class="widget-group--header">
-            <h3>{{ group.label }}</h3>
-            {% if group.description %}
-                <p class="tl_help tl_tip">{{ group.description }}</p>
+            {% if group.label %}
+                <h3>{{ group.label }}</h3>
+                {% if group.description %}
+                    <p class="tl_help tl_tip">{{ group.description }}</p>
+                {% endif %}
             {% endif %}
         </div>
         <div class="widget-group--container" data-min="{{ group.minElements }}" data-max="{{ group.maxElements }}">
