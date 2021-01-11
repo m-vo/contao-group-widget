@@ -137,9 +137,8 @@ final class EntityStorage implements StorageInterface
             }
         }
 
-        if (!empty(array_diff_key($elementIds, array_keys($elementsById)))) {
-            // IDs mismatch
-            return;
+        if (\count(array_intersect($elementIds, array_keys($elementsById))) !== \count($elementsById)) {
+            throw new \InvalidArgumentException('Cannot order, provided elements do not match stored data.');
         }
 
         foreach (array_reverse($elementIds) as $position => $id) {

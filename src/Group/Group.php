@@ -216,6 +216,13 @@ final class Group
             // Generate new elements for special value -1
             if (-1 === $id) {
                 $newElementIds[$key] = $this->storage->createElement();
+
+                continue;
+            }
+
+            // Strip unmatched IDs
+            if (!\in_array($id, $existingElementIds, true)) {
+                unset($newElementIds[$key]);
             }
         }
 
@@ -224,7 +231,7 @@ final class Group
         }
 
         // Constrain element counts
-        $this->applyMinMaxConstraints();
+        $newElementIds = $this->applyMinMaxConstraints($newElementIds);
 
         // Adjust order
         $this->storage->orderElements($newElementIds);
@@ -272,8 +279,7 @@ final class Group
     public function expand(string $palette): self
     {
         // Get elements
-        $this->applyMinMaxConstraints();
-        $elements = $this->storage->getElements();
+        $elements = $this->applyMinMaxConstraints($this->storage->getElements());
 
         // Build virtual fields
         $newPaletteItems = [$this->addGroupField(true)];
@@ -299,23 +305,24 @@ final class Group
         return $this;
     }
 
-    private function applyMinMaxConstraints(): void
+    private function applyMinMaxConstraints(array $elementIds): array
     {
         // Apply min/max constraints
-        $existingElementIds = $this->storage->getElements();
-        $size = \count($existingElementIds);
+        $size = \count($elementIds);
 
         if ($this->min > 0 && $size < $this->min) {
             for ($i = 0; $i < $this->min - $size; ++$i) {
-                $this->storage->createElement();
+                $elementIds[] = $this->storage->createElement();
+            }
+        } elseif ($this->max > 0 && $size > $this->max) {
+            for ($i = $this->max; $i < $size; ++$i) {
+                $this->storage->removeElement($elementIds[$i]);
+
+                unset($elementIds[$i]);
             }
         }
 
-        if ($this->max > 0 && $size > $this->max) {
-            for ($i = $this->max; $i < $size; ++$i) {
-                $this->storage->removeElement($existingElementIds[$i]);
-            }
-        }
+        return $elementIds;
     }
 
     private function addGroupField(bool $start): string

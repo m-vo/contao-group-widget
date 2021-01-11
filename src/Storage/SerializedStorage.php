@@ -74,9 +74,8 @@ final class SerializedStorage implements StorageInterface
     {
         $data = $this->getData();
 
-        if (!empty(array_diff_key($elementIds, array_keys($data)))) {
-            // IDs mismatch
-            return;
+        if (\count(array_intersect($elementIds, array_keys($data))) !== \count($data)) {
+            throw new \InvalidArgumentException('Cannot order, provided elements do not match stored data.');
         }
 
         $this->data = $this->normalizeKeys($data, $elementIds);
