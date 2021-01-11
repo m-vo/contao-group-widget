@@ -137,6 +137,11 @@ final class EntityStorage implements StorageInterface
             }
         }
 
+        if (!empty(array_diff_key($elementIds, array_keys($elementsById)))) {
+            // IDs mismatch
+            return;
+        }
+
         foreach (array_reverse($elementIds) as $position => $id) {
             $elementsById[$id]->setPosition($position);
         }

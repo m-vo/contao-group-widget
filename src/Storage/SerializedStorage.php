@@ -72,12 +72,23 @@ final class SerializedStorage implements StorageInterface
 
     public function orderElements(array $elementIds): void
     {
-        $this->data = $this->normalizeKeys($this->getData(), $elementIds);
+        $data = $this->getData();
+
+        if (!empty(array_diff_key($elementIds, array_keys($data)))) {
+            // IDs mismatch
+            return;
+        }
+
+        $this->data = $this->normalizeKeys($data, $elementIds);
     }
 
     public function getField(int $elementId, string $field)
     {
         $data = $this->getData();
+
+        if (!\array_key_exists($elementId, $data)) {
+            throw new \InvalidArgumentException("Element '$elementId' does not exist.");
+        }
 
         if (!\array_key_exists($field, $data[$elementId])) {
             throw new \InvalidArgumentException("Field '$field' does not exist.");
