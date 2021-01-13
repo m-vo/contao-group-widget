@@ -15,16 +15,10 @@ namespace Mvo\ContaoGroupWidget\Util;
 final class ArrayUtil
 {
     /**
-     * Merge two arrays recursively so that:
-     *  - associative values of $right overwrite those of $left
-     *  - sequential arrays are combined [...$left, ...$right].
+     * Merge two arrays recursively, but let $right overwrite properties of $left.
      */
     public static function mergePropertiesRecursive(array $left, array $right): array
     {
-        if (self::isSequential($left) && self::isSequential($right)) {
-            return [...$left, ...$right];
-        }
-
         $keys = array_merge(array_keys($left), array_keys($right));
         $result = [];
 
@@ -55,17 +49,5 @@ final class ArrayUtil
         }
 
         return $result;
-    }
-
-    /**
-     * Checks if an array's keys are numeric and in sequential order.
-     */
-    public static function isSequential(array $array): bool
-    {
-        if (0 === ($size = \count($array))) {
-            return true;
-        }
-
-        return array_keys($array) === range(0, $size - 1);
     }
 }

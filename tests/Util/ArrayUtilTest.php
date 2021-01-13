@@ -65,24 +65,5 @@ class ArrayUtilTest extends TestCase
                 ],
             ],
         ];
-
-        yield 'combine numeric arrays' => [
-            [
-                'save_callback' => [
-                    ['Foo', 'foo'],
-                ],
-            ],
-            [
-                'save_callback' => [
-                    ['Bar', 'bar'],
-                ],
-            ],
-            [
-                'save_callback' => [
-                    ['Foo', 'foo'],
-                    ['Bar', 'bar'],
-                ],
-            ],
-        ];
     }
 }
