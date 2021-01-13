@@ -372,12 +372,22 @@ final class Group
                 'eval' => [
                     'doNotSaveEmpty' => true,
                 ],
-                'load_callback' => [[GroupWidgetListener::class, 'onLoadGroupField']],
-                'save_callback' => [[GroupWidgetListener::class, 'onStoreGroupField']],
                 'sql' => null,
             ]
         );
 
+        // Install storage callbacks
+        $definition['load_callback'] = [
+            [GroupWidgetListener::class, 'onLoadGroupField'],
+            ...($definition['load_callback'] ?? []),
+        ];
+
+        $definition['save_callback'] = [
+            ...($definition['save_callback'] ?? []),
+            [GroupWidgetListener::class, 'onStoreGroupField'],
+        ];
+
+        // Set a default label
         if (!\array_key_exists('label', $definition)) {
             $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
         }
