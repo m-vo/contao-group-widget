@@ -16,8 +16,10 @@ use Twig\Environment;
 
 /**
  * Group factory methods.
+ *
+ * @final
  */
-final class Registry
+class Registry
 {
     private ContainerInterface $locator;
 

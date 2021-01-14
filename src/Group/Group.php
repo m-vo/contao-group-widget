@@ -18,7 +18,10 @@ use Mvo\ContaoGroupWidget\Util\ArrayUtil;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
-final class Group
+/**
+ * @final
+ */
+class Group
 {
     private ContainerInterface $locator;
 
