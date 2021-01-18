@@ -11,8 +11,6 @@ namespace Mvo\ContaoGroupWidget\Group;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
-use Mvo\ContaoGroupWidget\Storage\EntityStorage;
-use Mvo\ContaoGroupWidget\Storage\SerializedStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
 use Mvo\ContaoGroupWidget\Util\ArrayUtil;
 use Psr\Container\ContainerInterface;
@@ -29,13 +27,14 @@ class Group
     private string $table;
     private int $rowId;
 
+    private array $definition;
     private array $fields;
     private string $label;
     private string $description;
     private int $min;
     private int $max;
 
-    private StorageInterface $storage;
+    private ?StorageInterface $storage;
 
     private array $expandedPalette = [];
 
@@ -52,10 +51,10 @@ class Group
         $this->rowId = $rowId;
 
         // DCA definition
-        $definition = &$GLOBALS['TL_DCA'][$table]['fields'][$name];
+        $this->definition = $GLOBALS['TL_DCA'][$table]['fields'][$name];
 
-        $fields = $definition['fields'] ?? [];
-        $palette = $definition['palette'] ?? array_keys($fields) ?? [];
+        $fields = $this->definition['fields'] ?? [];
+        $palette = $this->definition['palette'] ?? array_keys($fields) ?? [];
 
         if (empty($palette)) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
@@ -74,10 +73,10 @@ class Group
             $this->fields[$field] = $fieldDefinition;
         }
 
-        $this->label = $definition['label'][0] ?? '';
-        $this->description = $definition['label'][1] ?? '';
-        $this->min = $definition['min'] ?? 0;
-        $this->max = $definition['max'] ?? 0;
+        $this->label = $this->definition['label'][0] ?? '';
+        $this->description = $this->definition['label'][1] ?? '';
+        $this->min = $this->definition['min'] ?? 0;
+        $this->max = $this->definition['max'] ?? 0;
 
         if ($this->min < 0) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'min' cannot be less than 0.");
@@ -86,28 +85,13 @@ class Group
         if (0 !== $this->max && $this->max < $this->min) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'max' cannot be less than 'min'.");
         }
+    }
 
-        // Storage backend
-        $storage = $definition['storage'] ?? 'serialized';
+    public function setStorage(StorageInterface $storage): self
+    {
+        $this->storage = $storage;
 
-        switch ($storage) {
-            case 'serialized':
-                $this->storage = new SerializedStorage($locator, $this);
-                break;
-
-            case 'entity':
-                $entity = $definition['entity'] ?? '';
-
-                if (!class_exists($entity)) {
-                    throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'entity' must point to a valid entity class.");
-                }
-
-                $this->storage = new EntityStorage($locator, $entity, $this);
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid definition for group '$name': Unknown storage type '$storage'.");
-        }
+        return $this;
     }
 
     /**
@@ -183,6 +167,16 @@ class Group
     }
 
     /**
+     * @internal
+     *
+     * @return mixed
+     */
+    public function getDefinition(string $key)
+    {
+        return $this->definition[$key] ?? null;
+    }
+
+    /**
      * Returns the value of an element's field.
      *
      * (Delegate to storage engine.)
@@ -191,6 +185,10 @@ class Group
      */
     public function getField(int $elementId, string $field)
     {
+        if (null === $this->storage) {
+            return null;
+        }
+
         return $this->storage->getField($elementId, $field);
     }
 
@@ -201,7 +199,9 @@ class Group
      */
     public function setField(int $elementId, string $field, $value): self
     {
-        $this->storage->setField($elementId, $field, $value);
+        if (null !== $this->storage) {
+            $this->storage->setField($elementId, $field, $value);
+        }
 
         return $this;
     }
@@ -214,6 +214,10 @@ class Group
      */
     public function setElements(array $newElementIds): self
     {
+        if (null === $this->storage) {
+            return $this;
+        }
+
         $existingElementIds = $this->storage->getElements();
 
         // Synchronize elements
@@ -251,7 +255,9 @@ class Group
      */
     public function persist(): self
     {
-        $this->storage->persist();
+        if (null !== $this->storage) {
+            $this->storage->persist();
+        }
 
         return $this;
     }
@@ -263,7 +269,9 @@ class Group
      */
     public function remove(): self
     {
-        $this->storage->remove();
+        if (null !== $this->storage) {
+            $this->storage->remove();
+        }
 
         return $this;
     }
