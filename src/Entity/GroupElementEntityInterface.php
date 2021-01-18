@@ -16,8 +16,4 @@ interface GroupElementEntityInterface
     public function getPosition(): ?int;
 
     public function setPosition(int $position);
-
-    public function getParent(): ?GroupEntityInterface;
-
-    public function setParent(?GroupEntityInterface $parent);
 }
