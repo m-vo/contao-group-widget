@@ -279,7 +279,7 @@ class Group
      *    […]
      *  <group end>
      */
-    public function expand(string $palette): self
+    public function expand(string $palette, bool $isSubPalette = false): self
     {
         // Get elements
         $elements = $this->applyMinMaxConstraints($this->storage->getElements());
@@ -299,11 +299,16 @@ class Group
 
         $newPaletteItems[] = $this->addGroupField(false);
 
-        PaletteManipulator::create()
+        $paletteManipulator = PaletteManipulator::create()
             ->addField($newPaletteItems, $this->name)
             ->removeField($this->name)
-            ->applyToPalette($palette, $this->table)
         ;
+
+        if (!$isSubPalette) {
+            $paletteManipulator->applyToPalette($palette, $this->table);
+        } else {
+            $paletteManipulator->applyToSubpalette($palette, $this->table);
+        }
 
         return $this;
     }

@@ -62,13 +62,11 @@ final class GroupWidgetListener
     public function onLoadDataContainer(DataContainer $dc): void
     {
         $table = $dc->table;
+        $id = (int) $dc->id;
+
         $availableGroupFields = $this->registry->getGroupFields($table);
 
-        foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $paletteName => $palette) {
-            if (!\is_string($palette)) {
-                continue;
-            }
-
+        $handlePalette = function (string $paletteName, string $palette, bool $isSubpalette = false) use ($table, $id, $availableGroupFields): void {
             // Search palettes for group fields
             $groupFields = array_filter(
                 preg_split('/[,;]/', $palette),
@@ -78,7 +76,7 @@ final class GroupWidgetListener
             );
 
             foreach ($groupFields as $name) {
-                $group = $this->registry->getGroup($table, (int) $dc->id, $name);
+                $group = $this->registry->getGroup($table, $id, $name);
 
                 if (
                     null !== ($request = $this->requestStack->getMasterRequest())
@@ -92,8 +90,20 @@ final class GroupWidgetListener
                     $group->setElements($ids);
                 }
 
-                $group->expand($paletteName);
+                $group->expand($paletteName, $isSubpalette);
             }
+        };
+
+        foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $name => $palette) {
+            if (!\is_string($palette)) {
+                continue;
+            }
+
+            $handlePalette($name, $palette);
+        }
+
+        foreach ($GLOBALS['TL_DCA'][$table]['subpalettes'] ?? [] as $name => $palette) {
+            $handlePalette($name, $palette, true);
         }
     }
 
