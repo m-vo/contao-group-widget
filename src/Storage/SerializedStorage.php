@@ -12,23 +12,22 @@ namespace Mvo\ContaoGroupWidget\Storage;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Group\Group;
-use Psr\Container\ContainerInterface;
 
 /**
  * Storage adapter to store group/element data into a DCA table's blob field.
  */
 final class SerializedStorage implements StorageInterface
 {
-    private ContainerInterface $locator;
+    private Connection $connection;
 
     private Group $group;
 
     private ?string $originalData = null;
     private ?array $data = null;
 
-    public function __construct(ContainerInterface $locator, Group $group)
+    public function __construct(Connection $connection, Group $group)
     {
-        $this->locator = $locator;
+        $this->connection = $connection;
         $this->group = $group;
     }
 
@@ -127,11 +126,9 @@ final class SerializedStorage implements StorageInterface
         }
 
         // Store blob to DCA table
-        $connection = $this->connection();
+        $name = $this->connection->quoteIdentifier($this->group->getName());
 
-        $name = $connection->quoteIdentifier($this->group->getName());
-
-        $connection->update(
+        $this->connection->update(
             $this->group->getTable(),
             [$name => $serialized],
             ['id' => $this->group->getRowId()]
@@ -152,12 +149,10 @@ final class SerializedStorage implements StorageInterface
         }
 
         // Fetch blob from DCA table
-        $connection = $this->connection();
+        $name = $this->connection->quoteIdentifier($this->group->getName());
+        $table = $this->connection->quoteIdentifier($this->group->getTable());
 
-        $name = $connection->quoteIdentifier($this->group->getName());
-        $table = $connection->quoteIdentifier($this->group->getTable());
-
-        $this->originalData = $connection->fetchOne(
+        $this->originalData = $this->connection->fetchOne(
             "SELECT $name from $table WHERE id = ?",
             [$this->group->getRowId()]
         ) ?: '';
@@ -238,10 +233,5 @@ final class SerializedStorage implements StorageInterface
         }
 
         return $result;
-    }
-
-    private function connection(): Connection
-    {
-        return $this->locator->get('database_connection');
     }
 }
