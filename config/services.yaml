@@ -2,8 +2,21 @@ services:
   Mvo\ContaoGroupWidget\Group\Registry:
     arguments:
       - '@Psr\Container\ContainerInterface'
+      - !tagged_iterator 'mvo_contao_group.storage_factory'
 
   Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener:
     arguments:
       - '@request_stack'
       - '@Mvo\ContaoGroupWidget\Group\Registry'
+
+  Mvo\ContaoGroupWidget\Storage\SerializedStorageFactory:
+    arguments:
+      - '@database_connection'
+    tags:
+      - { name: 'mvo_contao_group.storage_factory' }
+
+  Mvo\ContaoGroupWidget\Storage\EntityStorageFactory:
+    arguments:
+      - '@doctrine.orm.entity_manager'
+    tags:
+      - { name: 'mvo_contao_group.storage_factory' }
