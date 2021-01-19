@@ -62,37 +62,60 @@ final class GroupWidgetListener
     public function onLoadDataContainer(DataContainer $dc): void
     {
         $table = $dc->table;
-        $availableGroupFields = $this->registry->getGroupFields($table);
+        $id = (int) $dc->id;
 
-        foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $paletteName => $palette) {
+        // Split a palette into fields
+        $getPaletteFields = static fn (string $palette): array => preg_split('/[,;]/', $palette);
+
+        // Find currently visible group fields
+        $visibleGroupFields = array_intersect(
+            $this->registry->getGroupFields($table),
+            $getPaletteFields($dc->getPalette())
+        );
+
+        if (empty($visibleGroupFields)) {
+            return;
+        }
+
+        // Build a mapping [affected group name => [palette key, isSubPalette]]
+        $groupFieldsWithPalettes = [];
+
+        $addAffectedPalettes = static function (string $key, string $palette, bool $isSubPalette) use ($getPaletteFields, $visibleGroupFields, &$groupFieldsWithPalettes): void {
+            foreach (array_intersect($visibleGroupFields, $getPaletteFields($palette)) as $groupField) {
+                $groupFieldsWithPalettes[$groupField][] = [$key, $isSubPalette];
+            }
+        };
+
+        foreach ($GLOBALS['TL_DCA'][$table]['palettes'] ?? [] as $key => $palette) {
             if (!\is_string($palette)) {
                 continue;
             }
 
-            // Search palettes for group fields
-            $groupFields = array_filter(
-                preg_split('/[,;]/', $palette),
-                static function (string $name) use ($availableGroupFields): bool {
-                    return \in_array($name, $availableGroupFields, true);
-                }
-            );
+            $addAffectedPalettes($key, $palette, false);
+        }
 
-            foreach ($groupFields as $name) {
-                $group = $this->registry->getGroup($table, (int) $dc->id, $name);
+        foreach ($GLOBALS['TL_DCA'][$table]['subpalettes'] ?? [] as $key => $palette) {
+            $addAffectedPalettes($key, $palette, true);
+        }
 
-                if (
-                    null !== ($request = $this->requestStack->getMasterRequest())
-                    && null !== ($post = $request->request->get("widget-group__$name"))
-                ) {
-                    $ids = array_map(
-                        'intval',
-                        array_filter(explode(',', $post))
-                    );
+        // Handle form data and expand groups
+        foreach ($groupFieldsWithPalettes as $name => $palettes) {
+            $group = $this->registry->getGroup($table, $id, $name);
 
-                    $group->setElements($ids);
-                }
+            if (
+                null !== ($request = $this->requestStack->getMasterRequest())
+                && null !== ($post = $request->request->get("widget-group__$name"))
+            ) {
+                $ids = array_map(
+                    'intval',
+                    array_filter(explode(',', $post))
+                );
 
-                $group->expand($paletteName);
+                $group->setElements($ids);
+            }
+
+            foreach ($palettes as [$palette, $isSubPalette]) {
+                $group->expand($palette, $isSubPalette);
             }
         }
     }

@@ -37,6 +37,8 @@ class Group
 
     private StorageInterface $storage;
 
+    private array $expandedPalette = [];
+
     /**
      * @internal
      */
@@ -279,31 +281,38 @@ class Group
      *    […]
      *  <group end>
      */
-    public function expand(string $palette): self
+    public function expand(string $paletteKey, bool $isSubPalette = false): self
     {
-        // Get elements
-        $elements = $this->applyMinMaxConstraints($this->storage->getElements());
+        // Create virtual fields once
+        if (empty($this->expandedPalette)) {
+            $elements = $this->applyMinMaxConstraints($this->storage->getElements());
 
-        // Build virtual fields
-        $newPaletteItems = [$this->addGroupField(true)];
+            $this->expandedPalette = [$this->addGroupField(true)];
 
-        foreach ($elements as $id) {
-            $newPaletteItems[] = $this->addGroupElementField(true, $id);
+            foreach ($elements as $id) {
+                $this->expandedPalette[] = $this->addGroupElementField(true, $id);
 
-            foreach ($this->fields as $name => $definition) {
-                $newPaletteItems[] = $this->addVirtualField($name, $definition, $id);
+                foreach ($this->fields as $name => $definition) {
+                    $this->expandedPalette[] = $this->addVirtualField($name, $definition, $id);
+                }
+
+                $this->expandedPalette[] = $this->addGroupElementField(false, $id);
             }
 
-            $newPaletteItems[] = $this->addGroupElementField(false, $id);
+            $this->expandedPalette[] = $this->addGroupField(false);
         }
 
-        $newPaletteItems[] = $this->addGroupField(false);
-
-        PaletteManipulator::create()
-            ->addField($newPaletteItems, $this->name)
+        // Expand palette
+        $paletteManipulator = PaletteManipulator::create()
+            ->addField($this->expandedPalette, $this->name)
             ->removeField($this->name)
-            ->applyToPalette($palette, $this->table)
         ;
+
+        if (!$isSubPalette) {
+            $paletteManipulator->applyToPalette($paletteKey, $this->table);
+        } else {
+            $paletteManipulator->applyToSubpalette($paletteKey, $this->table);
+        }
 
         return $this;
     }
