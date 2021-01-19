@@ -66,6 +66,7 @@
 
     p {
       margin-top: 2px;
+      padding-bottom: 2px;
     }
   }
 
@@ -79,7 +80,7 @@
     min-height: 94px;
 
     margin-top: 24px;
-    margin-right: 12px;
+    margin-right: 26px;
     margin-left: 26px;
     margin-bottom: 0;
     padding-bottom: 12px;
@@ -108,6 +109,10 @@
       height: 25px;
       left: -26px;
       right: -1px;
+    }
+
+    .widget {
+      font-size: 0;
     }
   }
 
