@@ -7,11 +7,13 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Test\Group;
+namespace Mvo\ContaoGroupWidget\Tests\Group;
 
+use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Group\Registry;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Twig\Environment;
 
 class RegistryTest extends TestCase
 {
@@ -50,7 +52,16 @@ class RegistryTest extends TestCase
             ],
         ];
 
-        $registry = new Registry($this->createMock(ContainerInterface::class));
+        $locator = $this->createMock(ContainerInterface::class);
+        $locator
+            ->method('get')
+            ->willReturnMap([
+                ['twig', $this->createMock(Environment::class)],
+                ['database_connection', $this->createMock(Connection::class)],
+            ])
+        ;
+
+        $registry = new Registry($locator);
 
         $group = $registry->getGroup('tl_foo', 123, 'my_group');
 

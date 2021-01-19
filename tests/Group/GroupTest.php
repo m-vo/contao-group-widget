@@ -7,13 +7,13 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Test\Group;
+namespace Mvo\ContaoGroupWidget\Tests\Group;
 
-use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Group\Group;
+use Mvo\ContaoGroupWidget\Tests\Fixtures\DummyStorage;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
+use Twig\Environment;
 
 class GroupTest extends TestCase
 {
@@ -33,7 +33,7 @@ class GroupTest extends TestCase
         ];
 
         $group = new Group(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'
@@ -151,7 +151,7 @@ class GroupTest extends TestCase
         $this->expectExceptionMessage($exception);
 
         new Group(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'
@@ -197,14 +197,6 @@ class GroupTest extends TestCase
             ],
             "Invalid definition for group 'my_group': Key 'max' cannot be less than 'min'.",
         ];
-
-        yield 'bad storage engine' => [
-            [
-                'palette' => ['foo'],
-                'storage' => 'bookshelf',
-            ],
-            "Invalid definition for group 'my_group': Unknown storage type 'bookshelf'.",
-        ];
     }
 
     public function testExpandsPalette(): void
@@ -220,39 +212,22 @@ class GroupTest extends TestCase
                         'inputType' => 'random',
                     ],
                 ],
-                'min' => 2,
             ],
             'foo' => [
                 'inputType' => 'text',
             ],
         ];
 
-        $connection = $this->createMock(Connection::class);
-
-        $connection
-            ->method('quoteIdentifier')
-            ->willReturn('')
-        ;
-
-        $connection
-            ->method('fetchOne')
-            ->willReturn(null)
-        ;
-
-        $locator = $this->createMock(ContainerInterface::class);
-        $locator
-            ->method('get')
-            ->with('database_connection')
-            ->willReturn($connection)
-        ;
+        $twig = $this->createMock(Environment::class);
 
         $group = new Group(
-            $locator,
+            $twig,
             'tl_foo',
             123,
             'my_group'
         );
 
+        $group->setStorage(new DummyStorage());
         $group->expand('default');
 
         $expectedFooDefinition = [

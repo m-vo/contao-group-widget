@@ -7,7 +7,7 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Test\Group;
+namespace Mvo\ContaoGroupWidget\Tests\EventListener;
 
 use Contao\DataContainer;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
