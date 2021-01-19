@@ -39,7 +39,8 @@
   .widget-group .widget-group--header {
     margin-bottom: -4px; }
     .widget-group .widget-group--header p {
-      margin-top: 2px; }
+      margin-top: 2px;
+      padding-bottom: 2px; }
   .widget-group .widget-group--container {
     display: flex;
     flex-direction: column; }
@@ -47,7 +48,7 @@
     position: relative;
     min-height: 94px;
     margin-top: 24px;
-    margin-right: 12px;
+    margin-right: 26px;
     margin-left: 26px;
     margin-bottom: 0;
     padding-bottom: 12px;
@@ -69,5 +70,7 @@
       height: 25px;
       left: -26px;
       right: -1px; }
+    .widget-group .widget-group--element .widget {
+      font-size: 0; }
   .widget-group .widget-group--footer .controls {
     margin-top: 4px; }
