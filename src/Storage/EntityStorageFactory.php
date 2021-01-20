@@ -100,6 +100,7 @@ class EntityStorageFactory implements StorageFactoryInterface
     private function getReferencedEntity(string $referencedEntity, Group $group)
     {
         // Find metadata for the referenced entity
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->entityManager
             ->getMetadataFactory()
             ->getMetadataFor($referencedEntity)

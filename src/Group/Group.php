@@ -291,6 +291,10 @@ class Group
      */
     public function expand(string $paletteKey, bool $isSubPalette = false): self
     {
+        if (null === $this->storage) {
+            return $this;
+        }
+
         // Create virtual fields once
         if (empty($this->expandedPalette)) {
             $elements = $this->applyMinMaxConstraints($this->storage->getElements());
