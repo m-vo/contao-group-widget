@@ -11,12 +11,21 @@ namespace Mvo\ContaoGroupWidget\Tests\Group;
 
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Group\Group;
-use Mvo\ContaoGroupWidget\Tests\Fixtures\DummyStorage;
+use Mvo\ContaoGroupWidget\Storage\StorageInterface;
+use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorage;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
 class GroupTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['TL_DCA']);
+
+        parent::tearDown();
+    }
+
     /**
      * @dataProvider provideDefinitions
      */
@@ -33,15 +42,13 @@ class GroupTest extends TestCase
         ];
 
         $group = new Group(
-            $this->createMock(Environment::class),
+            $this->createMock(ContainerInterface::class),
             'tl_foo',
             123,
             'my_group'
         );
 
         $assertionCallback($group);
-
-        unset($GLOBALS['TL_DCA']);
     }
 
     public function provideDefinitions(): \Generator
@@ -131,6 +138,16 @@ class GroupTest extends TestCase
                 ], $group->getFieldDefinition('foo'));
             },
         ];
+
+        yield 'raw definition' => [
+            [
+                'palette' => ['foo'],
+                'foobar' => ['bar' => 'baz'],
+            ],
+            static function (Group $group): void {
+                self::assertEquals(['bar' => 'baz'], $group->getDefinition('foobar'));
+            },
+        ];
     }
 
     /**
@@ -151,13 +168,11 @@ class GroupTest extends TestCase
         $this->expectExceptionMessage($exception);
 
         new Group(
-            $this->createMock(Environment::class),
+            $this->createMock(ContainerInterface::class),
             'tl_foo',
             123,
             'my_group'
         );
-
-        unset($GLOBALS['TL_DCA']);
     }
 
     public function provideInvalidDefinitions(): \Generator
@@ -172,6 +187,13 @@ class GroupTest extends TestCase
                 'palette' => [],
             ],
             "Invalid definition for group 'my_group': Keys 'palette' and 'fields' cannot both be empty.",
+        ];
+
+        yield 'string palette' => [
+            [
+                'palette' => 'foo',
+            ],
+            "Invalid definition for group 'my_group': Key 'palette' must be an array.",
         ];
 
         yield 'bad field reference' => [
@@ -219,9 +241,16 @@ class GroupTest extends TestCase
         ];
 
         $twig = $this->createMock(Environment::class);
+        $locator = $this->createMock(ContainerInterface::class);
+
+        $locator
+            ->method('get')
+            ->with('twig')
+            ->willReturn($twig)
+        ;
 
         $group = new Group(
-            $twig,
+            $locator,
             'tl_foo',
             123,
             'my_group'
@@ -288,7 +317,175 @@ class GroupTest extends TestCase
             'my_group__(end)';
 
         self::assertEquals($expectedPalette, $GLOBALS['TL_DCA']['tl_foo']['palettes']['default']);
+    }
 
-        unset($GLOBALS['TL_DCA']);
+    public function testGetField(): void
+    {
+        $group = $this->getDummyGroup();
+
+        $storage = $this->createMock(StorageInterface::class);
+        $storage
+            ->expects(self::once())
+            ->method('getField')
+            ->with(123, 'bar')
+            ->willReturn('data')
+        ;
+
+        $group->setStorage($storage);
+
+        self::assertEquals('data', $group->getField(123, 'bar'));
+    }
+
+    public function testSetField(): void
+    {
+        $group = $this->getDummyGroup();
+
+        $storage = $this->createMock(StorageInterface::class);
+        $storage
+            ->expects(self::once())
+            ->method('setField')
+            ->with(123, 'bar', 'data')
+        ;
+
+        $group->setStorage($storage);
+
+        $group->setField(123, 'bar', 'data');
+    }
+
+    public function testSetElements(): void
+    {
+        $group = $this->getDummyGroup();
+
+        $storage = $this->createMock(StorageInterface::class);
+
+        // Simulate transition [1, 5, 3] with [5, 2, 1, -1] --> [5, 1, 6]
+        //  - should create new item (6)
+        //  - should remove item 3
+        //  - should ignore unmapped (2)
+        //  - should order (5, 1, 6)
+
+        $storage
+            ->method('getElements')
+            ->willReturn([1, 5, 3])
+        ;
+
+        $storage
+            ->expects(self::once())
+            ->method('createElement')
+            ->willReturn(6)
+        ;
+
+        $storage
+            ->expects(self::once())
+            ->method('removeElement')
+            ->with(3)
+        ;
+
+        $storage
+            ->expects(self::once())
+            ->method('orderElements')
+            ->with([5, 1, 6])
+        ;
+
+        $group->setStorage($storage);
+
+        $group->setElements([2, 5, 1, -1]);
+    }
+
+    public function testSetElementsWithMinConstraint(): void
+    {
+        $group = $this->getDummyGroup(['min' => 3]);
+
+        $storage = $this->createMock(StorageInterface::class);
+
+        $storage
+            ->method('getElements')
+            ->willReturn([1])
+        ;
+
+        $storage
+            ->expects(self::exactly(2))
+            ->method('createElement')
+            ->willReturnOnConsecutiveCalls(2, 3)
+        ;
+
+        $group->setStorage($storage);
+
+        $group->setElements([1]);
+    }
+
+    public function testSetElementsWithMaxConstraint(): void
+    {
+        $group = $this->getDummyGroup(['max' => 3]);
+
+        $storage = $this->createMock(StorageInterface::class);
+
+        $storage
+            ->method('getElements')
+            ->willReturn([1, 2, 3, 4, 5])
+        ;
+
+        $storage
+            ->expects(self::exactly(2))
+            ->method('removeElement')
+            ->willReturnOnConsecutiveCalls(4, 5)
+        ;
+
+        $group->setStorage($storage);
+
+        $group->setElements([1, 2, 3, 4, 5]);
+    }
+
+    public function testRemove(): void
+    {
+        $group = $this->getDummyGroup();
+
+        $storage = $this->createMock(StorageInterface::class);
+        $storage
+            ->expects(self::once())
+            ->method('remove')
+        ;
+
+        $group->setStorage($storage);
+
+        $group->remove();
+    }
+
+    public function testPersist(): void
+    {
+        $group = $this->getDummyGroup();
+
+        $storage = $this->createMock(StorageInterface::class);
+        $storage
+            ->expects(self::once())
+            ->method('persist')
+        ;
+
+        $group->setStorage($storage);
+
+        $group->persist();
+    }
+
+    private function getDummyGroup($definition = []): Group
+    {
+        $GLOBALS['TL_DCA']['tl_foo']['fields'] = [
+            'my_group' => array_merge(
+                [
+                    'inputType' => 'group',
+                    'palette' => ['foo'],
+                ],
+                $definition
+            ),
+            'foo' => [
+                'inputType' => 'text',
+            ],
+        ];
+
+        return new Group(
+            $this->createMock(ContainerInterface::class),
+            'tl_foo',
+            123,
+            'my_group'
+        );
     }
 }

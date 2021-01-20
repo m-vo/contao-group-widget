@@ -60,6 +60,10 @@ class Group
             throw new \InvalidArgumentException("Invalid definition for group '$name': Keys 'palette' and 'fields' cannot both be empty.");
         }
 
+        if (!\is_array($palette)) {
+            throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'palette' must be an array.");
+        }
+
         foreach ($palette as $field) {
             $fieldDefinition = ArrayUtil::mergePropertiesRecursive(
                 $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? [],
@@ -243,7 +247,7 @@ class Group
         $newElementIds = $this->applyMinMaxConstraints($newElementIds);
 
         // Adjust order
-        $this->storage->orderElements($newElementIds);
+        $this->storage->orderElements(array_values($newElementIds));
 
         return $this;
     }

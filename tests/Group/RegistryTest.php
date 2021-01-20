@@ -11,6 +11,9 @@ namespace Mvo\ContaoGroupWidget\Tests\Group;
 
 use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Group\Registry;
+use Mvo\ContaoGroupWidget\Tests\Stubs\ArrayIteratorAggregate;
+use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorage;
+use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorageFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
@@ -31,7 +34,10 @@ class RegistryTest extends TestCase
             ],
         ];
 
-        $registry = new Registry($this->createMock(ContainerInterface::class));
+        $registry = new Registry(
+            $this->createMock(ContainerInterface::class),
+            new ArrayIteratorAggregate()
+        );
 
         self::assertSame(['my_group'], $registry->getGroupFields('tl_foo'));
 
@@ -49,6 +55,7 @@ class RegistryTest extends TestCase
                 'palette' => ['foo'],
                 'min' => 1,
                 'max' => 5,
+                'storage' => 'dummy',
             ],
         ];
 
@@ -61,7 +68,16 @@ class RegistryTest extends TestCase
             ])
         ;
 
-        $registry = new Registry($locator);
+        $dummyStorageFactory = $this->createPartialMock(DummyStorageFactory::class, ['create']);
+        $dummyStorageFactory
+            ->method('create')
+            ->willReturn(new DummyStorage())
+        ;
+
+        $registry = new Registry(
+            $locator,
+            new ArrayIteratorAggregate(['dummy' => $dummyStorageFactory])
+        );
 
         $group = $registry->getGroup('tl_foo', 123, 'my_group');
 

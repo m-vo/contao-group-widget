@@ -7,7 +7,7 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Tests\Fixtures;
+namespace Mvo\ContaoGroupWidget\Tests\Stubs;
 
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
 

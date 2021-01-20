@@ -43,17 +43,12 @@ class ObjectAccessorTest extends TestCase
         $object = new class() {
             private $foo = '';
             public $bar = '';
-            public $fooBar = '';
+            private $fooBar = '';
             private $other = '';
 
             public function setFoo(string $foo): void
             {
                 $this->foo = $foo;
-            }
-
-            public function setBar(string $bar): void
-            {
-                $this->bar = $bar;
             }
 
             public function setOther(string $value): void
