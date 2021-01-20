@@ -12,6 +12,7 @@ namespace Mvo\ContaoGroupWidget\Storage;
 use Doctrine\ORM\EntityManagerInterface;
 use Mvo\ContaoGroupWidget\Entity\GroupElementEntityInterface;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
+use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 
 /**
  * Storage adapter to store group/element data using entity classes.
@@ -19,6 +20,7 @@ use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 final class EntityStorage implements StorageInterface
 {
     private EntityManagerInterface $entityManager;
+    private ObjectAccessor $objectAccessor;
 
     private GroupEntityProxy $groupEntityProxy;
     private string $elementEntity;
@@ -26,6 +28,7 @@ final class EntityStorage implements StorageInterface
     public function __construct(EntityManagerInterface $entityManager, GroupEntityProxy $groupEntityProxy, string $elementEntity)
     {
         $this->entityManager = $entityManager;
+        $this->objectAccessor = new ObjectAccessor();
 
         $this->groupEntityProxy = $groupEntityProxy;
         $this->elementEntity = $elementEntity;
@@ -125,10 +128,7 @@ final class EntityStorage implements StorageInterface
         /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
             if ($element->getId() === $elementId) {
-                $property = new \ReflectionProperty($element, $field);
-                $property->setAccessible(true);
-
-                return $property->getValue($element);
+                return $this->objectAccessor->getValue($element, $field);
             }
         }
 
@@ -140,10 +140,7 @@ final class EntityStorage implements StorageInterface
         /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
             if ($element->getId() === $elementId) {
-                $property = new \ReflectionProperty($element, $field);
-                $property->setAccessible(true);
-
-                $property->setValue($element, $value);
+                $this->objectAccessor->setValue($element, $field, $value);
 
                 return;
             }

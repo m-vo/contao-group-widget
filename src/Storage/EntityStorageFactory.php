@@ -13,14 +13,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 use Mvo\ContaoGroupWidget\Group\Group;
+use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 
 class EntityStorageFactory implements StorageFactoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private ObjectAccessor $objectAccessor;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->objectAccessor = new ObjectAccessor();
     }
 
     public static function getName(): string
@@ -130,20 +133,13 @@ class EntityStorageFactory implements StorageFactoryInterface
         }
 
         // Create a new instance
-        $properties = [
-            'sourceTable' => $group->getTable(),
-            'sourceId' => $group->getRowId(),
-        ];
+        $entity = $classMetadata
+            ->getReflectionClass()
+            ->newInstance()
+        ;
 
-        $reflectionClass = $classMetadata->getReflectionClass();
-        $entity = $reflectionClass->newInstance();
-
-        foreach ($properties as $name => $value) {
-            $property = $reflectionClass->getProperty($name);
-            $property->setAccessible(true);
-
-            $property->setValue($entity, $value);
-        }
+        $this->objectAccessor->setValue($entity, 'sourceTable', $group->getTable());
+        $this->objectAccessor->setValue($entity, 'sourceId', $group->getRowId());
 
         $this->entityManager->persist($entity);
 
