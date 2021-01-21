@@ -16,6 +16,8 @@ use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 
 /**
  * Storage adapter to store group/element data using entity classes.
+ *
+ * @internal
  */
 final class EntityStorage implements StorageInterface
 {
@@ -32,6 +34,22 @@ final class EntityStorage implements StorageInterface
 
         $this->groupEntityProxy = $groupEntityProxy;
         $this->elementEntity = $elementEntity;
+    }
+
+    /**
+     * @internal
+     */
+    public function getGroupEntityProxy(): GroupEntityProxy
+    {
+        return $this->groupEntityProxy;
+    }
+
+    /**
+     * @internal
+     */
+    public function getElementEntityClass(): string
+    {
+        return $this->elementEntity;
     }
 
     public function getElements(): array

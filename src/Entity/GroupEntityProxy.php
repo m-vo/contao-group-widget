@@ -35,7 +35,7 @@ class GroupEntityProxy
 
         foreach ([$this->methodGet, $this->methodAdd, $this->methodRemove] as $method) {
             if (!method_exists($groupEntity, $method)) {
-                throw new \LogicException(sprintf("Group entity '%s' needs to have a method '%s' to be able to access the association '%s.", \get_class($groupEntity), $method, $associationProperty));
+                throw new \LogicException(sprintf("Group entity '%s' needs to have a method '%s' to be able to access the association '%s'.", \get_class($groupEntity), $method, $associationProperty));
             }
         }
     }

@@ -15,6 +15,8 @@ use Mvo\ContaoGroupWidget\Group\Group;
 
 /**
  * Storage adapter to store group/element data into a DCA table's blob field.
+ *
+ * @internal
  */
 final class SerializedStorage implements StorageInterface
 {
