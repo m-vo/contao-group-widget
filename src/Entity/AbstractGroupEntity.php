@@ -48,29 +48,22 @@ abstract class AbstractGroupEntity
         $this->elements = new ArrayCollection();
     }
 
+    // Implementing this method is optional
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    // Implementing this method is optional
     public function getSourceTable(): ?string
     {
         return $this->sourceTable;
     }
 
-    public function setSourceTable(string $sourceTable): void
-    {
-        $this->sourceTable = $sourceTable;
-    }
-
+    // Implementing this method is optional
     public function getSourceId(): ?int
     {
         return $this->sourceId;
-    }
-
-    public function setSourceId(int $sourceId): void
-    {
-        $this->sourceId = $sourceId;
     }
 
     public function getElements(): Collection
