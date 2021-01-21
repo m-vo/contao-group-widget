@@ -19,12 +19,12 @@ class AbstractGroupElementEntity implements GroupElementEntityInterface
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", options={"unsigned": true})
      */
     protected $id;
 
     /**
-     * @ORM\Column(name="position", type="integer")
+     * @ORM\Column(name="position", type="integer", options={"unsigned": true})
      */
     protected $position;
 
@@ -42,18 +42,6 @@ class AbstractGroupElementEntity implements GroupElementEntityInterface
         return $this->id;
     }
 
-    public function getParent(): ?GroupEntityInterface
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?GroupEntityInterface $parent): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
     public function getPosition(): ?int
     {
         return $this->position;
@@ -62,6 +50,18 @@ class AbstractGroupElementEntity implements GroupElementEntityInterface
     public function setPosition(int $position): self
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getParent(): ?object
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?object $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

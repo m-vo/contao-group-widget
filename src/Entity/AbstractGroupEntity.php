@@ -16,12 +16,12 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass()
  */
-abstract class AbstractGroupEntity implements GroupEntityInterface
+abstract class AbstractGroupEntity
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", options={"unsigned": true})
      */
     protected $id;
 
@@ -48,29 +48,22 @@ abstract class AbstractGroupEntity implements GroupEntityInterface
         $this->elements = new ArrayCollection();
     }
 
+    // Implementing this method is optional
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    // Implementing this method is optional
     public function getSourceTable(): ?string
     {
         return $this->sourceTable;
     }
 
-    public function setSourceTable(string $sourceTable): void
-    {
-        $this->sourceTable = $sourceTable;
-    }
-
+    // Implementing this method is optional
     public function getSourceId(): ?int
     {
         return $this->sourceId;
-    }
-
-    public function setSourceId(int $sourceId): void
-    {
-        $this->sourceId = $sourceId;
     }
 
     public function getElements(): Collection
@@ -78,18 +71,26 @@ abstract class AbstractGroupEntity implements GroupEntityInterface
         return $this->elements;
     }
 
-    public function addElement(GroupElementEntityInterface $element): void
+    public function addElement($element): void
     {
+        if (!$element instanceof AbstractGroupElementEntity) {
+            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'.", __METHOD__, self::class));
+        }
+
         if (!$this->elements->contains($element)) {
             $this->elements[] = $element;
             $element->setParent($this);
         }
     }
 
-    public function removeElement(GroupElementEntityInterface $element): void
+    public function removeElement($element): void
     {
+        if (!$element instanceof AbstractGroupElementEntity) {
+            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'", __METHOD__, self::class));
+        }
+
         if ($this->elements->removeElement($element)) {
-            // set the owning side to null (unless already changed)
+            // Set the owning side to null (unless already changed)
             if ($element->getParent() === $this) {
                 $element->setParent(null);
             }

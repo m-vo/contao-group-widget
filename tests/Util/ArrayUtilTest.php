@@ -7,6 +7,8 @@ declare(strict_types=1);
  * @license MIT
  */
 
+namespace Mvo\ContaoGroupWidget\Tests\Util;
+
 use Mvo\ContaoGroupWidget\Util\ArrayUtil;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +22,7 @@ class ArrayUtilTest extends TestCase
         self::assertEquals($expected, ArrayUtil::mergePropertiesRecursive($left, $right));
     }
 
-    public function provideArrays(): Generator
+    public function provideArrays(): \Generator
     {
         yield 'all empty' => [
             [], [], [],

@@ -7,11 +7,16 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Test\Group;
+namespace Mvo\ContaoGroupWidget\Tests\Group;
 
+use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Group\Registry;
+use Mvo\ContaoGroupWidget\Tests\Stubs\ArrayIteratorAggregate;
+use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorage;
+use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorageFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Twig\Environment;
 
 class RegistryTest extends TestCase
 {
@@ -29,7 +34,10 @@ class RegistryTest extends TestCase
             ],
         ];
 
-        $registry = new Registry($this->createMock(ContainerInterface::class));
+        $registry = new Registry(
+            $this->createMock(ContainerInterface::class),
+            new ArrayIteratorAggregate()
+        );
 
         self::assertSame(['my_group'], $registry->getGroupFields('tl_foo'));
 
@@ -47,10 +55,29 @@ class RegistryTest extends TestCase
                 'palette' => ['foo'],
                 'min' => 1,
                 'max' => 5,
+                'storage' => 'dummy',
             ],
         ];
 
-        $registry = new Registry($this->createMock(ContainerInterface::class));
+        $locator = $this->createMock(ContainerInterface::class);
+        $locator
+            ->method('get')
+            ->willReturnMap([
+                ['twig', $this->createMock(Environment::class)],
+                ['database_connection', $this->createMock(Connection::class)],
+            ])
+        ;
+
+        $dummyStorageFactory = $this->createPartialMock(DummyStorageFactory::class, ['create']);
+        $dummyStorageFactory
+            ->method('create')
+            ->willReturn(new DummyStorage())
+        ;
+
+        $registry = new Registry(
+            $locator,
+            new ArrayIteratorAggregate(['dummy' => $dummyStorageFactory])
+        );
 
         $group = $registry->getGroup('tl_foo', 123, 'my_group');
 

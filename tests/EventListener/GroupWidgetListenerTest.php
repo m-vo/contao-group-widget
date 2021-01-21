@@ -7,12 +7,13 @@ declare(strict_types=1);
  * @license MIT
  */
 
-namespace Mvo\ContaoGroupWidget\Test\Group;
+namespace Mvo\ContaoGroupWidget\Tests\EventListener;
 
 use Contao\DataContainer;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
+use Mvo\ContaoGroupWidget\Tests\Stubs\ArrayIteratorAggregate;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,7 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $requestStack,
-            new Registry($this->createMock(ContainerInterface::class))
+            new Registry($this->createMock(ContainerInterface::class), new ArrayIteratorAggregate())
         );
 
         $GLOBALS['TL_DCA']['tl_foo']['fields'] = $fields;
@@ -137,14 +138,17 @@ class GroupWidgetListenerTest extends TestCase
         $groupBar
             ->expects(self::once())
             ->method('expand')
-            ->with('default')
+            ->with('default', false)
         ;
 
         $groupFooBar = $this->createMock(Group::class);
         $groupFooBar
-            ->expects(self::once())
+            ->expects(self::exactly(2))
             ->method('expand')
-            ->with('other')
+            ->withConsecutive(
+                ['other', false],
+                ['sub', true],
+            )
         ;
 
         $groupFooBar
@@ -188,6 +192,11 @@ class GroupWidgetListenerTest extends TestCase
 
         $dataContainer = $this->createMock(DataContainer::class);
         $dataContainer
+            ->method('getPalette')
+            ->willReturn('foo,bar;[sub],foobar,[EOF]')
+        ;
+
+        $dataContainer
             ->method('__get')
             ->willReturnCallback(
                 static function (string $key) {
@@ -201,10 +210,15 @@ class GroupWidgetListenerTest extends TestCase
             )
         ;
 
-        $GLOBALS['TL_DCA']['tl_foo']['palettes'] = [
-            '__selector' => ['something'],
-            'default' => 'foo,bar',
-            'other' => 'foobar;baz',
+        $GLOBALS['TL_DCA']['tl_foo'] = [
+            'palettes' => [
+                '__selector' => ['something'],
+                'default' => 'foo,bar;sub',
+                'other' => 'foobar;baz',
+            ],
+            'subpalettes' => [
+                'sub' => 'foobar',
+            ],
         ];
 
         $listener->onLoadDataContainer($dataContainer);
