@@ -122,7 +122,7 @@ class GroupTest extends TestCase
         yield 'merged fields' => [
             [
                 'fields' => [
-                    'foo' => [
+                    '&foo' => [
                         'eval' => ['mandatory' => false],
                     ],
                 ],
@@ -136,6 +136,21 @@ class GroupTest extends TestCase
                         'mandatory' => false,
                     ],
                 ], $group->getFieldDefinition('foo'));
+            },
+        ];
+
+        yield 'non-merged fields with same ' => [
+            [
+                'fields' => [
+                    'foo' => [
+                        'inputType' => 'textarea',
+                    ],
+                ],
+            ],
+            static function (Group $group): void {
+                self::assertEquals(['foo'], $group->getFields());
+                self::assertEquals('textarea', $group->getFieldDefinition('foo')['inputType'] ?? null);
+                self::assertArrayNotHasKey('eval', $group->getFieldDefinition('foo') ?? []);
             },
         ];
 

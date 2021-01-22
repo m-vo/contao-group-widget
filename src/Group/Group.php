@@ -54,6 +54,25 @@ class Group
         $this->definition = $GLOBALS['TL_DCA'][$table]['fields'][$name];
 
         $fields = $this->definition['fields'] ?? [];
+
+        $getReferencedDefinition = function (string $field): ?array {
+            return $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? null;
+        };
+
+        // Pull in referenced definitions
+        foreach ($fields as $field => $fieldDefinition) {
+            if (0 === strpos($field, '&')) {
+                $realFieldName = ltrim($field, '&');
+
+                if (null === ($referencedDefinition = $getReferencedDefinition($realFieldName))) {
+                    throw new \InvalidArgumentException("Invalid definition for group '$this->name': Referenced field '$field' does not exist.");
+                }
+
+                $fields[$realFieldName] = ArrayUtil::mergePropertiesRecursive($referencedDefinition, $fieldDefinition);
+                unset($fields[$field]);
+            }
+        }
+
         $palette = $this->definition['palette'] ?? array_keys($fields) ?? [];
 
         if (empty($palette)) {
@@ -64,13 +83,9 @@ class Group
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'palette' must be an array.");
         }
 
+        // Validate palette and build field definitions
         foreach ($palette as $field) {
-            $fieldDefinition = ArrayUtil::mergePropertiesRecursive(
-                $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? [],
-                $fields[$field] ?? []
-            );
-
-            if (empty($fieldDefinition)) {
+            if (null === ($fieldDefinition = $fields[$field] ?? $getReferencedDefinition($field))) {
                 throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
             }
 
@@ -417,7 +432,11 @@ class Group
 
         // Set a default label
         if (!\array_key_exists('label', $definition)) {
-            $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
+            // Use '<groupName>.<fieldName>' as key for inlined fields
+            $labelKey = \array_key_exists($name, $GLOBALS['TL_DCA'][$this->table]['fields'])
+                ? $name : "{$this->name}.$name";
+
+            $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$labelKey];
         }
 
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = $definition;

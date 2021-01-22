@@ -1,7 +1,7 @@
 # Entity Storage Backend
 
 This storage backend uses Doctrine ORM to store the records in your entity 
-classes. To enable, set the `storage` key to `entitiy`:
+classes. To enable, set the `storage` key to `entity`:
 
 ```php
 $GLOBALS['TL_DCA']['tl_island']['treasures'] = [
@@ -11,7 +11,7 @@ $GLOBALS['TL_DCA']['tl_island']['treasures'] = [
 ];
 ```
 
-We'll need to entities - one for the group, one for the element - with an 
+We'll need two entities: one for the group, one for the element and an 
 association between them. The group entity can either be the same entity 
 you're using for your DCA (if you do so) or a separate, referenced one.
 
