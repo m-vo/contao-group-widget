@@ -39,7 +39,7 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
             'inputType' => 'text',
             'eval' => ['tl_class' => 'w50'],
         ],
-        'singleSRC' => [ // merge with existing field
+        '&singleSRC' => [ // merge with existing field
             'eval' => ['mandatory' => false],
         ]   
     ],   

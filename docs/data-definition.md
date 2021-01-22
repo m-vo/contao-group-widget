@@ -32,9 +32,9 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
 ```
 
 If you're defining a field under the group's `fields` definition that 
-already exists in your DCA, the properties will be merged. You can use this 
-to overwrite certain properties that differ in your group:
-
+already exists in your DCA, the properties can be merged by adding a `&` 
+symbol in front of the field name. You can use this to overwrite certain 
+properties that should be different in your group:
 
 ```php
 $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
@@ -65,7 +65,7 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
             'inputType' => 'select',
             'options' => ['Text Blocks', 'Hero Image', 'Foobar'],
         ],
-        'title' => [
+        '&title' => [
             // set some values, but take the rest from the existing definition
             // under '$GLOBALS['TL_DCA']['tl_my_dca']['fields']['title']'
             'eval' => ['mandatory' => false]
