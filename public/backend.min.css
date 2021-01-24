@@ -40,7 +40,8 @@
     margin-bottom: -4px; }
     .widget-group .widget-group--header p {
       margin-top: 2px;
-      padding-bottom: 2px; }
+      padding-bottom: 2px;
+      font-size: .75rem; }
   .widget-group .widget-group--container {
     display: flex;
     flex-direction: column; }
