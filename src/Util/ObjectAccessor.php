@@ -24,6 +24,20 @@ final class ObjectAccessor
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
+    public function supports(object $object, string $property): bool
+    {
+        if (
+            $this->propertyAccessor->isReadable($object, $property) &&
+            $this->propertyAccessor->isWritable($object, $property)
+        ) {
+            return true;
+        }
+
+        $reflectionClass = new \ReflectionClass($object);
+
+        return $reflectionClass->hasProperty($property);
+    }
+
     /**
      * Get a value via PropertyAccess, fall back to reflection.
      *

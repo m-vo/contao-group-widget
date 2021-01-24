@@ -49,18 +49,21 @@ abstract class AbstractGroupEntity
     }
 
     // Implementing this method is optional
+    // (then a field named 'id' is required, though)
     public function getId(): ?int
     {
         return $this->id;
     }
 
     // Implementing this method is optional
+    // (then a field named 'sourceTable' is required, though)
     public function getSourceTable(): ?string
     {
         return $this->sourceTable;
     }
 
     // Implementing this method is optional
+    // (then a field named 'sourceId' is required, though)
     public function getSourceId(): ?int
     {
         return $this->sourceId;

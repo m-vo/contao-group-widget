@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass()
  */
-class AbstractGroupElementEntity implements GroupElementEntityInterface
+class AbstractGroupElementEntity
 {
     /**
      * @ORM\Id
@@ -23,6 +23,7 @@ class AbstractGroupElementEntity implements GroupElementEntityInterface
      */
     protected $id;
 
+    // Defining this field is optional
     /**
      * @ORM\Column(name="position", type="integer", options={"unsigned": true})
      */
@@ -42,11 +43,13 @@ class AbstractGroupElementEntity implements GroupElementEntityInterface
         return $this->id;
     }
 
+    // Implementing this method is optional
     public function getPosition(): ?int
     {
         return $this->position;
     }
 
+    // Implementing this method is optional
     public function setPosition(int $position): self
     {
         $this->position = $position;

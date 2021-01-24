@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Mvo\ContaoGroupWidget\Storage;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Mvo\ContaoGroupWidget\Entity\GroupElementEntityInterface;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 
@@ -26,6 +25,7 @@ final class EntityStorage implements StorageInterface
 
     private GroupEntityProxy $groupEntityProxy;
     private string $elementEntity;
+    private string $elementIdentifier;
 
     public function __construct(EntityManagerInterface $entityManager, GroupEntityProxy $groupEntityProxy, string $elementEntity)
     {
@@ -34,6 +34,17 @@ final class EntityStorage implements StorageInterface
 
         $this->groupEntityProxy = $groupEntityProxy;
         $this->elementEntity = $elementEntity;
+
+        $elementIdentifier = $this->entityManager
+            ->getClassMetadata($elementEntity)
+            ->getIdentifier()
+        ;
+
+        if (!\is_array($elementIdentifier) || 1 !== \count($elementIdentifier)) {
+            throw new \InvalidArgumentException("Entity '$elementEntity' cannot have a composite identifier in order to use it as a group element.");
+        }
+
+        $this->elementIdentifier = $elementIdentifier[0];
     }
 
     /**
@@ -59,19 +70,13 @@ final class EntityStorage implements StorageInterface
 
         usort(
             $elements,
-            static fn (GroupElementEntityInterface $a, GroupElementEntityInterface $b): int => $b->getPosition() <=> $a->getPosition()
+            fn (object $a, object $b): int => $this->getElementPosition($b) <=> $this->getElementPosition($a)
         );
 
         // Get IDs
         return array_map(
-            static function (GroupElementEntityInterface $element): int {
-                $id = $element->getId();
-
-                if (null === $id) {
-                    throw new \RuntimeException('Element ID could not be retrieved - did you miss a flush?');
-                }
-
-                return $id;
+            function (object $element): int {
+                return $this->getElementId($element);
             },
             $elements
         );
@@ -79,7 +84,6 @@ final class EntityStorage implements StorageInterface
 
     public function createElement(): int
     {
-        /** @var GroupElementEntityInterface $element */
         $element = $this->entityManager
             ->getMetadataFactory()
             ->getMetadataFor($this->elementEntity)
@@ -88,7 +92,7 @@ final class EntityStorage implements StorageInterface
         ;
 
         // Position at the end
-        $element->setPosition(0);
+        $this->setElementPosition($element, 0);
 
         $this->groupEntityProxy->addElement($element);
 
@@ -96,20 +100,13 @@ final class EntityStorage implements StorageInterface
         $this->entityManager->persist($element);
         $this->entityManager->flush();
 
-        $id = $element->getId();
-
-        if (null === $id) {
-            throw new \RuntimeException('New element ID could not be retrieved.');
-        }
-
-        return $id;
+        return $this->getElementId($element);
     }
 
     public function removeElement(int $elementId): void
     {
-        /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
-            if ($elementId === $element->getId()) {
+            if ($elementId === $this->getElementId($element)) {
                 $this->groupEntityProxy->removeElement($element);
 
                 return;
@@ -123,13 +120,8 @@ final class EntityStorage implements StorageInterface
     {
         $elementsById = [];
 
-        /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
-            $id = $element->getId();
-
-            if (null !== $id) {
-                $elementsById[$id] = $element;
-            }
+            $elementsById[$this->getElementId($element)] = $element;
         }
 
         if (\count(array_intersect($elementIds, array_keys($elementsById))) !== \count($elementsById)) {
@@ -143,9 +135,8 @@ final class EntityStorage implements StorageInterface
 
     public function getField(int $elementId, string $field)
     {
-        /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
-            if ($element->getId() === $elementId) {
+            if ($elementId === $this->getElementId($element)) {
                 return $this->objectAccessor->getValue($element, $field);
             }
         }
@@ -155,9 +146,8 @@ final class EntityStorage implements StorageInterface
 
     public function setField(int $elementId, string $field, $value): void
     {
-        /** @var GroupElementEntityInterface $element */
         foreach ($this->groupEntityProxy->getElements() as $element) {
-            if ($element->getId() === $elementId) {
+            if ($elementId === $this->getElementId($element)) {
                 $this->objectAccessor->setValue($element, $field, $value);
 
                 return;
@@ -177,5 +167,45 @@ final class EntityStorage implements StorageInterface
         $this->entityManager->remove($this->groupEntityProxy->getReference());
 
         $this->entityManager->flush();
+    }
+
+    /**
+     * Get an element's identifier.
+     */
+    private function getElementId(object $element): int
+    {
+        $id = $this->objectAccessor->getValue($element, $this->elementIdentifier);
+
+        if (null === $id) {
+            throw new \RuntimeException("Identifier of group element entity '{$this->elementEntity}' could not be retrieved - did you miss a flush?");
+        }
+
+        if (!\is_int($id)) {
+            throw new \RuntimeException("Identifier of group element entity '{$this->elementEntity}' must be an integer.");
+        }
+
+        return $id;
+    }
+
+    /**
+     * Get an element's position or 0 if no field/accessor is defined.
+     */
+    private function getElementPosition(object $element): int
+    {
+        if ($this->objectAccessor->supports($element, 'position')) {
+            return $this->objectAccessor->getValue($element, 'position');
+        }
+
+        return 0;
+    }
+
+    /**
+     * Set an element's position if the element has a respective field/accessor.
+     */
+    private function setElementPosition(object $element, int $position): void
+    {
+        if ($this->objectAccessor->supports($element, 'position')) {
+            $this->objectAccessor->setValue($element, 'position', $position);
+        }
     }
 }
