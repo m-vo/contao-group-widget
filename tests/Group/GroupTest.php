@@ -332,6 +332,16 @@ class GroupTest extends TestCase
             'my_group__(end)';
 
         self::assertEquals($expectedPalette, $GLOBALS['TL_DCA']['tl_foo']['palettes']['default']);
+
+        // Check default labels are being assigned
+        $GLOBALS['TL_LANG']['tl_foo']['foo'] = ['foo label'];
+        $GLOBALS['TL_LANG']['tl_foo']['my_group_']['bar'] = ['my_group.bar label'];
+
+        self::assertEquals(['foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__1']['label']);
+        self::assertEquals(['foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__2']['label']);
+
+        self::assertEquals(['my_group.bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__1']['label']);
+        self::assertEquals(['my_group.bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__2']['label']);
     }
 
     public function testGetField(): void

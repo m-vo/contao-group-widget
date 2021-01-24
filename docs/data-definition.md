@@ -117,13 +117,24 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
 
 
 ## Translations
-The translation key of the inline group elements will have a default reference 
-as if a field `<group name>.<field name>` was part of the DCA. To add 
-translations for your inline field `image` of group `my_group` in DCA 
-`tl_bar` you would define a translation like so:
+The translation key of the inline group elements will be assigned a default 
+reference if nothing is explicitly set. To add translations for your inline 
+field `image` of group `my_group` in DCA `tl_bar` you would define a translation
+like so (note the trailing `_` that is added to the group's name):
 
 ```php
-$GLOBALS['TL_LANG']['tl_bar']['my_group.image'] = ['Image', 'Add an image'];
+$GLOBALS['TL_LANG']['tl_bar']['my_group_']['image'] = ['Image', 'Add an image'];
+```
+
+Or, if you prefer the `xliff` format:
+
+```xml
+<trans-unit id="tl_bar.my_group_.image.0">
+    <source>Image</source>
+</trans-unit>
+<trans-unit id="tl_bar.my_group_.image.1">
+    <source>Add an image</source>
+</trans-unit>
 ```
 
 If you want to deviate from this, just add your own `label` definition like 

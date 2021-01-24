@@ -432,11 +432,11 @@ class Group
 
         // Set a default label
         if (!\array_key_exists('label', $definition)) {
-            // Use '<groupName>.<fieldName>' as key for inlined fields
-            $labelKey = \array_key_exists($name, $GLOBALS['TL_DCA'][$this->table]['fields'])
-                ? $name : "{$this->name}.$name";
-
-            $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$labelKey];
+            if (\array_key_exists($name, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
+                $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
+            } else {
+                $definition['label'] = &$GLOBALS['TL_LANG'][$this->table]["{$this->name}_"][$name];
+            }
         }
 
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = $definition;
