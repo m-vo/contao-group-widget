@@ -58,7 +58,7 @@ class GroupEntityProxy
     /**
      * Call a method "addThing($element)" on the association property "things".
      */
-    public function addElement(GroupElementEntityInterface $element): void
+    public function addElement(object $element): void
     {
         $method = $this->methodAdd;
 
@@ -68,7 +68,7 @@ class GroupEntityProxy
     /**
      * Call a method "removeThing($element)" on the association property "things".
      */
-    public function removeElement(GroupElementEntityInterface $element): void
+    public function removeElement(object $element): void
     {
         $method = $this->methodRemove;
 

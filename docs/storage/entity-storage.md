@@ -91,9 +91,12 @@ need to do a bit more setup:
    ```
 
 ## Element entity
-Our associated element entity must implement the `GroupElementEntityInterface`. 
-We need this to determine an element's position and ID in the group. There is
-an abstract base class for your convenience:
+Our associated element entity must follow the following criteria:
+ * The identifier must be an integer (and no composite key).
+ * If you want to have sortable elements, there must either exist 
+   `getPosition()` and `setPosition()` accessors or a `position` field.
+
+There is an abstract base class for your convenience:
 
 ```php
 /**

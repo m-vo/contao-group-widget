@@ -97,4 +97,38 @@ class ObjectAccessorTest extends TestCase
 
         $accessor->setValue($object, 'foo', 'foo');
     }
+
+    public function testSupports(): void
+    {
+        $object = new class() {
+            private $foo = 'foo';
+            public $bar = 'bar';
+
+            public function getFooBar(): string
+            {
+                return 'getFooBar';
+            }
+
+            public function setFooBar($value): void
+            {
+            }
+
+            public function getThing(): string
+            {
+                return 'getThing';
+            }
+        };
+
+        $accessor = new ObjectAccessor();
+
+        self::assertTrue($accessor->supports($object, 'foo'));
+        self::assertTrue($accessor->supports($object, 'bar'));
+        self::assertTrue($accessor->supports($object, 'fooBar'));
+
+        // No property
+        self::assertFalse($accessor->supports($object, 'other'));
+
+        // Missing setter
+        self::assertFalse($accessor->supports($object, 'thing'));
+    }
 }
