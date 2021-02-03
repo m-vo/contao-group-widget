@@ -127,6 +127,9 @@ export class WidgetGroup {
         this.addButton.addEventListener('click', event => {
             event.preventDefault();
 
+            const scrollOffset = this.addButton.getBoundingClientRect().y + window.scrollY;
+            window.sessionStorage.setItem('contao_backend_offset', scrollOffset.toString());
+
             this.updateOrderTarget(true);
             this.form.submit();
         });
