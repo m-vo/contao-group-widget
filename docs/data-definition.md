@@ -115,6 +115,18 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
 ];
 ```
 
+### Ordering of elements
+By default, a user can reorder elements (up/down/drag). You can disable this by 
+setting `order` to `false`:
+
+```php
+$GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
+    'inputType' => 'group',
+    // …
+    
+    'order' => false,
+];
+```
 
 ## Translations
 The translation key of the inline group elements will be assigned a default 

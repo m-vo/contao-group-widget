@@ -33,8 +33,9 @@ class Group
     private string $description;
     private int $min;
     private int $max;
+    private bool $enableOrdering;
 
-    private ?StorageInterface $storage;
+    private ?StorageInterface $storage = null;
 
     private array $expandedPalette = [];
 
@@ -96,6 +97,7 @@ class Group
         $this->description = $this->definition['label'][1] ?? '';
         $this->min = $this->definition['min'] ?? 0;
         $this->max = $this->definition['max'] ?? 0;
+        $this->enableOrdering = $this->definition['order'] ?? true;
 
         if ($this->min < 0) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'min' cannot be less than 0.");
@@ -262,7 +264,9 @@ class Group
         $newElementIds = $this->applyMinMaxConstraints($newElementIds);
 
         // Adjust order
-        $this->storage->orderElements(array_values($newElementIds));
+        if ($this->enableOrdering) {
+            $this->storage->orderElements(array_values($newElementIds));
+        }
 
         return $this;
     }
@@ -379,6 +383,7 @@ class Group
                 [
                     'group' => $this,
                     'type' => $start,
+                    'order' => $this->enableOrdering,
                 ]
             ),
         ];

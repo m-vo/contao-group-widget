@@ -48,6 +48,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['my_group'] = [
     'min' => 1,
     'max' => 5,
     
+    // disable ordering (on by default)
+    'order' => 'false',
+    
     // store serialized into a blob (default storage backend)
     'sql' => [
         'type' => 'blob',

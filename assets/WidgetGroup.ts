@@ -6,6 +6,7 @@ export class WidgetGroup {
     private readonly elements: HTMLElement[]
     private readonly min: number = NaN;
     private readonly max: number = NaN;
+    private readonly orderingEnabled: boolean;
 
     // Footer elements
     private readonly orderField: HTMLInputElement;
@@ -25,6 +26,8 @@ export class WidgetGroup {
                 this[v] = value;
             }
         });
+
+        this.orderingEnabled = elementsContainer.getAttribute('data-order') === '1';
 
         const footerContainer = container.querySelector('.widget-group--footer');
         this.orderField = footerContainer.querySelector('input[data-order]');
@@ -65,6 +68,19 @@ export class WidgetGroup {
         this.elements.forEach(el => {
             const [up, down, remove, drag] = WidgetGroup.getControls(el);
 
+            // Delete
+            remove.addEventListener('click', event => {
+                event.preventDefault();
+
+                const position = WidgetGroup.getPosition(el);
+                this.remove(position);
+                remove.blur();
+            });
+
+            if(!this.orderingEnabled) {
+                return;
+            }
+
             // Move one with arrow buttons
             up.addEventListener('click', event => {
                 event.preventDefault();
@@ -80,15 +96,6 @@ export class WidgetGroup {
                 const position = WidgetGroup.getPosition(el);
                 this.swap(position, position + 1);
                 down.blur();
-            });
-
-            // Delete
-            remove.addEventListener('click', event => {
-                event.preventDefault();
-
-                const position = WidgetGroup.getPosition(el);
-                this.remove(position);
-                remove.blur();
             });
 
             // Drag & drop
@@ -143,11 +150,11 @@ export class WidgetGroup {
 
             const [up, down, remove, drag] = WidgetGroup.getControls(el);
 
-            WidgetGroup.toggleAttribute('disabled', up, 0 === index);
-            WidgetGroup.toggleAttribute('disabled', down, numElements - 1 === index);
+            WidgetGroup.toggleAttribute('disabled', up, !this.orderingEnabled || 0 === index);
+            WidgetGroup.toggleAttribute('disabled', down, !this.orderingEnabled || numElements - 1 === index);
             WidgetGroup.toggleAttribute('disabled', remove, !isNaN(this.min) && numElements === this.min);
 
-            const allowDrag = numElements > 1;
+            const allowDrag = this.orderingEnabled && numElements > 1;
             WidgetGroup.toggleAttribute('draggable', drag, allowDrag);
             drag.classList.toggle('disabled', !allowDrag);
 

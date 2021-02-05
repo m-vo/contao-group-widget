@@ -44,6 +44,12 @@
 
       &:disabled, &.disabled {
         filter: grayscale(100%) opacity(0.5);
+        cursor: default;
+
+        &:hover {
+          background-color: transparent;
+          box-shadow: none;
+        }
       }
     }
   }
