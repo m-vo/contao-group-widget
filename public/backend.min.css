@@ -28,7 +28,11 @@
         background-size: 18px 18px;
         background-image: url("../../../system/themes/flexible/icons/new.svg"); }
       .widget-group .controls > *:disabled, .widget-group .controls > *.disabled {
-        filter: grayscale(100%) opacity(0.5); }
+        filter: grayscale(100%) opacity(0.5);
+        cursor: default; }
+        .widget-group .controls > *:disabled:hover, .widget-group .controls > *.disabled:hover {
+          background-color: transparent;
+          box-shadow: none; }
   .widget-group .drop-area::after {
     padding-top: 10px;
     border-bottom: 4px solid transparent;
