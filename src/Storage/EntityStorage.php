@@ -129,7 +129,7 @@ final class EntityStorage implements StorageInterface
         }
 
         foreach (array_reverse($elementIds) as $position => $id) {
-            $elementsById[$id]->setPosition($position);
+            $this->setElementPosition($elementsById[$id], $position);
         }
     }
 
