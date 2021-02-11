@@ -11,6 +11,7 @@ namespace Mvo\ContaoGroupWidget\Storage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
@@ -46,8 +47,10 @@ class EntityStorageFactory implements StorageFactoryInterface
 
         // Wrap entity into a proxy that handles accessing and manipulating the
         // element association. The entity must have methods that follow a
-        // contract (get<Elements>/add<Element>/remove<Element>).
-        $groupEntityProxy = new GroupEntityProxy($entity, $targetMapping['fieldName']);
+        // contract (either 'get<Elements>'/'add<Element>'/'remove<Element>' or
+        // 'get<Element>'/'set<Element>' in case of a one to one relation).
+        $oneToOneRelation = ClassMetadataInfo::ONE_TO_ONE === $targetMapping['type'];
+        $groupEntityProxy = new GroupEntityProxy($entity, $targetMapping['fieldName'], !$oneToOneRelation);
 
         // Get the class of the element entity (the target in the association).
         $elementEntity = $targetMapping['targetEntity'];
