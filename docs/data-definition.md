@@ -151,3 +151,19 @@ Or, if you prefer the `xliff` format:
 
 If you want to deviate from this, just add your own `label` definition like 
 usual.
+
+## Various
+Similarly to other Contao widgets, setting a `tl_class` or `style` under the 
+`eval` is possible and will be applied to the group widget container:
+
+```php
+$GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
+    'inputType' => 'group',
+    // …
+    
+    'eval' => [
+        'tl_class' => 'w50',
+        'style' => 'background-color: rebeccapurple;' // wtf 
+    ],  
+];
+```
