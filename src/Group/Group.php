@@ -34,6 +34,7 @@ class Group
     private int $min;
     private int $max;
     private bool $enableOrdering;
+    private array $htmlAttributes;
 
     private ?StorageInterface $storage = null;
 
@@ -95,6 +96,12 @@ class Group
 
         $this->label = $this->definition['label'][0] ?? '';
         $this->description = $this->definition['label'][1] ?? '';
+
+        $this->htmlAttributes = array_filter([
+            'class' => $this->definition['eval']['tl_class'] ?? '',
+            'style' => $this->definition['eval']['style'] ?? '',
+        ]);
+
         $this->min = $this->definition['min'] ?? 0;
         $this->max = $this->definition['max'] ?? 0;
         $this->enableOrdering = $this->definition['order'] ?? true;
@@ -384,6 +391,7 @@ class Group
                     'group' => $this,
                     'type' => $start,
                     'order' => $this->enableOrdering,
+                    'htmlAttributes' => $this->htmlAttributes,
                 ]
             ),
         ];
