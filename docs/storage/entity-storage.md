@@ -56,6 +56,12 @@ class Island
 If you're using `make:entity` from Symfony's maker bundle, this will all be 
 auto-generated for you in the same way the group widget expects it.
 
+**Note:** You can also use the group widget in a `OneToOne` relation if you 
+limit the elements to a maximum of `1`. In this case you do *not* have to 
+implement the methods mentioned before but a regular getter and setter 
+instead. Have a look at the `tests/Fixtures/Entity/Monkey.php` entity for an 
+example.  
+
 ### Standalone entity variant
 Similarly, using an individual entity class is possible. In this case you 
 need to do a bit more setup:
@@ -177,5 +183,6 @@ You'll find the full code of these examples in the `tests/Fixtures/Entity`
 directory. 
 
   * `Island` is an entity backing a DCA with a group field,
+  * `Monkey` is analogous to `Island` but has a `OneToOne` relation,
   * `Map` a standalone one,
   * `Treasure` the element entity.

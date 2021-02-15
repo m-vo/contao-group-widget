@@ -1,5 +1,8 @@
 {% if type =='start' %}
-    <div class="widget widget-group">
+    {%- set htmlAttributes = htmlAttributes|merge({
+        class: (htmlAttributes.class|default('') ~ ' widget widget-group')|trim
+    }) -%}
+    <div{% for name, value in htmlAttributes %} {{ name }}="{{ value }}"{% endfor %}>
         <div class="widget-group--header">
             {% if group.label %}
                 <h3>{{ group.label }}</h3>
