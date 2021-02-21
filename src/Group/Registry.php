@@ -75,7 +75,7 @@ class Registry
     {
         return array_keys(
             array_filter(
-                $GLOBALS['TL_DCA'][$table]['fields'] ?? [],
+                array_filter($GLOBALS['TL_DCA'][$table]['fields'] ?? []),
                 static fn (array $definition): bool => 'group' === ($definition['inputType'] ?? null)
             )
         );
