@@ -14,6 +14,7 @@ use Contao\DataContainer;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Twig\Environment;
 
 /**
  * @internal
@@ -22,11 +23,13 @@ final class GroupWidgetListener
 {
     private RequestStack $requestStack;
     private Registry $registry;
+    private Environment $twig;
 
-    public function __construct(RequestStack $requestStack, Registry $registry)
+    public function __construct(RequestStack $requestStack, Registry $registry, Environment $twig)
     {
         $this->requestStack = $requestStack;
         $this->registry = $registry;
+        $this->twig = $twig;
     }
 
     /**
@@ -68,12 +71,24 @@ final class GroupWidgetListener
         $getPaletteFields = static fn (string $palette): array => preg_split('/[,;]/', $palette);
 
         // Find currently visible group fields
-        $visibleGroupFields = array_intersect(
-            $this->registry->getGroupFields($table),
-            $getPaletteFields($dc->getPalette())
-        );
+        $groupFields = $this->registry->getGroupFields($table);
+        $visibleGroupFields = array_intersect($groupFields, $getPaletteFields($dc->getPalette()));
 
         if (empty($visibleGroupFields)) {
+            foreach ($groupFields as $groupField) {
+                // If a group widget is located in a subpalette that isn't shown by
+                // default, we need to submit the form once the dummy widget gets
+                // injected so that the virtual fields can be built correctly.
+                $GLOBALS['TL_DCA'][$table]['fields'][$groupField] = [
+                    'input_field_callback' => fn () => $this->twig->render(
+                        '@MvoContaoGroupWidget/widget_group_reloader.html.twig',
+                        [
+                            'table' => $table,
+                        ]
+                    ),
+                ];
+            }
+
             return;
         }
 

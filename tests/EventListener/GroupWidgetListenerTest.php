@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Twig\Environment;
 
 class GroupWidgetListenerTest extends TestCase
 {
@@ -38,7 +39,8 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $requestStack,
-            new Registry($this->createMock(ContainerInterface::class), new ArrayIteratorAggregate())
+            new Registry($this->createMock(ContainerInterface::class), new ArrayIteratorAggregate()),
+            $this->createMock(Environment::class)
         );
 
         $GLOBALS['TL_DCA']['tl_foo']['fields'] = $fields;
@@ -188,7 +190,11 @@ class GroupWidgetListenerTest extends TestCase
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
-        $listener = new GroupWidgetListener($requestStack, $registry);
+        $listener = new GroupWidgetListener(
+            $requestStack,
+            $registry,
+            $this->createMock(Environment::class),
+        );
 
         $dataContainer = $this->createMock(DataContainer::class);
         $dataContainer
@@ -250,7 +256,8 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
-            $registry
+            $registry,
+            $this->createMock(Environment::class)
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -295,7 +302,8 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
-            $registry
+            $registry,
+            $this->createMock(Environment::class)
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -334,7 +342,8 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
-            $registry
+            $registry,
+            $this->createMock(Environment::class)
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -374,7 +383,8 @@ class GroupWidgetListenerTest extends TestCase
 
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
-            $registry
+            $registry,
+            $this->createMock(Environment::class)
         );
 
         $dataContainer = $this->createMock(DataContainer::class);

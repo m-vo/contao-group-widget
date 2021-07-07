@@ -8,6 +8,7 @@ services:
     arguments:
       - '@request_stack'
       - '@Mvo\ContaoGroupWidget\Group\Registry'
+      - '@twig'
 
   Mvo\ContaoGroupWidget\Storage\SerializedStorageFactory:
     arguments:
