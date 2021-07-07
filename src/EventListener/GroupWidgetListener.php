@@ -68,7 +68,7 @@ final class GroupWidgetListener
         $id = (int) $dc->id;
 
         // Split a palette into fields
-        $getPaletteFields = static fn (string $palette): array => preg_split('/[,;]/', $palette);
+        $getPaletteFields = static fn (string $palette): array => array_map('trim', preg_split('/[,;]/', $palette));
 
         // Find currently visible group fields
         $groupFields = $this->registry->getGroupFields($table);

@@ -219,7 +219,7 @@ class GroupWidgetListenerTest extends TestCase
         $GLOBALS['TL_DCA']['tl_foo'] = [
             'palettes' => [
                 '__selector' => ['something'],
-                'default' => 'foo,bar;sub',
+                'default' => 'foo, bar  ;sub', // spaces should get normalized
                 'other' => 'foobar;baz',
             ],
             'subpalettes' => [
