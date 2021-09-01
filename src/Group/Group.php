@@ -361,6 +361,10 @@ class Group
 
     private function applyMinMaxConstraints(array $elementIds): array
     {
+        if (null === $this->storage) {
+            throw new \RuntimeException('Cannot apply min/max constraints if no storage back end is set.');
+        }
+
         // Apply min/max constraints
         $size = \count($elementIds);
 
@@ -445,10 +449,10 @@ class Group
 
         // Set a default label
         if (!\array_key_exists('label', $definition)) {
-            if (\array_key_exists($name, $GLOBALS['TL_DCA'][$this->table]['fields'])) {
-                $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
-            } else {
+            if (\array_key_exists($name, $GLOBALS['TL_LANG'][$this->table]["{$this->name}_"] ?? [])) {
                 $definition['label'] = &$GLOBALS['TL_LANG'][$this->table]["{$this->name}_"][$name];
+            } else {
+                $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
             }
         }
 
