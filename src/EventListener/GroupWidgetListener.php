@@ -47,7 +47,13 @@ final class GroupWidgetListener
             return;
         }
 
-        if (!\in_array($action = $request->get('act', ''), ['edit', 'delete'], true)) {
+        $isFileDriver = \in_array(
+            $GLOBALS['TL_DCA'][$table]['config']['dataContainer'] ?? '',
+            ['File', DC_File::class],
+            true
+        );
+
+        if (!$isFileDriver && !\in_array($request->get('act', ''), ['edit', 'delete'], true)) {
             return;
         }
 
@@ -206,7 +212,12 @@ final class GroupWidgetListener
 
     private function getRowId(DataContainer $dc): int
     {
-        if ($dc instanceof DC_File || $dc instanceof DC_Folder) {
+        if ($dc instanceof DC_File) {
+            // Use a static row id
+            return 1;
+        }
+
+        if ($dc instanceof DC_Folder) {
             if (null === ($model = FilesModel::findByPath((string) $dc->id))) {
                 throw new \RuntimeException('Could not determine a numeric row ID.');
             }
