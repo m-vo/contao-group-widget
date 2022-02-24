@@ -7,7 +7,7 @@
             {% if group.label %}
                 <h3>{{ group.label }}</h3>
                 {% if group.description %}
-                    <p class="tl_help tl_tip">{{ group.description }}</p>
+                    <p class="tl_help tl_tip">{{ group.description|raw }}</p>
                 {% endif %}
             {% endif %}
         </div>
