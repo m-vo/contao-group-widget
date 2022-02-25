@@ -42,10 +42,10 @@ final class SerializedStorage implements StorageInterface
     {
         $getNextId = static function ($keys) {
             if (empty($keys)) {
-                return 1;
+                return 0;
             }
 
-            return max(1, ...$keys) + 1;
+            return max($keys) + 1;
         };
 
         $data = $this->getData();
@@ -186,7 +186,7 @@ final class SerializedStorage implements StorageInterface
      */
     private function normalizeGroupData(array $data): array
     {
-        $isValidId = static fn ($id) => \is_int($id) && 0 !== $id;
+        $isValidId = static fn ($id) => \is_int($id);
 
         $keys = array_keys($data);
 

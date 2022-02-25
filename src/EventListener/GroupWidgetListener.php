@@ -121,12 +121,7 @@ final class GroupWidgetListener
                 null !== ($request = $this->requestStack->getMasterRequest())
                 && null !== ($post = $request->request->get("widget-group__$name"))
             ) {
-                $ids = array_map(
-                    'intval',
-                    array_filter(explode(',', $post))
-                );
-
-                $group->setElements($ids);
+                $group->setElements(array_map('intval', explode(',', $post)));
             }
 
             foreach ($palettes as [$palette, $isSubPalette]) {
