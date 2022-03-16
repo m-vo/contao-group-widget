@@ -127,6 +127,9 @@ final class SerializedStorage implements StorageInterface
             return;
         }
 
+        // Announce changes, so that a new version will be created
+        $this->group->setChanged();
+
         // Store blob to DCA table
         $name = $this->connection->quoteIdentifier($this->group->getName());
 

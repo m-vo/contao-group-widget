@@ -145,6 +145,11 @@ final class GroupWidgetListener
         /** @var Group $group */
         foreach ($this->registry->getInitializedGroups($dc->table, (int) $dc->id) as $group) {
             $group->persist();
+
+            if ($group->hasChanges()) {
+                /** @psalm-suppress UndefinedMagicPropertyAssignment */
+                $dc->createNewVersion = true;
+            }
         }
     }
 

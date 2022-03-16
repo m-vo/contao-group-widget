@@ -37,6 +37,7 @@ class Group
     private array $htmlAttributes;
 
     private ?StorageInterface $storage = null;
+    private bool $changed = false;
 
     private array $expandedPalette = [];
 
@@ -202,6 +203,22 @@ class Group
     public function getDefinition(string $key)
     {
         return $this->definition[$key] ?? null;
+    }
+
+    /**
+     * @internal
+     */
+    public function setChanged(): void
+    {
+        $this->changed = true;
+    }
+
+    /**
+     * @internal
+     */
+    public function hasChanges(): bool
+    {
+        return $this->changed;
     }
 
     /**
