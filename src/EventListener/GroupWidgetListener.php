@@ -44,7 +44,7 @@ final class GroupWidgetListener
             return;
         }
 
-        if (!\in_array($action = $request->get('act', ''), ['edit', 'delete'], true)) {
+        if (!\in_array($request->query->get('act', ''), ['edit', 'delete'], true)) {
             return;
         }
 
@@ -123,7 +123,7 @@ final class GroupWidgetListener
             ) {
                 $ids = array_map(
                     'intval',
-                    array_filter(explode(',', $post))
+                    array_filter(explode(',', (string) $post))
                 );
 
                 $group->setElements($ids);

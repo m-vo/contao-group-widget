@@ -27,12 +27,7 @@ class GroupWidgetListenerTest extends TestCase
      */
     public function testInitializeGroupRegistersCallbacksAndAssets(string $act, array $fields, bool $registered): void
     {
-        $request = $this->createMock(Request::class);
-        $request
-            ->method('get')
-            ->with('act')
-            ->willReturn($act)
-        ;
+        $request = new Request(['act' => $act]);
 
         $requestStack = new RequestStack();
         $requestStack->push($request);

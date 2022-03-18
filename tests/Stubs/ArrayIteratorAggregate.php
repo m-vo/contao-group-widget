@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Mvo\ContaoGroupWidget\Tests\Stubs;
 
-use ArrayIterator;
-
 class ArrayIteratorAggregate implements \IteratorAggregate
 {
     private array $values;
@@ -22,6 +20,6 @@ class ArrayIteratorAggregate implements \IteratorAggregate
 
     public function getIterator()
     {
-        return new ArrayIterator($this->values);
+        return new \ArrayIterator($this->values);
     }
 }

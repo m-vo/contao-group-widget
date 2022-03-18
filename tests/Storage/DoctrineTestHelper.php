@@ -10,12 +10,12 @@ declare(strict_types=1);
 namespace Mvo\ContaoGroupWidget\Tests\Storage;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 class DoctrineTestHelper
 {
@@ -33,11 +33,12 @@ class DoctrineTestHelper
         $config->setProxyNamespace('Tests');
         $config->setMetadataDriverImpl(
             new AnnotationDriver(
-                new AnnotationReader(), __DIR__.'/../Fixtures/Entity'
+                new AnnotationReader(),
+                __DIR__.'/../Fixtures/Entity'
             )
         );
-        $config->setQueryCacheImpl(new ArrayCache());
-        $config->setMetadataCacheImpl(new ArrayCache());
+        $config->setQueryCache(new ArrayAdapter());
+        $config->setMetadataCache(new ArrayAdapter());
 
         $params = [
             'driver' => 'pdo_sqlite',

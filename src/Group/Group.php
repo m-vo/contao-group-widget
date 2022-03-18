@@ -58,9 +58,7 @@ class Group
 
         $fields = $this->definition['fields'] ?? [];
 
-        $getReferencedDefinition = function (string $field): ?array {
-            return $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? null;
-        };
+        $getReferencedDefinition = fn (string $field): ?array => $GLOBALS['TL_DCA'][$this->table]['fields'][$field] ?? null;
 
         // Pull in referenced definitions
         foreach ($fields as $field => $fieldDefinition) {

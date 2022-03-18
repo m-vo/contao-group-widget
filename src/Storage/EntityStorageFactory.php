@@ -65,16 +65,16 @@ class EntityStorageFactory implements StorageFactoryInterface
 
         // Find metadata for the entity that matches the group's table
         $classMetadata = (
-        function () use ($table, $name): ClassMetadata {
-            /** @var ClassMetadata $metadata */
-            foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $metadata) {
-                if ($table === $metadata->getTableName()) {
-                    return $metadata;
+            function () use ($table, $name): ClassMetadata {
+                /** @var ClassMetadata $metadata */
+                foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $metadata) {
+                    if ($table === $metadata->getTableName()) {
+                        return $metadata;
+                    }
                 }
-            }
 
-            throw new \InvalidArgumentException("There is no entity for table '$table'. Did you forget an 'entity' definition for group '$name'?");
-        }
+                throw new \InvalidArgumentException("There is no entity for table '$table'. Did you forget an 'entity' definition for group '$name'?");
+            }
         )();
 
         if (!$classMetadata->hasAssociation($name)) {
