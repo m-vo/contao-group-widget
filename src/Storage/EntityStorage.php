@@ -75,9 +75,7 @@ final class EntityStorage implements StorageInterface
 
         // Get IDs
         return array_map(
-            function (object $element): int {
-                return $this->getElementId($element);
-            },
+            fn (object $element): int => $this->getElementId($element),
             $elements
         );
     }

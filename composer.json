@@ -27,7 +27,8 @@
   "require-dev": {
     "contao/manager-plugin": "^2.0",
     "bamarni/composer-bin-plugin": "^1.4",
-    "phpunit/phpunit": "^8.5"
+    "phpunit/phpunit": "^9.5",
+    "symfony/cache": "^5.4"
   },
   "conflict": {
     "contao/manager-plugin": "<2.0 || >=3.0"
@@ -61,5 +62,12 @@
     "chain" : [
       "@cs", "@psalm", "@tests"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "contao-components/installer": true,
+      "bamarni/composer-bin-plugin": true,
+      "contao/manager-plugin": true
+    }
   }
 }
