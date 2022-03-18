@@ -11,6 +11,9 @@ namespace Mvo\ContaoGroupWidget\EventListener;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\DataContainer;
+use Contao\DC_File;
+use Contao\DC_Folder;
+use Contao\FilesModel;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -44,7 +47,13 @@ final class GroupWidgetListener
             return;
         }
 
-        if (!\in_array($action = $request->get('act', ''), ['edit', 'delete'], true)) {
+        $isFileDriver = \in_array(
+            $GLOBALS['TL_DCA'][$table]['config']['dataContainer'] ?? '',
+            ['File', DC_File::class],
+            true
+        );
+
+        if (!$isFileDriver && !\in_array($request->get('act', ''), ['edit', 'delete'], true)) {
             return;
         }
 
@@ -65,7 +74,7 @@ final class GroupWidgetListener
     public function onLoadDataContainer(DataContainer $dc): void
     {
         $table = $dc->table;
-        $id = (int) $dc->id;
+        $id = $this->getRowId($dc);
 
         // Split a palette into fields
         $getPaletteFields = static fn (string $palette): array => array_map('trim', preg_split('/[,;]/', $palette));
@@ -143,7 +152,7 @@ final class GroupWidgetListener
     public function onSubmitDataContainer(DataContainer $dc): void
     {
         /** @var Group $group */
-        foreach ($this->registry->getInitializedGroups($dc->table, (int) $dc->id) as $group) {
+        foreach ($this->registry->getInitializedGroups($dc->table, $this->getRowId($dc)) as $group) {
             $group->persist();
 
             if ($group->hasChanges()) {
@@ -158,10 +167,15 @@ final class GroupWidgetListener
      *
      * Removes all groups that were loaded.
      */
-    public function onDeleteDataContainer(DataContainer $dc): void
+    public function onDeleteDataContainer(/* dynamic arguments */): void
     {
+        $args = \func_get_args();
+
+        /** @var DataContainer $dc is the second argument in DC_Folder, first everywhere else */
+        $dc = $args[0] instanceof DataContainer ? $args[0] : $args[1];
+
         /** @var Group $group */
-        foreach ($this->registry->getInitializedGroups($dc->table, (int) $dc->id) as $group) {
+        foreach ($this->registry->getInitializedGroups($dc->table, $this->getRowId($dc)) as $group) {
             $group->remove();
         }
     }
@@ -178,9 +192,9 @@ final class GroupWidgetListener
         [$group, $field, $id] = explode('__', $dc->field);
 
         return $this->registry
-            ->getGroup($dc->table, (int) $dc->id, $group)
+            ->getGroup($dc->table, $this->getRowId($dc), $group)
             ->getField((int) $id, $field)
-        ;
+            ;
     }
 
     /**
@@ -193,11 +207,29 @@ final class GroupWidgetListener
         [$group, $field, $id] = explode('__', $dc->field);
 
         $this->registry
-            ->getGroup($dc->table, (int) $dc->id, $group)
+            ->getGroup($dc->table, $this->getRowId($dc), $group)
             ->setField((int) $id, $field, $value)
         ;
 
-        // Prevent DC_Table from saving the record
+        // Prevent DataContainer from saving the record
         return null;
+    }
+
+    private function getRowId(DataContainer $dc): int
+    {
+        if ($dc instanceof DC_File) {
+            // Use a static row id
+            return 1;
+        }
+
+        if ($dc instanceof DC_Folder) {
+            if (null === ($model = FilesModel::findByPath((string) $dc->id))) {
+                throw new \RuntimeException('Could not determine a numeric row ID.');
+            }
+
+            return (int) $model->id;
+        }
+
+        return (int) $dc->id;
     }
 }
