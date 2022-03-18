@@ -373,6 +373,9 @@ class Group
             $paletteManipulator->applyToSubpalette($paletteKey, $this->table);
         }
 
+        // Set 'multiple' = true, so that we're getting better diffs
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$this->name]['eval']['multiple'] = true;
+
         return $this;
     }
 
