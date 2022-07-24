@@ -19,10 +19,10 @@
   ],
   "require": {
     "php": ">=7.4",
-    "contao/core-bundle": "^4.9",
+    "contao/core-bundle": "^4.9 || ^5.0",
     "twig/twig": "^2.7 || ^3.0",
     "doctrine/dbal": "^2.12 || ^3.0",
-    "symfony/property-access": "^4.4 || ^5.0"
+    "symfony/property-access": "^4.4 || ^5.0 || ^6.0"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.0",
