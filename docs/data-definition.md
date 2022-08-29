@@ -41,7 +41,7 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
     'inputType' => 'group',
     'palette' => ['text', 'singleSRC'],
     'fields' => [
-        'text' => [
+        '&text' => [
             'eval' => ['tl_class' => 'w50'],
         ]
     ],
