@@ -34,5 +34,12 @@
                 <directory name="tests" />
             </errorLevel>
         </InternalMethod>
+        <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
+        <ReservedWord errorLevel="suppress">
+            <errorLevel type="suppress">
+                <file name="src/DependencyInjection/MvoContaoGroupWidgetExtension.php" />
+                <file name="src/EventListener/GroupWidgetListener.php" />
+            </errorLevel>
+        </ReservedWord>
     </issueHandlers>
 </psalm>
