@@ -1,7 +1,8 @@
 services:
   Mvo\ContaoGroupWidget\Group\Registry:
     arguments:
-      - '@Psr\Container\ContainerInterface'
+      - !service_locator
+        twig: '@twig'
       - !tagged_iterator 'mvo_contao_group.storage_factory'
 
   Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener:
