@@ -69,7 +69,7 @@ class Registry
 
     public function getInitializedGroups(string $table, int $rowId): array
     {
-        return $this->groupCache[$this->getCacheKey($table, $rowId)] ?? [];
+        return array_values($this->groupCache[$this->getCacheKey($table, $rowId)] ?? []);
     }
 
     /**

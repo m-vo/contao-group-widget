@@ -15,7 +15,7 @@ use Mvo\ContaoGroupWidget\Tests\Stubs\ArrayIteratorAggregate;
 use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorage;
 use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorageFactory;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
 
 class RegistryTest extends TestCase
@@ -35,7 +35,9 @@ class RegistryTest extends TestCase
         ];
 
         $registry = new Registry(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
+            $this->createMock(RequestStack::class),
+            $this->createMock(Connection::class),
             new ArrayIteratorAggregate()
         );
 
@@ -59,15 +61,6 @@ class RegistryTest extends TestCase
             ],
         ];
 
-        $locator = $this->createMock(ContainerInterface::class);
-        $locator
-            ->method('get')
-            ->willReturnMap([
-                ['twig', $this->createMock(Environment::class)],
-                ['database_connection', $this->createMock(Connection::class)],
-            ])
-        ;
-
         $dummyStorageFactory = $this->createPartialMock(DummyStorageFactory::class, ['create']);
         $dummyStorageFactory
             ->method('create')
@@ -75,7 +68,9 @@ class RegistryTest extends TestCase
         ;
 
         $registry = new Registry(
-            $locator,
+            $this->createMock(Environment::class),
+            $this->createMock(RequestStack::class),
+            $this->createMock(Connection::class),
             new ArrayIteratorAggregate(['dummy' => $dummyStorageFactory])
         );
 
