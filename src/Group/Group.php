@@ -273,22 +273,33 @@ class Group
         $existingElementIds = $this->storage->getElements();
 
         // Synchronize elements
-        foreach ($newElementIds as $key => $id) {
-            // Generate new elements for special value -1
-            if (-1 === $id) {
-                $newElementIds[$key] = $this->storage->createElement();
+        $elementsToCreate = array_filter($newElementIds, static fn (int $id): bool => -1 === $id);
+        $elementsToRemove = array_diff($existingElementIds, $newElementIds);
+        $unmappedItems = array_diff($newElementIds, $existingElementIds, [-1]);
 
-                continue;
-            }
+        // In case there are no explicitly set new elements (id = -1), we
+        // assume the first unmatched ID to be a new element that was never
+        // stored due to validation errors
+        if (empty($elementsToCreate) && !empty($unmappedItems)) {
+            $key = array_key_first($unmappedItems);
 
-            // Strip unmatched IDs
-            if (!\in_array($id, $existingElementIds, true)) {
-                unset($newElementIds[$key]);
-            }
+            unset($unmappedItems[$key]);
+            $elementsToCreate[$key] = -1;
         }
 
-        foreach (array_diff($existingElementIds, $newElementIds) as $id) {
+        // Generate new elements for special value -1
+        foreach (array_keys($elementsToCreate) as $key) {
+            $newElementIds[$key] = $this->storage->createElement();
+        }
+
+        // Remove any element that is not in the list
+        foreach ($elementsToRemove as $key => $id) {
             $this->storage->removeElement($id);
+        }
+
+        // Drop unmapped items
+        foreach (array_keys($unmappedItems) as $key) {
+            unset($newElementIds[$key]);
         }
 
         // Constrain element counts
