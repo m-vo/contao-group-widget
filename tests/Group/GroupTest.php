@@ -377,7 +377,7 @@ class GroupTest extends TestCase
 
         $storage = $this->createMock(StorageInterface::class);
 
-        // Simulate transition [1, 5, 3] with [5, 2, 1, -1] --> [5, 1, 6]
+        // Simulate transition [1, 5, 3] with [2, 5, 1, -1] --> [5, 1, 6]
         //  - should create new item (6)
         //  - should remove item 3
         //  - should ignore unmapped (2)
