@@ -62,9 +62,11 @@ class Registry
             return $group;
         }
 
-        $this->handleDcMultilingual($table, $rowId);
+        if (null === $group = $this->handleDcMultilingual($table, $rowId, $name)) {
+            $group = $this->createGroup($table, $rowId, $name);
+        }
 
-        return $this->groupCache[$cacheKey][$name] = $this->createGroup($table, $rowId, $name);
+        return $this->groupCache[$cacheKey][$name] = $group;
     }
 
     public function getInitializedGroups(string $table, int $rowId): array
@@ -85,11 +87,13 @@ class Registry
         );
     }
 
-    private function createGroup(string $table, int $rowId, string $name): Group
+    private function createGroup(string $table, int $rowId, string $name, bool $withStorage = true): Group
     {
         $group = new Group($this->twig, $table, $rowId, $name);
 
-        $group->setStorage($this->createStorage($table, $name, $group));
+        if ($withStorage) {
+            $group->setStorage($this->createStorage($table, $name, $group));
+        }
 
         return $group;
     }
@@ -117,10 +121,10 @@ class Registry
      * compatible, we need to adjust the target $rowId in case a translated
      * version was selected.
      */
-    private function handleDcMultilingual(string $table, int &$rowId): void
+    private function handleDcMultilingual(string $table, int $rowId, string $name): ?Group
     {
         if (($GLOBALS['TL_DCA'][$table]['config']['dataContainer'] ?? '') !== Driver::class) {
-            return;
+            return null;
         }
 
         $language = $this->requestStack
@@ -130,7 +134,7 @@ class Registry
         ;
 
         if (null === $language) {
-            return;
+            return null;
         }
 
         $pidColumn = $dca['config']['langPid'] ?? 'langPid';
@@ -147,7 +151,11 @@ class Registry
         );
 
         if ($result) {
-            $rowId = (int) $result;
+            return $this->createGroup($table, (int) $result, $name);
         }
+
+        // In case we do not have a record yet, we create a group without a
+        // storage - otherwise the parent entries would show up.
+        return $this->createGroup($table, $rowId, $name, false);
     }
 }
