@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Mvo\ContaoGroupWidget\Group;
 
 use Doctrine\DBAL\Connection;
+use Mvo\ContaoGroupWidget\Storage\NullStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageFactoryInterface;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -87,13 +88,10 @@ class Registry
         );
     }
 
-    private function createGroup(string $table, int $rowId, string $name, bool $withStorage = true): Group
+    private function createGroup(string $table, int $rowId, string $name, StorageInterface $storage = null): Group
     {
         $group = new Group($this->twig, $table, $rowId, $name);
-
-        if ($withStorage) {
-            $group->setStorage($this->createStorage($table, $name, $group));
-        }
+        $group->setStorage($storage ?? $this->createStorage($table, $name, $group));
 
         return $group;
     }
@@ -154,8 +152,11 @@ class Registry
             return $this->createGroup($table, (int) $result, $name);
         }
 
-        // In case we do not have a record yet, we create a group without a
-        // storage - otherwise the parent entries would show up.
-        return $this->createGroup($table, $rowId, $name, false);
+        // In case we do not have a record yet, we create a group with an empty
+        // dummy storage that does not persist anything - otherwise the parent
+        // entries would show up. As soon as the record gets saved/the page is
+        // reloaded, we do have a record and the real storage kicks in
+        // persisting the posted values.
+        return $this->createGroup($table, $rowId, $name, new NullStorage());
     }
 }
