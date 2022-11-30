@@ -14,7 +14,6 @@ use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
 use Mvo\ContaoGroupWidget\Tests\Stubs\DummyStorage;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
 class GroupTest extends TestCase
@@ -42,7 +41,7 @@ class GroupTest extends TestCase
         ];
 
         $group = new Group(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'
@@ -183,7 +182,7 @@ class GroupTest extends TestCase
         $this->expectExceptionMessage($exception);
 
         new Group(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'
@@ -259,17 +258,8 @@ class GroupTest extends TestCase
         $GLOBALS['TL_LANG']['tl_foo']['foo'] = ['foo label'];
         $GLOBALS['TL_LANG']['tl_foo']['my_group_']['bar'] = ['my_group.bar label'];
 
-        $twig = $this->createMock(Environment::class);
-        $locator = $this->createMock(ContainerInterface::class);
-
-        $locator
-            ->method('get')
-            ->with('twig')
-            ->willReturn($twig)
-        ;
-
         $group = new Group(
-            $locator,
+            $twig = $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'
@@ -387,7 +377,7 @@ class GroupTest extends TestCase
 
         $storage = $this->createMock(StorageInterface::class);
 
-        // Simulate transition [1, 5, 3] with [5, 2, 1, -1] --> [5, 1, 6]
+        // Simulate transition [1, 5, 3] with [2, 5, 1, -1] --> [5, 1, 6]
         //  - should create new item (6)
         //  - should remove item 3
         //  - should ignore unmapped (2)
@@ -511,7 +501,7 @@ class GroupTest extends TestCase
         ];
 
         return new Group(
-            $this->createMock(ContainerInterface::class),
+            $this->createMock(Environment::class),
             'tl_foo',
             123,
             'my_group'

@@ -13,7 +13,6 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
 use Mvo\ContaoGroupWidget\Util\ArrayUtil;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 
 /**
@@ -21,7 +20,7 @@ use Twig\Environment;
  */
 class Group
 {
-    private ContainerInterface $locator;
+    private Environment $twig;
 
     private string $name;
     private string $table;
@@ -31,6 +30,7 @@ class Group
     private array $fields;
     private string $label;
     private string $description;
+    private array $defaultWrapperDefinition = [];
     private int $min;
     private int $max;
     private bool $enableOrdering;
@@ -44,9 +44,9 @@ class Group
     /**
      * @internal
      */
-    public function __construct(ContainerInterface $locator, string $table, int $rowId, string $name)
+    public function __construct(Environment $twig, string $table, int $rowId, string $name)
     {
-        $this->locator = $locator;
+        $this->twig = $twig;
 
         // Object metadata
         $this->name = $name;
@@ -111,6 +111,15 @@ class Group
 
         if (0 !== $this->max && $this->max < $this->min) {
             throw new \InvalidArgumentException("Invalid definition for group '$name': Key 'max' cannot be less than 'min'.");
+        }
+
+        // Make sure the group wrappers are visible when using DC Multilingual
+        foreach ($fields as $fieldDefinition) {
+            if (isset($fieldDefinition['eval']['translatableFor'])) {
+                $this->defaultWrapperDefinition = ['eval' => ['translatableFor' => '*']];
+
+                break;
+            }
         }
     }
 
@@ -264,22 +273,33 @@ class Group
         $existingElementIds = $this->storage->getElements();
 
         // Synchronize elements
-        foreach ($newElementIds as $key => $id) {
-            // Generate new elements for special value -1
-            if (-1 === $id) {
-                $newElementIds[$key] = $this->storage->createElement();
+        $elementsToCreate = array_filter($newElementIds, static fn (int $id): bool => -1 === $id);
+        $elementsToRemove = array_diff($existingElementIds, $newElementIds);
+        $unmappedItems = array_diff($newElementIds, $existingElementIds, [-1]);
 
-                continue;
-            }
+        // In case there are no explicitly set new elements (id = -1), we
+        // assume the first unmatched ID to be a new element that was never
+        // stored due to validation errors
+        if (empty($elementsToCreate) && !empty($unmappedItems)) {
+            $key = array_key_first($unmappedItems);
 
-            // Strip unmatched IDs
-            if (!\in_array($id, $existingElementIds, true)) {
-                unset($newElementIds[$key]);
-            }
+            unset($unmappedItems[$key]);
+            $elementsToCreate[$key] = -1;
         }
 
-        foreach (array_diff($existingElementIds, $newElementIds) as $id) {
+        // Generate new elements for special value -1
+        foreach (array_keys($elementsToCreate) as $key) {
+            $newElementIds[$key] = $this->storage->createElement();
+        }
+
+        // Remove any element that is not in the list
+        foreach ($elementsToRemove as $key => $id) {
             $this->storage->removeElement($id);
+        }
+
+        // Drop unmapped items
+        foreach (array_keys($unmappedItems) as $key) {
+            unset($newElementIds[$key]);
         }
 
         // Constrain element counts
@@ -406,17 +426,20 @@ class Group
         $type = $start ? 'start' : 'end';
         $newName = "{$this->name}__({$type})";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = [
-            'input_field_callback' => fn () => $this->twig()->render(
-                '@MvoContaoGroupWidget/widget_group.html.twig',
-                [
-                    'group' => $this,
-                    'type' => $start,
-                    'order' => $this->enableOrdering,
-                    'htmlAttributes' => $this->htmlAttributes,
-                ]
-            ),
-        ];
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge(
+            $this->defaultWrapperDefinition,
+            [
+                'input_field_callback' => fn () => $this->twig->render(
+                    '@MvoContaoGroupWidget/widget_group.html.twig',
+                    [
+                        'group' => $this,
+                        'type' => $start,
+                        'order' => $this->enableOrdering,
+                        'htmlAttributes' => $this->htmlAttributes,
+                    ]
+                ),
+            ]
+        );
 
         return $newName;
     }
@@ -426,16 +449,19 @@ class Group
         $type = $start ? 'el_start' : 'el_end';
         $newName = "{$this->name}__({$type})__{$id}";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = [
-            'input_field_callback' => fn () => $this->twig()->render(
-                '@MvoContaoGroupWidget/widget_group_element.html.twig',
-                [
-                    'group' => $this,
-                    'type' => $start,
-                    'id' => $id,
-                ]
-            ),
-        ];
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge(
+            $this->defaultWrapperDefinition,
+            [
+                'input_field_callback' => fn () => $this->twig->render(
+                    '@MvoContaoGroupWidget/widget_group_element.html.twig',
+                    [
+                        'group' => $this,
+                        'type' => $start,
+                        'id' => $id,
+                    ]
+                ),
+            ]
+        );
 
         return $newName;
     }
@@ -477,10 +503,5 @@ class Group
         $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = $definition;
 
         return $newName;
-    }
-
-    private function twig(): Environment
-    {
-        return $this->locator->get('twig');
     }
 }

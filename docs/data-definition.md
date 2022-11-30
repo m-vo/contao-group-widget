@@ -153,6 +153,7 @@ If you want to deviate from this, just add your own `label` definition like
 usual.
 
 ## Various
+### Styling
 Similarly to other Contao widgets, setting a `tl_class` or `style` under the 
 `eval` is possible and will be applied to the group widget container:
 
@@ -165,5 +166,30 @@ $GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
         'tl_class' => 'w50',
         'style' => 'background-color: rebeccapurple;' // wtf 
     ],  
+];
+````
+
+### DC_Multilingual
+The group widget also has build-in support for [terminal42/contao-DC_Multilingual](https://github.com/terminal42/contao-DC_Multilingual). 
+Make sure to add an `['eval']['translatableFor'] = '…'` entry to each group
+field definition that should be affected.
+
+Note, that you won't be able to match fallback values across translations,
+because an editor will create/remove/reorder each group individually. For the
+typical use case, you therefore want to set the value to `*` for all fields:
+
+```php
+$GLOBALS['TL_DCA']['tl_my_dca']['fields']['my_group_field'] = [
+    'inputType' => 'group',
+    'fields' => [
+        'my_headline' => [
+            'inputType' => 'text',
+            'eval' => ['mandatory' => true, 'translatableFor' => '*'],
+        ],
+        'my_description' => [
+            'inputType' => 'textarea',
+            'eval' => ['tl_class' => 'clr', 'translatableFor' => '*'],
+        ],
+    ],
 ];
 ```

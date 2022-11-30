@@ -7,7 +7,8 @@
     "Contao\\ManagerPlugin\\Bundle\\Config\\BundleConfig",
     "Contao\\ManagerPlugin\\Bundle\\Parser\\ParserInterface",
     "Contao\\ManagerPlugin\\Config\\ConfigPluginInterface",
-    "Contao\\ManagerPlugin\\Routing\\RoutingPluginInterface"
+    "Contao\\ManagerPlugin\\Routing\\RoutingPluginInterface",
+    "Terminal42\\DcMultilingualBundle\\Driver"
   ],
   "php-core-extensions" : [
     "Core",

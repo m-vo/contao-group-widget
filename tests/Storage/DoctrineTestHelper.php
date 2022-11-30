@@ -65,7 +65,7 @@ class DoctrineTestHelper
         $diff = $connection
             ->getSchemaManager()
             ->createSchema()
-            ->getMigrateToSql($toSchema, $connection->getDatabasePlatform(), )
+            ->getMigrateToSql($toSchema, $connection->getDatabasePlatform())
         ;
 
         foreach ($diff as $sql) {

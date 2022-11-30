@@ -9,9 +9,12 @@ declare(strict_types=1);
 
 namespace Mvo\ContaoGroupWidget\Group;
 
+use Doctrine\DBAL\Connection;
+use Mvo\ContaoGroupWidget\Storage\NullStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageFactoryInterface;
 use Mvo\ContaoGroupWidget\Storage\StorageInterface;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Terminal42\DcMultilingualBundle\Driver;
 use Twig\Environment;
 
 /**
@@ -21,7 +24,9 @@ use Twig\Environment;
  */
 class Registry
 {
-    private ContainerInterface $locator;
+    private Environment $twig;
+    private RequestStack $requestStack;
+    private Connection $connection;
 
     /**
      * @var array<string, StorageFactoryInterface>
@@ -29,13 +34,18 @@ class Registry
     private array $storageFactories = [];
 
     /**
-     * @var array<string, Group>
+     * @var array<string, array<string,Group>>
      */
     private array $groupCache = [];
 
-    public function __construct(ContainerInterface $locator, \IteratorAggregate $storageFactories)
+    /**
+     * @internal
+     */
+    public function __construct(Environment $twig, RequestStack $requestStack, Connection $connection, \IteratorAggregate $storageFactories)
     {
-        $this->locator = $locator;
+        $this->twig = $twig;
+        $this->requestStack = $requestStack;
+        $this->connection = $connection;
 
         /** @var StorageFactoryInterface $factory */
         foreach ($storageFactories->getIterator() as $factory) {
@@ -49,23 +59,20 @@ class Registry
      */
     public function getGroup(string $table, int $rowId, string $name): Group
     {
-        $cacheKey = md5($table."\x0".$rowId."\x0".$name);
-
-        if (null !== ($group = $this->groupCache[$cacheKey] ?? null)) {
+        if (null !== ($group = $this->groupCache[$cacheKey = $this->getCacheKey($table, $rowId)][$name] ?? null)) {
             return $group;
         }
 
-        return $this->groupCache[$cacheKey] = $this->createGroup($table, $rowId, $name);
+        if (null === $group = $this->handleDcMultilingual($table, $rowId, $name)) {
+            $group = $this->createGroup($table, $rowId, $name);
+        }
+
+        return $this->groupCache[$cacheKey][$name] = $group;
     }
 
     public function getInitializedGroups(string $table, int $rowId): array
     {
-        return array_values(
-            array_filter(
-                $this->groupCache,
-                static fn (Group $group): bool => $table === $group->getTable() && $rowId === $group->getRowId()
-            )
-        );
+        return array_values($this->groupCache[$this->getCacheKey($table, $rowId)] ?? []);
     }
 
     /**
@@ -81,19 +88,10 @@ class Registry
         );
     }
 
-    public static function getSubscribedServices(): array
+    private function createGroup(string $table, int $rowId, string $name, StorageInterface $storage = null): Group
     {
-        return [
-            self::class,
-            'twig' => Environment::class,
-        ];
-    }
-
-    private function createGroup(string $table, int $rowId, string $name): Group
-    {
-        $group = new Group($this->locator, $table, $rowId, $name);
-
-        $group->setStorage($this->createStorage($table, $name, $group));
+        $group = new Group($this->twig, $table, $rowId, $name);
+        $group->setStorage($storage ?? $this->createStorage($table, $name, $group));
 
         return $group;
     }
@@ -109,5 +107,56 @@ class Registry
         }
 
         return $storageFactory->create($group);
+    }
+
+    private function getCacheKey(string $table, int $rowId): string
+    {
+        return $table."\x0".$rowId;
+    }
+
+    /**
+     * DC Multilingual stores translations in their own rows. In order to be
+     * compatible, we need to adjust the target $rowId in case a translated
+     * version was selected.
+     */
+    private function handleDcMultilingual(string $table, int $rowId, string $name): ?Group
+    {
+        if (($GLOBALS['TL_DCA'][$table]['config']['dataContainer'] ?? '') !== Driver::class) {
+            return null;
+        }
+
+        $language = $this->requestStack
+            ->getSession()
+            ->getBag('contao_backend')
+            ->get("dc_multilingual:$table:$rowId")
+        ;
+
+        if (null === $language) {
+            return null;
+        }
+
+        $pidColumn = $dca['config']['langPid'] ?? 'langPid';
+        $languageColumn = $dca['config']['langColumnName'] ?? 'language';
+
+        $result = $this->connection->fetchOne(
+            sprintf(
+                'SELECT id FROM %s WHERE %s=? AND %s=?',
+                $this->connection->quoteIdentifier($table),
+                $this->connection->quoteIdentifier($pidColumn),
+                $this->connection->quoteIdentifier($languageColumn),
+            ),
+            [$rowId, $language]
+        );
+
+        if ($result) {
+            return $this->createGroup($table, (int) $result, $name);
+        }
+
+        // In case we do not have a record yet, we create a group with an empty
+        // dummy storage that does not persist anything - otherwise the parent
+        // entries would show up. As soon as the record gets saved/the page is
+        // reloaded, we do have a record and the real storage kicks in
+        // persisting the posted values.
+        return $this->createGroup($table, $rowId, $name, new NullStorage());
     }
 }

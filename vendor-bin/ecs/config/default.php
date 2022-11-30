@@ -2,29 +2,25 @@
 
 declare(strict_types=1);
 
-use Contao\EasyCodingStandard\Sniffs\ContaoFrameworkClassAliasSniff;
+use Contao\EasyCodingStandard\Fixer\TypeHintOrderFixer;
+use Contao\EasyCodingStandard\Sniffs\UseSprintfInExceptionsSniff;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestCaseStaticMethodCallsFixer;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symplify\EasyCodingStandard\Config\ECSConfig;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->import(__DIR__ . '/../vendor/contao/easy-coding-standard/config/set/contao.php');
+return static function (ECSConfig $ecsConfig): void {
+    $ecsConfig->import(__DIR__ . '/../vendor/contao/easy-coding-standard/config/contao.php');
 
-    $services = $containerConfigurator->services();
+    $ecsConfig->ruleWithConfiguration(HeaderCommentFixer::class, [
+        'header' => "@author  Moritz Vondano\n@license MIT",
+    ]);
 
-    $services
-        ->set(HeaderCommentFixer::class)
-        ->call('configure', [[
-            'header' => "@author  Moritz Vondano\n@license MIT",
-        ]]);
+    $ecsConfig->ruleWithConfiguration(PhpUnitTestCaseStaticMethodCallsFixer::class, [
+        'call_type' => 'self'
+    ]);
 
-    $services
-        ->set(PhpUnitTestCaseStaticMethodCallsFixer::class)
-        ->call('configure', [[
-            'call_type' => 'self',
-        ]])
-    ;
-
-    $services
-        ->set(ContaoFrameworkClassAliasSniff::class, \stdClass::class);
+    $ecsConfig->skip([
+        TypeHintOrderFixer::class,
+        UseSprintfInExceptionsSniff::class,
+    ]);
 };

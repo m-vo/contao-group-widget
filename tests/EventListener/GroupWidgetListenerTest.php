@@ -10,12 +10,12 @@ declare(strict_types=1);
 namespace Mvo\ContaoGroupWidget\Tests\EventListener;
 
 use Contao\DataContainer;
+use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\EventListener\GroupWidgetListener;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
 use Mvo\ContaoGroupWidget\Tests\Stubs\ArrayIteratorAggregate;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
@@ -32,10 +32,13 @@ class GroupWidgetListenerTest extends TestCase
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
+        $twig = $this->createMock(Environment::class);
+        $connection = $this->createMock(Connection::class);
+
         $listener = new GroupWidgetListener(
             $requestStack,
-            new Registry($this->createMock(ContainerInterface::class), new ArrayIteratorAggregate()),
-            $this->createMock(Environment::class)
+            new Registry($twig, $requestStack, $connection, new ArrayIteratorAggregate()),
+            $twig
         );
 
         $GLOBALS['TL_DCA']['tl_foo']['fields'] = $fields;
