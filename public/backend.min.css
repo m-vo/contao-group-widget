@@ -15,6 +15,9 @@
       .widget-group .controls > *:hover {
         background-color: #f9f9f9;
         box-shadow: #d0d0d2 0 0 1px 1px; }
+        html[data-color-scheme="dark"] .widget-group .controls > *:hover {
+          background-color: #292c32;
+          box-shadow: #4e5156 0 0 1px 1px; }
       .widget-group .controls > *[data-up] {
         background-image: url("../../../system/themes/flexible/icons/up.svg"); }
       .widget-group .controls > *[data-down] {
@@ -60,6 +63,9 @@
     background-color: #f9f9f9;
     border: 1px solid #d0d0d2;
     border-radius: 4px; }
+    html[data-color-scheme="dark"] .widget-group .widget-group--element {
+      background-color: #292c32;
+      border-color: #4e5156; }
     .widget-group .widget-group--element .controls {
       position: absolute;
       top: 4px;

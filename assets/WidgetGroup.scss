@@ -18,6 +18,11 @@
       &:hover {
         background-color: #f9f9f9;
         box-shadow: #d0d0d2 0 0 1px 1px;
+
+        html[data-color-scheme="dark"] & {
+          background-color: #292c32;
+          box-shadow: #4e5156 0 0 1px 1px;
+        }
       }
 
       &[data-up] {
@@ -95,6 +100,11 @@
     background-color: #f9f9f9;
     border: 1px solid #d0d0d2;
     border-radius: 4px;
+
+    html[data-color-scheme="dark"] & {
+      background-color: #292c32;
+      border-color: #4e5156;
+    }
 
     .controls {
       position: absolute;
