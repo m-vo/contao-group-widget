@@ -107,11 +107,11 @@ final class GroupWidgetListener
                 continue;
             }
 
-            $addAffectedPalettes($key, $palette, false);
+            $addAffectedPalettes((string) $key, $palette, false);
         }
 
         foreach ($GLOBALS['TL_DCA'][$table]['subpalettes'] ?? [] as $key => $palette) {
-            $addAffectedPalettes($key, $palette, true);
+            $addAffectedPalettes((string) $key, $palette, true);
         }
 
         // Handle form data and expand groups
