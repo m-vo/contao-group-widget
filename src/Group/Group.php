@@ -90,6 +90,9 @@ class Group
                 throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
             }
 
+            // Make sure those fields can never be managed via user permissions (Contao 5 compatibility)
+            $fieldDefinition['exclude'] = false;
+            
             $this->fields[$field] = $fieldDefinition;
         }
 
