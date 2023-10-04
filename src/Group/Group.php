@@ -438,6 +438,7 @@ class Group
                         'htmlAttributes' => $this->htmlAttributes,
                     ]
                 ),
+                'exclude' => false, // Do not apply user permissions
             ]
         );
 
@@ -460,6 +461,7 @@ class Group
                         'id' => $id,
                     ]
                 ),
+                'exclude' => false, // Do not apply user permissions
             ]
         );
 
@@ -476,6 +478,7 @@ class Group
                 'eval' => [
                     'doNotSaveEmpty' => true,
                 ],
+                'exclude' => false, // Do not apply user permissions
                 'sql' => null,
             ]
         );
