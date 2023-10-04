@@ -89,9 +89,6 @@ class Group
             if (null === ($fieldDefinition = $fields[$field] ?? $getReferencedDefinition($field))) {
                 throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
             }
-
-            // Make sure those fields can never be managed via user permissions (Contao 5 compatibility)
-            $fieldDefinition['exclude'] = false;
             
             $this->fields[$field] = $fieldDefinition;
         }
@@ -481,6 +478,7 @@ class Group
                 'eval' => [
                     'doNotSaveEmpty' => true,
                 ],
+                'exclude' => false, // Do not apply user permissions
                 'sql' => null,
             ]
         );
