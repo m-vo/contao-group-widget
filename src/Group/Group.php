@@ -89,7 +89,7 @@ class Group
             if (null === ($fieldDefinition = $fields[$field] ?? $getReferencedDefinition($field))) {
                 throw new \InvalidArgumentException("Invalid definition for group '$name': Field '$field' does not exist.");
             }
-            
+
             $this->fields[$field] = $fieldDefinition;
         }
 
