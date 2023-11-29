@@ -135,8 +135,8 @@ class Registry
             return null;
         }
 
-        $pidColumn = $dca['config']['langPid'] ?? 'langPid';
-        $languageColumn = $dca['config']['langColumnName'] ?? 'language';
+        $pidColumn = $GLOBALS['TL_DCA'][$table]['config']['langPid'] ?? 'langPid';
+        $languageColumn = $GLOBALS['TL_DCA'][$table]['config']['langColumnName'] ?? 'language';
 
         $result = $this->connection->fetchOne(
             sprintf(
