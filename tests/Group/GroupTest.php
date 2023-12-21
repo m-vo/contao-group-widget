@@ -273,6 +273,7 @@ class GroupTest extends TestCase
             'eval' => [
                 'doNotSaveEmpty' => true,
             ],
+            'exclude' => false,
             'sql' => null,
             'load_callback' => [[GroupWidgetListener::class, 'onLoadGroupField']],
             'save_callback' => [[GroupWidgetListener::class, 'onStoreGroupField']],
@@ -284,6 +285,7 @@ class GroupTest extends TestCase
             'eval' => [
                 'doNotSaveEmpty' => true,
             ],
+            'exclude' => false,
             'sql' => null,
             'load_callback' => [[GroupWidgetListener::class, 'onLoadGroupField']],
             'save_callback' => [[GroupWidgetListener::class, 'onStoreGroupField']],

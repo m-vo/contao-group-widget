@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Mvo\ContaoGroupWidget\Group;
 
+use Contao\CoreBundle\Session\Attribute\ArrayAttributeBag;
 use Doctrine\DBAL\Connection;
 use Mvo\ContaoGroupWidget\Storage\NullStorage;
 use Mvo\ContaoGroupWidget\Storage\StorageFactoryInterface;
@@ -121,15 +122,18 @@ class Registry
      */
     private function handleDcMultilingual(string $table, int $rowId, string $name): ?Group
     {
+        /** @psalm-suppress UndefinedClass */
         if (($GLOBALS['TL_DCA'][$table]['config']['dataContainer'] ?? '') !== Driver::class) {
             return null;
         }
 
-        $language = $this->requestStack
+        /** @var ArrayAttributeBag $contaoBackendBag */
+        $contaoBackendBag = $this->requestStack
             ->getSession()
             ->getBag('contao_backend')
-            ->get("dc_multilingual:$table:$rowId")
         ;
+
+        $language = $contaoBackendBag->get("dc_multilingual:$table:$rowId");
 
         if (null === $language) {
             return null;
