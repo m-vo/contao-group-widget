@@ -472,6 +472,7 @@ class Group
     {
         $newName = "{$this->name}__{$name}__{$id}";
 
+        /** @var array{load_callback?: array<int, array>, save_callback?: array<int, array>} $definition */
         $definition = ArrayUtil::mergePropertiesRecursive(
             $definition,
             [
@@ -499,6 +500,7 @@ class Group
             if (\array_key_exists($name, $GLOBALS['TL_LANG'][$this->table]["{$this->name}_"] ?? [])) {
                 $definition['label'] = &$GLOBALS['TL_LANG'][$this->table]["{$this->name}_"][$name];
             } else {
+                /** @psalm-suppress UnsupportedPropertyReferenceUsage */
                 $definition['label'] = &$GLOBALS['TL_LANG'][$this->table][$name];
             }
         }
