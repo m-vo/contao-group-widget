@@ -1,4 +1,4 @@
-.widget-group {
+.group-widget {
   clear: both;
 
   .controls {
@@ -73,7 +73,7 @@
     }
   }
 
-  .widget-group--header {
+  .group-widget--header {
     margin-bottom: -4px;
 
     p {
@@ -83,12 +83,12 @@
     }
   }
 
-  .widget-group--container {
+  .group-widget--container {
     display: flex;
     flex-direction: column;
   }
 
-  .widget-group--element {
+  .group-widget--element {
     position: relative;
     min-height: 94px;
 
@@ -134,7 +134,7 @@
     }
   }
 
-  .widget-group--footer {
+  .group-widget--footer {
     .controls {
       margin-top: 4px;
     }

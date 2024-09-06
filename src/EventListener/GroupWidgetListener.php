@@ -120,7 +120,7 @@ final class GroupWidgetListener
 
             if (
                 null !== ($request = $this->getRequest())
-                && null !== ($post = $request->request->get("widget-group__$name"))
+                && null !== ($post = $request->request->get("group-widget__$name"))
             ) {
                 $ids = array_map(
                     'intval',
