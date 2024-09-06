@@ -26,7 +26,8 @@
       }
 
       &[data-up] {
-        background-image: url('../../../system/themes/flexible/icons/up.svg');
+        background-image: url('../../../system/themes/flexible/icons/down.svg');
+        scale: -1;
       }
 
       &[data-down] {
