@@ -70,6 +70,10 @@
 
     &.dropping::after {
       border-color: #0f1c26;
+
+      html[data-color-scheme="dark"] & {
+        border-color: #4e5156;
+      }
     }
   }
 
