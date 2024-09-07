@@ -19,7 +19,8 @@
           background-color: #292c32;
           box-shadow: #4e5156 0 0 1px 1px; }
       .group-widget .controls > *[data-up] {
-        background-image: url("../../../system/themes/flexible/icons/up.svg"); }
+        background-image: url("../../../system/themes/flexible/icons/down.svg");
+        scale: -1; }
       .group-widget .controls > *[data-down] {
         background-image: url("../../../system/themes/flexible/icons/down.svg"); }
       .group-widget .controls > *[data-drag] {
@@ -43,6 +44,8 @@
     content: ''; }
   .group-widget .drop-area.dropping::after {
     border-color: #0f1c26; }
+    html[data-color-scheme="dark"] .group-widget .drop-area.dropping::after {
+      border-color: #4e5156; }
   .group-widget .group-widget--header {
     margin-bottom: -4px; }
     .group-widget .group-widget--header p {
