@@ -16,8 +16,8 @@ export class WidgetGroup {
     constructor(container: HTMLElement) {
         this.form = container.closest('form');
 
-        const elementsContainer = container.querySelector('.widget-group--container');
-        this.elements = Array.from(elementsContainer.querySelectorAll('.widget-group--element'));
+        const elementsContainer = container.querySelector('.group-widget--container');
+        this.elements = Array.from(elementsContainer.querySelectorAll('.group-widget--element'));
 
         ['min', 'max'].forEach(v => {
             const value = Number.parseInt(elementsContainer.getAttribute(`data-${v}`));
@@ -29,7 +29,7 @@ export class WidgetGroup {
 
         this.orderingEnabled = elementsContainer.getAttribute('data-order') === '1';
 
-        const footerContainer = container.querySelector('.widget-group--footer');
+        const footerContainer = container.querySelector('.group-widget--footer');
         this.orderField = footerContainer.querySelector('input[data-order]');
         this.addButton =  footerContainer.querySelector('button[data-add]');
         this.footerDropArea = footerContainer.querySelector<HTMLElement>('.drop-area');

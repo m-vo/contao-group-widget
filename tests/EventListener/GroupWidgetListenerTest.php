@@ -183,7 +183,7 @@ class GroupWidgetListenerTest extends TestCase
         ;
 
         $request = new Request();
-        $request->request->set('widget-group__foobar', '2,4,-1');
+        $request->request->set('group-widget__foobar', '2,4,-1');
 
         $requestStack = new RequestStack();
         $requestStack->push($request);
