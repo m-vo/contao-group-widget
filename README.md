@@ -54,7 +54,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['my_group'] = [
     // store serialized into a blob (default storage backend)
     'sql' => [
         'type' => 'blob',
-        'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_BLOB,
+        'length' => \Doctrine\DBAL\Platforms\MySQLPlatform::LENGTH_LIMIT_BLOB,
         'notnull' => false,
     ],
 ];
