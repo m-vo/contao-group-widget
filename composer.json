@@ -26,17 +26,17 @@
     "doctrine/inflector": "^1.4 || ^2.0",
     "doctrine/orm": "^2.6",
     "psr/container": "^1.0 || ^2.0",
-    "symfony/config": "^4.4 || ^5.0 || ^6.0",
-    "symfony/dependency-injection": "^4.4 || ^5.0 || ^6.0",
-    "symfony/property-access": "^4.4 || ^5.0 || ^6.0",
-    "symfony/http-foundation": "^4.4 || ^5.0 || ^6.0",
-    "symfony/http-kernel": "^4.4 || ^5.0 || ^6.0"
+    "symfony/config": "^4.4 || ^5.0 || ^6.0 || ^7.0",
+    "symfony/dependency-injection": "^4.4 || ^5.0 || ^6.0 || ^7.0",
+    "symfony/property-access": "^4.4 || ^5.0 || ^6.0 || ^7.0",
+    "symfony/http-foundation": "^4.4 || ^5.0 || ^6.0 || ^7.0",
+    "symfony/http-kernel": "^4.4 || ^5.0 || ^6.0 || ^7.0"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.0",
     "bamarni/composer-bin-plugin": "^1.4",
     "phpunit/phpunit": "^9.5",
-    "symfony/cache": "^5.4"
+    "symfony/cache": "^5.4 || ^6.0 || ^7.0"
   },
   "conflict": {
     "contao/manager-plugin": "<2.0 || >=3.0"
