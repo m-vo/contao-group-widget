@@ -89,7 +89,7 @@ class Registry
         );
     }
 
-    private function createGroup(string $table, int $rowId, string $name, StorageInterface $storage = null): Group
+    private function createGroup(string $table, int $rowId, string $name, ?StorageInterface $storage = null): Group
     {
         $group = new Group($this->twig, $table, $rowId, $name);
         $group->setStorage($storage ?? $this->createStorage($table, $name, $group));
