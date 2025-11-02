@@ -1,90 +1,147 @@
 .group-widget {
-  clear: both; }
-  .group-widget .controls {
+  clear: both;
+
+  .controls {
     display: flex;
     flex-direction: column;
-    align-items: center; }
-    .group-widget .controls > * {
+    align-items: center;
+
+    > * {
       width: 24px;
       height: 24px;
       background-size: 16px 16px;
       background: none no-repeat center;
       border: none;
       border-radius: 50%;
-      transition: all .1s; }
-      .group-widget .controls > *:hover {
+      transition: all 0.1s;
+
+      &:hover {
         background-color: #f9f9f9;
-        box-shadow: #d0d0d2 0 0 1px 1px; }
-        html[data-color-scheme="dark"] .group-widget .controls > *:hover {
+        box-shadow: #d0d0d2 0 0 1px 1px;
+
+        html[data-color-scheme="dark"] & {
           background-color: #292c32;
-          box-shadow: #4e5156 0 0 1px 1px; }
-      .group-widget .controls > *[data-up] {
+          box-shadow: #4e5156 0 0 1px 1px;
+        }
+      }
+
+      &[data-up] {
         background-image: url("../../../system/themes/flexible/icons/down.svg");
-        scale: -1; }
-      .group-widget .controls > *[data-down] {
-        background-image: url("../../../system/themes/flexible/icons/down.svg"); }
-      .group-widget .controls > *[data-drag] {
+        scale: -1;
+      }
+
+      &[data-down] {
+        background-image: url("../../../system/themes/flexible/icons/down.svg");
+      }
+
+      &[data-drag] {
         background-image: url("../../../system/themes/flexible/icons/drag.svg");
-        cursor: move; }
-      .group-widget .controls > *[data-remove] {
-        background-image: url("../../../system/themes/flexible/icons/delete.svg"); }
-      .group-widget .controls > *[data-add] {
+        cursor: move;
+      }
+
+      &[data-remove] {
+        background-image: url("../../../system/themes/flexible/icons/delete.svg");
+      }
+
+      &[data-add] {
         background-size: 18px 18px;
-        background-image: url("../../../system/themes/flexible/icons/new.svg"); }
-      .group-widget .controls > *:disabled, .group-widget .controls > *.disabled {
+        background-image: url("../../../system/themes/flexible/icons/new.svg");
+      }
+
+      &:disabled,
+      &.disabled {
         filter: grayscale(100%) opacity(0.5);
-        cursor: default; }
-        .group-widget .controls > *:disabled:hover, .group-widget .controls > *.disabled:hover {
+        cursor: default;
+
+        &:hover {
           background-color: transparent;
-          box-shadow: none; }
-  .group-widget .drop-area::after {
-    padding-top: 10px;
-    border-bottom: 4px solid transparent;
-    display: block;
-    content: ''; }
-  .group-widget .drop-area.dropping::after {
-    border-color: #0f1c26; }
-    html[data-color-scheme="dark"] .group-widget .drop-area.dropping::after {
-      border-color: #4e5156; }
-  .group-widget .group-widget--header {
-    margin-bottom: -4px; }
-    .group-widget .group-widget--header p {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  .drop-area {
+    &::after {
+      padding-top: 10px;
+      border-bottom: 4px solid transparent;
+      display: block;
+      content: "";
+    }
+
+    &.dropping::after {
+      border-color: #0f1c26;
+
+      html[data-color-scheme="dark"] & {
+        border-color: #4e5156;
+      }
+    }
+  }
+
+  .group-widget--header {
+    margin-bottom: -4px;
+
+    p {
       margin-top: 2px;
       padding-bottom: 2px;
-      font-size: .75rem; }
-  .group-widget .group-widget--container {
+      font-size: 0.75rem;
+    }
+  }
+
+  .group-widget--container {
     display: flex;
-    flex-direction: column; }
-  .group-widget .group-widget--element {
+    flex-direction: column;
+  }
+
+  .group-widget--element {
     position: relative;
     min-height: 94px;
+
     margin-top: 24px;
     margin-right: 26px;
     margin-left: 26px;
     margin-bottom: 0;
     padding-bottom: 12px;
+
     background-color: #f9f9f9;
     border: 1px solid #d0d0d2;
-    border-radius: 4px; }
-    html[data-color-scheme="dark"] .group-widget .group-widget--element {
+    border-radius: 4px;
+
+    html[data-color-scheme="dark"] & {
       background-color: #292c32;
-      border-color: #4e5156; }
-    .group-widget .group-widget--element .controls {
+      border-color: #4e5156;
+    }
+
+    .controls {
       position: absolute;
       top: 4px;
       left: -32px;
+
       padding-right: 2px;
-      padding-left: 2px; }
-    .group-widget .group-widget--element.drag > *:not(.drop-area) {
-      opacity: .5;
-      transition: opacity .2s; }
-    .group-widget .group-widget--element .drop-area {
+      padding-left: 2px;
+    }
+
+    &.drag > *:not(.drop-area) {
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .drop-area {
       position: absolute;
       top: -25px;
       height: 25px;
       left: -26px;
-      right: -1px; }
-    .group-widget .group-widget--element .widget {
-      font-size: 0; }
-  .group-widget .group-widget--footer .controls {
-    margin-top: 4px; }
+      right: -1px;
+    }
+
+    .widget {
+      font-size: 0;
+    }
+  }
+
+  .group-widget--footer {
+    .controls {
+      margin-top: 4px;
+    }
+  }
+}
