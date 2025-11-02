@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace Mvo\ContaoGroupWidget\Storage;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Query\Parameter;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
@@ -88,7 +90,9 @@ class EntityStorageFactory implements StorageFactoryInterface
             ->select('g')
             ->from($classMetadata->getName(), 'g')
             ->where('g.id = :id')
-            ->setParameters(['id' => $group->getRowId()])
+            ->setParameters(new ArrayCollection([
+                new Parameter('id', $group->getRowId()),
+            ]))
             ->setMaxResults(1)
             ->getQuery()
         ;
@@ -124,10 +128,10 @@ class EntityStorageFactory implements StorageFactoryInterface
             ->select('g')
             ->from($classMetadata->getName(), 'g')
             ->where('g.sourceTable = :table AND g.sourceId = :id')
-            ->setParameters([
-                'table' => $group->getTable(),
-                'id' => $group->getRowId(),
-            ])
+            ->setParameters(new ArrayCollection([
+                new Parameter('table', $group->getTable()),
+                new Parameter('id', $group->getRowId()),
+            ]))
             ->setMaxResults(1)
             ->getQuery()
         ;
