@@ -1,11 +1,16 @@
 {% if type =='start' %}
-    <div class="group-widget--element" data-id="{{ id }}">
-        <div class="drop-area"></div>
+    <div class="group-widget--element" data-id="{{ id }}" data-mvo--group-widget-target="element">
+        <div class="drop-area"
+             data-action="dragenter->mvo--group-widget#dragEnter dragover->mvo--group-widget#dragOver:prevent dragleave->mvo--group-widget#dragLeave drop->mvo--group-widget#drop">
+        </div>
         <div class="controls">
-            <button type="button" disabled="disabled" data-up aria-label="{{ 'MSC.move_up.1'|trans({}, 'contao_default') }}"></button>
-            <div draggable="false" data-drag aria-label="{{ 'MSC.dragItemsHint'|trans({}, 'contao_default') }}"></div>
-            <button type="button" disabled="disabled" data-down aria-label="{{ 'MSC.move_down.1'|trans({}, 'contao_default') }}"></button>
-            <button type="button" disabled="disabled" data-remove aria-label="{{ 'MSC.delete'|trans({}, 'contao_default') }}"></button>
+            <button type="button" disabled="disabled" data-action="mvo--group-widget#up:prevent" data-up aria-label="{{ 'MSC.move_up.1'|trans({}, 'contao_default') }}"></button>
+            <div draggable="false"
+                 data-action="dragstart->mvo--group-widget#dragStart dragend->mvo--group-widget#dragEnd"
+                 data-drag
+                 aria-label="{{ 'MSC.dragItemsHint'|trans({}, 'contao_default') }}"></div>
+            <button type="button" disabled="disabled" data-action="mvo--group-widget#down:prevent" data-down aria-label="{{ 'MSC.move_down.1'|trans({}, 'contao_default') }}"></button>
+            <button type="button" disabled="disabled" data-action="mvo--group-widget#remove:prevent" data-remove aria-label="{{ 'MSC.delete'|trans({}, 'contao_default') }}"></button>
         </div>
 {% else %}
     </div>

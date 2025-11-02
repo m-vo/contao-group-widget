@@ -1,8 +1,12 @@
 {% if type =='start' %}
     {%- set htmlAttributes = htmlAttributes|merge({
-        class: (htmlAttributes.class|default('') ~ ' widget group-widget')|trim
+        class: (htmlAttributes.class|default('') ~ ' widget group-widget')|trim,
+        'data-controller': 'mvo--group-widget',
+        'data-mvo--group-widget-min-value': group.minElements,
+        'data-mvo--group-widget-max-value': group.maxElements,
+        'data-mvo--group-widget-ordering-enabled-value': order ? 'true' : 'false',
     }) -%}
-    <div{% for name, value in htmlAttributes %} {{ name }}="{{ value }}"{% endfor %}>
+    <div{% for name, value in htmlAttributes %} {{ name|e('html_attr') }}="{{ value }}"{% endfor %}>
         <div class="group-widget--header">
             {% if group.label %}
                 <h3>{{ group.label }}</h3>
@@ -11,14 +15,25 @@
                 {% endif %}
             {% endif %}
         </div>
-        <div class="group-widget--container" data-min="{{ group.minElements }}" data-max="{{ group.maxElements }}" data-order="{{ order ? '1' : '0' }}">
+        <div class="group-widget--container">
 {% else %}
         </div>
         <div class="group-widget--footer">
-            <div class="drop-area"></div>
+            <div class="drop-area"
+                 data-mvo--group-widget-target="footerDropArea"
+                 data-action="dragenter->mvo--group-widget#dragEnter dragover->mvo--group-widget#dragOver:prevent dragleave->mvo--group-widget#dragLeave drop->mvo--group-widget#drop">
+            </div>
+
             <div class="controls">
-                <input data-order type="hidden" name="group-widget__{{ group.name }}">
-                <button type="button" disabled="disabled" data-add title="{{ 'DCA.new.1'|trans({}, 'contao_default') }}"></button>
+                <input data-mvo--group-widget-target="order" type="hidden" name="group-widget__{{ group.name }}">
+                <button type="button"
+                        disabled="disabled"
+                        data-mvo--group-widget-target="addButton"
+                        data-action="mvo--group-widget#add:prevent"
+                        data-add
+                        title="{{ 'DCA.new.1'|trans({}, 'contao_default') }}"
+                        class="controls--add">
+                </button>
             </div>
         </div>
     </div>
