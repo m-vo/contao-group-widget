@@ -1,16 +1,20 @@
-import scss from 'rollup-plugin-scss'
-import typescript from '@rollup/plugin-typescript';
-import {terser} from "rollup-plugin-terser";
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import postcss from 'rollup-plugin-postcss'
+import postcssImport from 'postcss-import';
+import terser from "@rollup/plugin-terser";
 
 export default {
-    input: `assets/backend.ts`,
+    input: `assets/backend.js`,
     output: {
         file: `public/backend.min.js`,
         format: 'iife',
     },
     plugins: [
-        typescript(),
+        nodeResolve(),
+        postcss({
+            extract: true,
+            plugins: [postcssImport]
+        }),
         terser(),
-        scss(),
     ]
 };
