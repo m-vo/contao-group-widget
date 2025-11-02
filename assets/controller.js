@@ -148,7 +148,7 @@ export default class GroupWidgetController extends Controller {
       this.#toggleAttribute(
         "disabled",
         remove,
-        !isNaN(this.minValue) && numElements === this.minValue,
+        this.minValue > 0 && numElements === this.minValue,
       );
 
       const allowDrag = this.orderingEnabledValue && numElements > 1;
@@ -159,7 +159,7 @@ export default class GroupWidgetController extends Controller {
     this.#toggleAttribute(
       "disabled",
       this.addButtonTarget,
-      !isNaN(this.maxValue) && numElements === this.maxValue,
+      this.maxValue > 0 && numElements === this.maxValue,
     );
 
     this.#updateOrderTarget();
