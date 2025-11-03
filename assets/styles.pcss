@@ -13,7 +13,7 @@
       background: none no-repeat center;
       border: none;
       border-radius: 50%;
-      transition: all .1s;
+      transition: all 0.1s;
 
       &:hover {
         background-color: #f9f9f9;
@@ -26,29 +26,30 @@
       }
 
       &[data-up] {
-        background-image: url('../../../system/themes/flexible/icons/down.svg');
+        background-image: url("../../../system/themes/flexible/icons/down.svg");
         scale: -1;
       }
 
       &[data-down] {
-        background-image: url('../../../system/themes/flexible/icons/down.svg');
+        background-image: url("../../../system/themes/flexible/icons/down.svg");
       }
 
       &[data-drag] {
-        background-image: url('../../../system/themes/flexible/icons/drag.svg');
+        background-image: url("../../../system/themes/flexible/icons/drag.svg");
         cursor: move;
       }
 
       &[data-remove] {
-        background-image: url('../../../system/themes/flexible/icons/delete.svg');
+        background-image: url("../../../system/themes/flexible/icons/delete.svg");
       }
 
       &[data-add] {
         background-size: 18px 18px;
-        background-image: url('../../../system/themes/flexible/icons/new.svg');
+        background-image: url("../../../system/themes/flexible/icons/new.svg");
       }
 
-      &:disabled, &.disabled {
+      &:disabled,
+      &.disabled {
         filter: grayscale(100%) opacity(0.5);
         cursor: default;
 
@@ -65,7 +66,7 @@
       padding-top: 10px;
       border-bottom: 4px solid transparent;
       display: block;
-      content: '';
+      content: "";
     }
 
     &.dropping::after {
@@ -83,7 +84,7 @@
     p {
       margin-top: 2px;
       padding-bottom: 2px;
-      font-size: .75rem;
+      font-size: 0.75rem;
     }
   }
 
@@ -121,8 +122,8 @@
     }
 
     &.drag > *:not(.drop-area) {
-      opacity: .5;
-      transition: opacity .2s;
+      opacity: 0.5;
+      transition: opacity 0.2s;
     }
 
     .drop-area {
