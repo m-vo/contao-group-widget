@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass()
  */
+#[ORM\MappedSuperclass]
 abstract class AbstractGroupEntity
 {
     /**
@@ -23,16 +24,21 @@ abstract class AbstractGroupEntity
      * @ORM\GeneratedValue
      * @ORM\Column(name="id", type="integer", options={"unsigned": true})
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id', type: 'integer', options: ['unsigned' => true])]
     protected $id;
 
     /**
      * @ORM\Column(name="source_id", type="integer")
      */
+    #[ORM\Column(name: 'source_id', type: 'integer')]
     protected $sourceId;
 
     /**
      * @ORM\Column(name="source_table", type="string", length=255)
      */
+    #[ORM\Column(name: 'source_table', type: 'string', length: 255)]
     protected $sourceTable;
 
     /**
