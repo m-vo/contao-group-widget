@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass()
  */
+#[ORM\MappedSuperclass]
 class AbstractGroupElementEntity
 {
     /**
@@ -21,12 +22,16 @@ class AbstractGroupElementEntity
      * @ORM\GeneratedValue
      * @ORM\Column(name="id", type="integer", options={"unsigned": true})
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id', type: 'integer', options: ['unsigned' => true])]
     protected $id;
 
     // Defining this field is optional
     /**
      * @ORM\Column(name="position", type="integer", options={"unsigned": true})
      */
+    #[ORM\Column(name: 'position', type: 'integer', options: ['unsigned' => true])]
     protected $position;
 
     /**
