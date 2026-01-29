@@ -137,6 +137,10 @@
     .widget {
       font-size: 0;
     }
+
+    & > .widget-group {
+      padding: 0 15px;
+    }
   }
 
   .group-widget--footer {
