@@ -330,6 +330,7 @@ class GroupTest extends TestCase
             'my_group__(el_start)__2,my_group__foo__2,my_group__bar__2,my_group__(el_end)__2,'.
             'my_group__(end)';
 
+        /** @psalm-suppress TypeDoesNotContainType */
         self::assertSame($expectedPalette, $GLOBALS['TL_DCA']['tl_foo']['palettes']['default']);
 
         // Check default labels are references

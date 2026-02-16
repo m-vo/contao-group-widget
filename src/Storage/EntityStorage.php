@@ -85,6 +85,7 @@ final class EntityStorage implements StorageInterface
 
     public function createElement(): int
     {
+        /** @psalm-suppress ArgumentTypeCoercion */
         $element = $this->entityManager
             ->getMetadataFactory()
             ->getMetadataFor($this->elementEntity)

@@ -109,6 +109,7 @@ class EntityStorageFactory implements StorageFactoryInterface
     {
         // Find metadata for the referenced entity
         /** @var ClassMetadata $classMetadata */
+        /** @psalm-suppress ArgumentTypeCoercion */
         $classMetadata = $this->entityManager
             ->getMetadataFactory()
             ->getMetadataFor($referencedEntity)
@@ -125,6 +126,7 @@ class EntityStorageFactory implements StorageFactoryInterface
         }
 
         // Get current instance
+        /** @psalm-suppress InvalidArgument */
         $query = $this->entityManager->createQueryBuilder()
             ->select('g')
             ->from($classMetadata->getName(), 'g')
