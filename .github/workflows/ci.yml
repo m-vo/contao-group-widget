@@ -1,0 +1,36 @@
+name: CI
+
+on: [push, pull_request, pull_request_target]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.4
+                  extensions: dom, fileinfo, filter, gd, hash, intl, json, mbstring, pcre, pdo, zlib
+                  tools: prestissimo
+                  coverage: none
+
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Install dependencies
+              run: composer update --no-interaction --no-suggest
+
+            - name: Install vendor-bin
+              run: composer bin all update
+
+            - name: Run CS check
+              run: vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi
+
+            - name: Run psalm
+              run: vendor-bin/psalm/vendor/bin/psalm --no-suggestions
+
+            - name: Run unit tests
+              run: vendor/bin/phpunit --colors=always
+
+            - name: Run require-checker
+              run: vendor-bin/composer-require-checker/vendor/bin/composer-require-checker check --config-file=vendor-bin/composer-require-checker/config.json
