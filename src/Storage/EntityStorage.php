@@ -21,10 +21,13 @@ use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 final class EntityStorage implements StorageInterface
 {
     private EntityManagerInterface $entityManager;
+
     private ObjectAccessor $objectAccessor;
 
     private GroupEntityProxy $groupEntityProxy;
+
     private string $elementEntity;
+
     private string $elementIdentifier;
 
     public function __construct(EntityManagerInterface $entityManager, GroupEntityProxy $groupEntityProxy, string $elementEntity)
@@ -70,13 +73,13 @@ final class EntityStorage implements StorageInterface
 
         usort(
             $elements,
-            fn (object $a, object $b): int => $this->getElementPosition($b) <=> $this->getElementPosition($a)
+            fn (object $a, object $b): int => $this->getElementPosition($b) <=> $this->getElementPosition($a),
         );
 
         // Get IDs
         return array_map(
             fn (object $element): int => $this->getElementId($element),
-            $elements
+            $elements,
         );
     }
 

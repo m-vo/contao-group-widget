@@ -37,15 +37,11 @@ interface StorageInterface
 
     /**
      * Returns the value of an element's field.
-     *
-     * @return mixed
      */
     public function getField(int $elementId, string $field);
 
     /**
      * Sets the value of an element's field.
-     *
-     * @param mixed $value
      */
     public function setField(int $elementId, string $field, $value): void;
 

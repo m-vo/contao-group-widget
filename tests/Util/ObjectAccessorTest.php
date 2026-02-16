@@ -18,6 +18,7 @@ class ObjectAccessorTest extends TestCase
     {
         $object = new class() {
             private $foo = 'foo';
+
             public $bar = 'bar';
 
             public function getBar(): string
@@ -33,17 +34,20 @@ class ObjectAccessorTest extends TestCase
 
         $accessor = new ObjectAccessor();
 
-        self::assertEquals('foo', $accessor->getValue($object, 'foo'));
-        self::assertEquals('getBar', $accessor->getValue($object, 'bar'));
-        self::assertEquals('getFooBar', $accessor->getValue($object, 'fooBar'));
+        self::assertSame('foo', $accessor->getValue($object, 'foo'));
+        self::assertSame('getBar', $accessor->getValue($object, 'bar'));
+        self::assertSame('getFooBar', $accessor->getValue($object, 'fooBar'));
     }
 
     public function testSetValues(): void
     {
         $object = new class() {
             private $foo = '';
+
             public $bar = '';
+
             private $fooBar = '';
+
             private $other = '';
 
             public function setFoo(string $foo): void
@@ -64,10 +68,10 @@ class ObjectAccessorTest extends TestCase
         $accessor->setValue($object, 'fooBar', 'fooBar');
         $accessor->setValue($object, 'other', 'other');
 
-        self::assertEquals('foo', $accessor->getValue($object, 'foo'));
-        self::assertEquals('bar', $accessor->getValue($object, 'bar'));
-        self::assertEquals('fooBar', $accessor->getValue($object, 'fooBar'));
-        self::assertEquals('other', $accessor->getValue($object, 'other'));
+        self::assertSame('foo', $accessor->getValue($object, 'foo'));
+        self::assertSame('bar', $accessor->getValue($object, 'bar'));
+        self::assertSame('fooBar', $accessor->getValue($object, 'fooBar'));
+        self::assertSame('other', $accessor->getValue($object, 'other'));
     }
 
     public function testThrowsWhenGettingMissingProperty(): void
@@ -102,6 +106,7 @@ class ObjectAccessorTest extends TestCase
     {
         $object = new class() {
             private $foo = 'foo';
+
             public $bar = 'bar';
 
             public function getFooBar(): string

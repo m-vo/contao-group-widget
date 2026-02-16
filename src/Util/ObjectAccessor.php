@@ -27,8 +27,8 @@ final class ObjectAccessor
     public function supports(object $object, string $property): bool
     {
         if (
-            $this->propertyAccessor->isReadable($object, $property) &&
-            $this->propertyAccessor->isWritable($object, $property)
+            $this->propertyAccessor->isReadable($object, $property)
+            && $this->propertyAccessor->isWritable($object, $property)
         ) {
             return true;
         }
@@ -40,8 +40,6 @@ final class ObjectAccessor
 
     /**
      * Get a value via PropertyAccess, fall back to reflection.
-     *
-     * @return mixed
      */
     public function getValue(object $object, string $property)
     {

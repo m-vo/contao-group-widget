@@ -33,7 +33,7 @@ class GroupEntityProxyTest extends TestCase
         $proxy->addElement($treasure);
 
         self::assertCount(1, $proxy->getElements());
-        self::assertEquals($treasure, $proxy->getElements()->first());
+        self::assertSame($treasure, $proxy->getElements()->first());
 
         $proxy->removeElement($treasure);
 
@@ -54,7 +54,7 @@ class GroupEntityProxyTest extends TestCase
         $proxy->addElement($treasure);
 
         self::assertCount(1, $proxy->getElements());
-        self::assertEquals($treasure, $proxy->getElements()->first());
+        self::assertSame($treasure, $proxy->getElements()->first());
 
         $proxy->removeElement($treasure);
 
@@ -72,7 +72,7 @@ class GroupEntityProxyTest extends TestCase
         new GroupEntityProxy($entity, 'things');
     }
 
-    public function provideEntities(): \Generator
+    public static function provideEntities(): iterable
     {
         yield 'missing getThings()' => [
             new class() {
@@ -127,7 +127,7 @@ class GroupEntityProxyTest extends TestCase
         new GroupEntityProxy($entity, 'thing', false);
     }
 
-    public function provideEntitiesWithOneToOneRelation(): \Generator
+    public static function provideEntitiesWithOneToOneRelation(): iterable
     {
         yield 'missing getThing()' => [
             new class() {

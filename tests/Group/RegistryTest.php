@@ -38,7 +38,7 @@ class RegistryTest extends TestCase
             $this->createMock(Environment::class),
             $this->createMock(RequestStack::class),
             $this->createMock(Connection::class),
-            new ArrayIteratorAggregate()
+            new ArrayIteratorAggregate(),
         );
 
         self::assertSame(['my_group'], $registry->getGroupFields('tl_foo'));
@@ -71,7 +71,7 @@ class RegistryTest extends TestCase
             $this->createMock(Environment::class),
             $this->createMock(RequestStack::class),
             $this->createMock(Connection::class),
-            new ArrayIteratorAggregate(['dummy' => $dummyStorageFactory])
+            new ArrayIteratorAggregate(['dummy' => $dummyStorageFactory]),
         );
 
         $group = $registry->getGroup('tl_foo', 123, 'my_group');

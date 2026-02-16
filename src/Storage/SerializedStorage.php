@@ -25,6 +25,7 @@ final class SerializedStorage implements StorageInterface
     private Group $group;
 
     private ?string $originalData = null;
+
     private ?array $data = null;
 
     public function __construct(Connection $connection, Group $group)
@@ -136,7 +137,7 @@ final class SerializedStorage implements StorageInterface
         $this->connection->update(
             $this->group->getTable(),
             [$name => $serialized],
-            ['id' => $this->group->getRowId()]
+            ['id' => $this->group->getRowId()],
         );
 
         $this->originalData = $serialized;
@@ -159,7 +160,7 @@ final class SerializedStorage implements StorageInterface
 
         $this->originalData = $this->connection->fetchOne(
             "SELECT $name from $table WHERE id = ?",
-            [$this->group->getRowId()]
+            [$this->group->getRowId()],
         ) ?: '';
 
         // Deserialize and normalize it
@@ -209,7 +210,7 @@ final class SerializedStorage implements StorageInterface
         foreach ($data as $key => $fieldsData) {
             $data[$key] = $this->normalizeKeys(
                 \is_array($fieldsData) ? $fieldsData : [],
-                $fields
+                $fields,
             );
         }
 
@@ -217,9 +218,9 @@ final class SerializedStorage implements StorageInterface
     }
 
     /**
-     * The output will only contain those keys of $array that are specified
-     * in $keys, missing keys are added with the specified $fallbackValue.
-     * The order of the resulting array matches that of $keys.
+     * The output will only contain those keys of $array that are specified in $keys,
+     * missing keys are added with the specified $fallbackValue. The order of the
+     * resulting array matches that of $keys.
      *
      * Example:
      *   $array = ['foo' => 'foo', 'bar' => 2, 'other' => true]

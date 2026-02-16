@@ -21,6 +21,7 @@ use Mvo\ContaoGroupWidget\Util\ObjectAccessor;
 class EntityStorageFactory implements StorageFactoryInterface
 {
     private EntityManagerInterface $entityManager;
+
     private ObjectAccessor $objectAccessor;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -39,17 +40,17 @@ class EntityStorageFactory implements StorageFactoryInterface
         $entityClass = $group->getDefinition('entity');
 
         if (null === $entityClass) {
-            // If no entity reference is defined, assume that there is an
-            // entity backing the current DCA with a field for the group.
+            // If no entity reference is defined, assume that there is an entity backing the
+            // current DCA with a field for the group.
             [$entity, $targetMapping] = $this->getLocalEntity($group);
         } else {
             // Otherwise try to locate a referenced DCA via the 'entity' key.
             [$entity, $targetMapping] = $this->getReferencedEntity($entityClass, $group);
         }
 
-        // Wrap entity into a proxy that handles accessing and manipulating the
-        // element association. The entity must have methods that follow a
-        // contract (either 'get<Elements>'/'add<Element>'/'remove<Element>' or
+        // Wrap entity into a proxy that handles accessing and manipulating the element
+        // association. The entity must have methods that follow a contract (either
+        // 'get<Elements>'/'add<Element>'/'remove<Element>' or
         // 'get<Element>'/'set<Element>' in case of a one to one relation).
         $oneToOneRelation = ClassMetadataInfo::ONE_TO_ONE === $targetMapping['type'];
         $groupEntityProxy = new GroupEntityProxy($entity, $targetMapping['fieldName'], !$oneToOneRelation);

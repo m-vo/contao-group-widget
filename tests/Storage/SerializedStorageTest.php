@@ -20,14 +20,14 @@ class SerializedStorageTest extends TestCase
     {
         $storage = new SerializedStorage($this->getConnectionMock(), $this->getGroupMock());
 
-        self::assertEquals([1, 2, 3], $storage->getElements());
+        self::assertSame([1, 2, 3], $storage->getElements());
     }
 
     public function testCreateElement(): void
     {
         $storage = new SerializedStorage($this->getConnectionMock(), $this->getGroupMock());
 
-        self::assertEquals(4, $storage->createElement());
+        self::assertSame(4, $storage->createElement());
     }
 
     public function testRemoveElement(): void
@@ -39,7 +39,7 @@ class SerializedStorageTest extends TestCase
             ->with(
                 'tl_foo',
                 ['my_group' => 'a:2:{i:1;a:1:{s:4:"data";s:3:"foo";}i:3;a:1:{s:4:"data";N;}}'],
-                ['id' => 5]
+                ['id' => 5],
             )
         ;
 
@@ -73,7 +73,7 @@ class SerializedStorageTest extends TestCase
     {
         $storage = new SerializedStorage($this->getConnectionMock(), $this->getGroupMock());
 
-        self::assertEquals('bar', $storage->getField(2, 'data'));
+        self::assertSame('bar', $storage->getField(2, 'data'));
     }
 
     public function testSetField(): void
@@ -85,7 +85,7 @@ class SerializedStorageTest extends TestCase
             ->with(
                 'tl_foo',
                 ['my_group' => 'a:3:{i:1;a:1:{s:4:"data";s:3:"foo";}i:2;a:1:{s:4:"data";s:6:"foobar";}i:3;a:1:{s:4:"data";N;}}'],
-                ['id' => 5]
+                ['id' => 5],
             )
         ;
 
@@ -93,7 +93,7 @@ class SerializedStorageTest extends TestCase
 
         $storage->setField(2, 'data', 'foobar');
 
-        self::assertEquals('foobar', $storage->getField(2, 'data'));
+        self::assertSame('foobar', $storage->getField(2, 'data'));
 
         $storage->persist();
     }
@@ -107,7 +107,7 @@ class SerializedStorageTest extends TestCase
             ->with(
                 'tl_foo',
                 ['my_group' => 'a:3:{i:2;a:1:{s:4:"data";s:3:"bar";}i:1;a:1:{s:4:"data";s:3:"foo";}i:3;a:1:{s:4:"data";N;}}'],
-                ['id' => 5]
+                ['id' => 5],
             )
         ;
 
@@ -121,7 +121,6 @@ class SerializedStorageTest extends TestCase
     private function getGroupMock()
     {
         $group = $this->createMock(Group::class);
-
         $group
             ->method('getName')
             ->willReturn('my_group')
@@ -148,7 +147,6 @@ class SerializedStorageTest extends TestCase
     private function getConnectionMock()
     {
         $connection = $this->createMock(Connection::class);
-
         $connection
             ->method('quoteIdentifier')
             ->willReturnCallback(static fn (string $value): string => $value)

@@ -6,6 +6,7 @@ use Contao\EasyCodingStandard\Fixer\TypeHintOrderFixer;
 use Contao\EasyCodingStandard\Sniffs\UseSprintfInExceptionsSniff;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\PhpUnit\PhpUnitTestCaseStaticMethodCallsFixer;
+use SlevomatCodingStandard\Sniffs\Namespaces\ReferenceUsedNamesOnlySniff;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return static function (ECSConfig $ecsConfig): void {
@@ -22,5 +23,6 @@ return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->skip([
         TypeHintOrderFixer::class,
         UseSprintfInExceptionsSniff::class,
+        ReferenceUsedNamesOnlySniff::class,
     ]);
 };

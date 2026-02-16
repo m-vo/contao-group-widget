@@ -18,13 +18,12 @@ class SerializedStorageFactoryTest extends TestCase
 {
     public function testName(): void
     {
-        self::assertEquals('serialized', SerializedStorageFactory::getName());
+        self::assertSame('serialized', SerializedStorageFactory::getName());
     }
 
     public function testCreate(): void
     {
         $connection = $this->createMock(Connection::class);
-
         $connection
             ->method('quoteIdentifier')
             ->willReturnCallback(static fn (string $value): string => $value)
@@ -65,6 +64,6 @@ class SerializedStorageFactoryTest extends TestCase
 
         $instance = $factory->create($group);
 
-        self::assertEquals([1, 2, 3], $instance->getElements());
+        self::assertSame([1, 2, 3], $instance->getElements());
     }
 }

@@ -36,7 +36,7 @@ class EntityStorageTest extends TestCase
     {
         $storage = $this->getEntityStorage();
 
-        self::assertEquals([70, 12, 42], $storage->getElements());
+        self::assertSame([70, 12, 42], $storage->getElements());
     }
 
     public function testCreateElement(): void
@@ -45,7 +45,7 @@ class EntityStorageTest extends TestCase
 
         $storage->createElement();
 
-        self::assertEquals([70, 12, 42, 71], $storage->getElements());
+        self::assertSame([70, 12, 42, 71], $storage->getElements());
     }
 
     public function testRemoveElement(): void
@@ -54,7 +54,7 @@ class EntityStorageTest extends TestCase
 
         $storage->removeElement(12);
 
-        self::assertEquals([70, 42], $storage->getElements());
+        self::assertSame([70, 42], $storage->getElements());
     }
 
     public function testOrderElements(): void
@@ -63,14 +63,14 @@ class EntityStorageTest extends TestCase
 
         $storage->orderElements([42, 70, 12]);
 
-        self::assertEquals([42, 70, 12], $storage->getElements());
+        self::assertSame([42, 70, 12], $storage->getElements());
     }
 
     public function testGetField(): void
     {
         $storage = $this->getEntityStorage();
 
-        self::assertEquals('coconuts', $storage->getField(12, 'finding'));
+        self::assertSame('coconuts', $storage->getField(12, 'finding'));
     }
 
     public function testSetFieldAndPersist(): void
@@ -80,18 +80,18 @@ class EntityStorageTest extends TestCase
 
         $storage->setField(42, 'finding', 'eh, nothing?');
 
-        self::assertEquals('eh, nothing?', $storage->getField(42, 'finding'));
+        self::assertSame('eh, nothing?', $storage->getField(42, 'finding'));
 
-        self::assertEquals(
+        self::assertSame(
             'gold',
-            $connection->fetchOne('SELECT finding FROM tl_treasure WHERE id = 42')
+            $connection->fetchOne('SELECT finding FROM tl_treasure WHERE id = 42'),
         );
 
         $storage->persist();
 
-        self::assertEquals(
+        self::assertSame(
             'eh, nothing?',
-            $connection->fetchOne('SELECT finding FROM tl_treasure WHERE id = 42')
+            $connection->fetchOne('SELECT finding FROM tl_treasure WHERE id = 42'),
         );
     }
 
@@ -101,59 +101,47 @@ class EntityStorageTest extends TestCase
 
         $storage->remove();
 
-        self::assertEquals(
+        self::assertSame(
             0,
             $this->entityManager
                 ->getConnection()
-                ->fetchOne('SELECT COUNT(*) FROM tl_island WHERE id = 1')
+                ->fetchOne('SELECT COUNT(*) FROM tl_island WHERE id = 1'),
         );
     }
 
     protected function setupDatabase(Connection $connection): void
     {
-        $connection->insert(
-            'tl_island',
-            [
-                'id' => 1,
-                'name' => 'Mêlée Island',
-            ]
-        );
+        $connection->insert('tl_island', [
+            'id' => 1,
+            'name' => 'Mêlée Island',
+        ]);
 
-        $connection->insert(
-            'tl_treasure',
-            [
-                'id' => 42,
-                'finding' => 'gold',
-                'latitude' => 80.13,
-                'longitude' => 40.22,
-                'position' => 2,
-                'parent' => 1,
-            ]
-        );
+        $connection->insert('tl_treasure', [
+            'id' => 42,
+            'finding' => 'gold',
+            'latitude' => 80.13,
+            'longitude' => 40.22,
+            'position' => 2,
+            'parent' => 1,
+        ]);
 
-        $connection->insert(
-            'tl_treasure',
-            [
-                'id' => 70,
-                'finding' => 'silver',
-                'latitude' => 79.55,
-                'longitude' => 39.992,
-                'position' => 8,
-                'parent' => 1,
-            ]
-        );
+        $connection->insert('tl_treasure', [
+            'id' => 70,
+            'finding' => 'silver',
+            'latitude' => 79.55,
+            'longitude' => 39.992,
+            'position' => 8,
+            'parent' => 1,
+        ]);
 
-        $connection->insert(
-            'tl_treasure',
-            [
-                'id' => 12,
-                'finding' => 'coconuts',
-                'latitude' => 80.11,
-                'longitude' => 40.42,
-                'position' => 4,
-                'parent' => 1,
-            ]
-        );
+        $connection->insert('tl_treasure', [
+            'id' => 12,
+            'finding' => 'coconuts',
+            'latitude' => 80.11,
+            'longitude' => 40.42,
+            'position' => 4,
+            'parent' => 1,
+        ]);
     }
 
     protected function getEntityStorage(): EntityStorage

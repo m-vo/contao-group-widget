@@ -15,9 +15,9 @@ use Mvo\ContaoGroupWidget\Entity\AbstractGroupElementEntity;
 /**
  * Element entity.
  *
- * This contains information about element positions and ID generation.
- * If you want to adjust the implementation of the base class, make sure to
- * implement the `GroupElementEntityInterface` yourself.
+ * This contains information about element positions and ID generation. If you
+ * want to adjust the implementation of the base class, make sure to implement the
+ * `GroupElementEntityInterface` yourself.
  *
  * @ORM\Entity()
  * @ORM\Table(name="tl_treasure")
@@ -56,7 +56,7 @@ class Treasure extends AbstractGroupElementEntity
      */
     public function getLocation(): string
     {
-        return sprintf('%d, %d', $this->latitude, $this->longitude);
+        return \sprintf('%d, %d', $this->latitude, $this->longitude);
     }
 
     /**

@@ -26,7 +26,9 @@ use Twig\Environment;
 class Registry
 {
     private Environment $twig;
+
     private RequestStack $requestStack;
+
     private Connection $connection;
 
     /**
@@ -35,7 +37,7 @@ class Registry
     private array $storageFactories = [];
 
     /**
-     * @var array<string, array<string,Group>>
+     * @var array<string, array<string, Group>>
      */
     private array $groupCache = [];
 
@@ -55,8 +57,8 @@ class Registry
     }
 
     /**
-     * Creates and returns a group. The same instance will be returned if
-     * called with identical arguments.
+     * Creates and returns a group. The same instance will be returned if called with
+     * identical arguments.
      */
     public function getGroup(string $table, int $rowId, string $name): Group
     {
@@ -84,8 +86,8 @@ class Registry
         return array_keys(
             array_filter(
                 array_filter($GLOBALS['TL_DCA'][$table]['fields'] ?? []),
-                static fn (array $definition): bool => 'group' === ($definition['inputType'] ?? null)
-            )
+                static fn (array $definition): bool => 'group' === ($definition['inputType'] ?? null),
+            ),
         );
     }
 
@@ -117,8 +119,8 @@ class Registry
 
     /**
      * DC Multilingual stores translations in their own rows. In order to be
-     * compatible, we need to adjust the target $rowId in case a translated
-     * version was selected.
+     * compatible, we need to adjust the target $rowId in case a translated version
+     * was selected.
      */
     private function handleDcMultilingual(string $table, int $rowId, string $name): ?Group
     {
@@ -143,24 +145,23 @@ class Registry
         $languageColumn = $GLOBALS['TL_DCA'][$table]['config']['langColumnName'] ?? 'language';
 
         $result = $this->connection->fetchOne(
-            sprintf(
+            \sprintf(
                 'SELECT id FROM %s WHERE %s=? AND %s=?',
                 $this->connection->quoteIdentifier($table),
                 $this->connection->quoteIdentifier($pidColumn),
                 $this->connection->quoteIdentifier($languageColumn),
             ),
-            [$rowId, $language]
+            [$rowId, $language],
         );
 
         if ($result) {
             return $this->createGroup($table, (int) $result, $name);
         }
 
-        // In case we do not have a record yet, we create a group with an empty
-        // dummy storage that does not persist anything - otherwise the parent
-        // entries would show up. As soon as the record gets saved/the page is
-        // reloaded, we do have a record and the real storage kicks in
-        // persisting the posted values.
+        // In case we do not have a record yet, we create a group with an empty dummy
+        // storage that does not persist anything - otherwise the parent entries would
+        // show up. As soon as the record gets saved/the page is reloaded, we do have a
+        // record and the real storage kicks in persisting the posted values.
         return $this->createGroup($table, $rowId, $name, new NullStorage());
     }
 }

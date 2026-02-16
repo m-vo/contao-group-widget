@@ -38,7 +38,7 @@ class GroupWidgetListenerTest extends TestCase
         $listener = new GroupWidgetListener(
             $requestStack,
             new Registry($twig, $requestStack, $connection, new ArrayIteratorAggregate()),
-            $twig
+            $twig,
         );
 
         $GLOBALS['TL_DCA']['tl_foo']['fields'] = $fields;
@@ -46,29 +46,29 @@ class GroupWidgetListenerTest extends TestCase
         $listener->initializeGroups('tl_foo');
 
         if ($registered) {
-            self::assertEquals(
+            self::assertSame(
                 [[GroupWidgetListener::class, 'onLoadDataContainer']],
-                $GLOBALS['TL_DCA']['tl_foo']['config']['onload_callback']
+                $GLOBALS['TL_DCA']['tl_foo']['config']['onload_callback'],
             );
 
-            self::assertEquals(
+            self::assertSame(
                 [[GroupWidgetListener::class, 'onSubmitDataContainer']],
-                $GLOBALS['TL_DCA']['tl_foo']['config']['onsubmit_callback']
+                $GLOBALS['TL_DCA']['tl_foo']['config']['onsubmit_callback'],
             );
 
-            self::assertEquals(
+            self::assertSame(
                 [[GroupWidgetListener::class, 'onDeleteDataContainer']],
-                $GLOBALS['TL_DCA']['tl_foo']['config']['ondelete_callback']
+                $GLOBALS['TL_DCA']['tl_foo']['config']['ondelete_callback'],
             );
 
-            self::assertEquals(
+            self::assertSame(
                 'bundles/mvocontaogroupwidget/backend.min.js',
-                $GLOBALS['TL_JAVASCRIPT']['mvo-group-widget']
+                $GLOBALS['TL_JAVASCRIPT']['mvo-group-widget'],
             );
 
-            self::assertEquals(
+            self::assertSame(
                 'bundles/mvocontaogroupwidget/backend.min.css',
-                $GLOBALS['TL_CSS']['mvo-group-widget']
+                $GLOBALS['TL_CSS']['mvo-group-widget'],
             );
         } else {
             self::assertArrayNotHasKey('config', $GLOBALS['TL_DCA']['tl_foo']);
@@ -79,7 +79,7 @@ class GroupWidgetListenerTest extends TestCase
         unset($GLOBALS['TL_DCA'], $GLOBALS['TL_JAVASCRIPT'], $GLOBALS['TL_CSS']);
     }
 
-    public function provideEnvironments(): \Generator
+    public static function provideEnvironments(): iterable
     {
         yield 'existing group in edit mode' => [
             'edit',
@@ -158,7 +158,6 @@ class GroupWidgetListenerTest extends TestCase
         ;
 
         $registry = $this->createMock(Registry::class);
-
         $registry
             ->method('getGroupFields')
             ->with('tl_foo')
@@ -169,8 +168,8 @@ class GroupWidgetListenerTest extends TestCase
             ->method('getGroup')
             ->willReturnCallback(
                 static function (string $table, int $rowId, string $name) use ($groupFooBar, $groupBar) {
-                    self::assertEquals('tl_foo', $table);
-                    self::assertEquals(5, $rowId);
+                    self::assertSame('tl_foo', $table);
+                    self::assertSame(5, $rowId);
 
                     $groups = [
                         'bar' => $groupBar,
@@ -178,7 +177,7 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $groups[$name];
-                }
+                },
             )
         ;
 
@@ -210,7 +209,7 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $properties[$key];
-                }
+                },
             )
         ;
 
@@ -242,7 +241,7 @@ class GroupWidgetListenerTest extends TestCase
 
                 return $group;
             },
-            range(1, 3)
+            range(1, 3),
         );
 
         $registry = $this->createMock(Registry::class);
@@ -255,7 +254,7 @@ class GroupWidgetListenerTest extends TestCase
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
             $registry,
-            $this->createMock(Environment::class)
+            $this->createMock(Environment::class),
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -269,7 +268,7 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $properties[$key];
-                }
+                },
             )
         ;
 
@@ -288,7 +287,7 @@ class GroupWidgetListenerTest extends TestCase
 
                 return $group;
             },
-            range(1, 3)
+            range(1, 3),
         );
 
         $registry = $this->createMock(Registry::class);
@@ -301,7 +300,7 @@ class GroupWidgetListenerTest extends TestCase
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
             $registry,
-            $this->createMock(Environment::class)
+            $this->createMock(Environment::class),
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -315,7 +314,7 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $properties[$key];
-                }
+                },
             )
         ;
 
@@ -341,7 +340,7 @@ class GroupWidgetListenerTest extends TestCase
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
             $registry,
-            $this->createMock(Environment::class)
+            $this->createMock(Environment::class),
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -356,7 +355,7 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $properties[$key];
-                }
+                },
             )
         ;
 
@@ -382,7 +381,7 @@ class GroupWidgetListenerTest extends TestCase
         $listener = new GroupWidgetListener(
             $this->createMock(RequestStack::class),
             $registry,
-            $this->createMock(Environment::class)
+            $this->createMock(Environment::class),
         );
 
         $dataContainer = $this->createMock(DataContainer::class);
@@ -397,12 +396,12 @@ class GroupWidgetListenerTest extends TestCase
                     ];
 
                     return $properties[$key];
-                }
+                },
             )
         ;
 
         self::assertNull(
-            $listener->onStoreGroupField('some value', $dataContainer)
+            $listener->onStoreGroupField('some value', $dataContainer),
         );
     }
 }

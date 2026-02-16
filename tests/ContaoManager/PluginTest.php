@@ -29,7 +29,7 @@ class PluginTest extends TestCase
         /** @var BundleConfig $config */
         $config = $bundles[0];
 
-        self::assertEquals(MvoContaoGroupWidgetBundle::class, $config->getName());
-        self::assertEquals([ContaoCoreBundle::class], $config->getLoadAfter());
+        self::assertSame(MvoContaoGroupWidgetBundle::class, $config->getName());
+        self::assertSame([ContaoCoreBundle::class], $config->getLoadAfter());
     }
 }
