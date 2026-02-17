@@ -34,8 +34,8 @@ class DoctrineTestHelper
         $config->setMetadataDriverImpl(
             new AnnotationDriver(
                 new AnnotationReader(),
-                __DIR__.'/../Fixtures/Entity'
-            )
+                __DIR__.'/../Fixtures/Entity',
+            ),
         );
         $config->setQueryCache(new ArrayAdapter());
         $config->setMetadataCache(new ArrayAdapter());
@@ -58,7 +58,7 @@ class DoctrineTestHelper
 
         $toSchema = (new SchemaTool($entityManager))
             ->getSchemaFromMetadata(
-                $entityManager->getMetadataFactory()->getAllMetadata()
+                $entityManager->getMetadataFactory()->getAllMetadata(),
             )
         ;
 

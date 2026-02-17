@@ -44,27 +44,27 @@ class GroupTest extends TestCase
             $this->createMock(Environment::class),
             'tl_foo',
             123,
-            'my_group'
+            'my_group',
         );
 
         $assertionCallback($group);
     }
 
-    public function provideDefinitions(): \Generator
+    public static function provideDefinitions(): iterable
     {
         yield 'defaults' => [
             [
                 'palette' => ['foo'],
             ],
             static function (Group $group): void {
-                self::assertEquals('my_group', $group->getName());
-                self::assertEquals('tl_foo', $group->getTable());
-                self::assertEquals(123, $group->getRowId());
-                self::assertEquals('', $group->getLabel());
-                self::assertEquals('', $group->getDescription());
-                self::assertEquals(0, $group->getMinElements());
-                self::assertEquals(0, $group->getMaxElements());
-                self::assertEquals(['foo'], $group->getFields());
+                self::assertSame('my_group', $group->getName());
+                self::assertSame('tl_foo', $group->getTable());
+                self::assertSame(123, $group->getRowId());
+                self::assertSame('', $group->getLabel());
+                self::assertSame('', $group->getDescription());
+                self::assertSame(0, $group->getMinElements());
+                self::assertSame(0, $group->getMaxElements());
+                self::assertSame(['foo'], $group->getFields());
             },
         ];
 
@@ -74,8 +74,8 @@ class GroupTest extends TestCase
                 'palette' => ['foo'],
             ],
             static function (Group $group): void {
-                self::assertEquals('my group', $group->getLabel());
-                self::assertEquals('pretty nice', $group->getDescription());
+                self::assertSame('my group', $group->getLabel());
+                self::assertSame('pretty nice', $group->getDescription());
             },
         ];
 
@@ -86,8 +86,8 @@ class GroupTest extends TestCase
                 'palette' => ['foo'],
             ],
             static function (Group $group): void {
-                self::assertEquals(2, $group->getMinElements());
-                self::assertEquals(10, $group->getMaxElements());
+                self::assertSame(2, $group->getMinElements());
+                self::assertSame(10, $group->getMaxElements());
             },
         ];
 
@@ -100,7 +100,7 @@ class GroupTest extends TestCase
                 ],
             ],
             static function (Group $group): void {
-                self::assertEquals(['bar'], $group->getFields());
+                self::assertSame(['bar'], $group->getFields());
             },
         ];
 
@@ -114,7 +114,7 @@ class GroupTest extends TestCase
                 ],
             ],
             static function (Group $group): void {
-                self::assertEquals(['foo', 'bar'], $group->getFields());
+                self::assertSame(['foo', 'bar'], $group->getFields());
             },
         ];
 
@@ -127,14 +127,17 @@ class GroupTest extends TestCase
                 ],
             ],
             static function (Group $group): void {
-                self::assertEquals(['foo'], $group->getFields());
-                self::assertEquals([
-                    'inputType' => 'text',
-                    'eval' => [
-                        'tl_class' => 'w50',
-                        'mandatory' => false,
+                self::assertSame(['foo'], $group->getFields());
+                self::assertSame(
+                    [
+                        'inputType' => 'text',
+                        'eval' => [
+                            'tl_class' => 'w50',
+                            'mandatory' => false,
+                        ],
                     ],
-                ], $group->getFieldDefinition('foo'));
+                    $group->getFieldDefinition('foo'),
+                );
             },
         ];
 
@@ -147,8 +150,8 @@ class GroupTest extends TestCase
                 ],
             ],
             static function (Group $group): void {
-                self::assertEquals(['foo'], $group->getFields());
-                self::assertEquals('textarea', $group->getFieldDefinition('foo')['inputType'] ?? null);
+                self::assertSame(['foo'], $group->getFields());
+                self::assertSame('textarea', $group->getFieldDefinition('foo')['inputType'] ?? null);
                 self::assertArrayNotHasKey('eval', $group->getFieldDefinition('foo') ?? []);
             },
         ];
@@ -159,7 +162,7 @@ class GroupTest extends TestCase
                 'foobar' => ['bar' => 'baz'],
             ],
             static function (Group $group): void {
-                self::assertEquals(['bar' => 'baz'], $group->getDefinition('foobar'));
+                self::assertSame(['bar' => 'baz'], $group->getDefinition('foobar'));
             },
         ];
     }
@@ -185,11 +188,11 @@ class GroupTest extends TestCase
             $this->createMock(Environment::class),
             'tl_foo',
             123,
-            'my_group'
+            'my_group',
         );
     }
 
-    public function provideInvalidDefinitions(): \Generator
+    public static function provideInvalidDefinitions(): iterable
     {
         yield 'no fields/palette' => [
             [],
@@ -262,7 +265,7 @@ class GroupTest extends TestCase
             $twig = $this->createMock(Environment::class),
             'tl_foo',
             123,
-            'my_group'
+            'my_group',
         );
 
         $group->setStorage(new DummyStorage());
@@ -317,7 +320,7 @@ class GroupTest extends TestCase
             self::assertArrayHasKey($field, $GLOBALS['TL_DCA']['tl_foo']['fields']);
             self::assertInstanceOf(
                 \Closure::class,
-                $GLOBALS['TL_DCA']['tl_foo']['fields'][$field]['input_field_callback']
+                $GLOBALS['TL_DCA']['tl_foo']['fields'][$field]['input_field_callback'],
             );
         }
 
@@ -327,17 +330,18 @@ class GroupTest extends TestCase
             'my_group__(el_start)__2,my_group__foo__2,my_group__bar__2,my_group__(el_end)__2,'.
             'my_group__(end)';
 
-        self::assertEquals($expectedPalette, $GLOBALS['TL_DCA']['tl_foo']['palettes']['default']);
+        /** @psalm-suppress TypeDoesNotContainType */
+        self::assertSame($expectedPalette, $GLOBALS['TL_DCA']['tl_foo']['palettes']['default']);
 
         // Check default labels are references
         $GLOBALS['TL_LANG']['tl_foo']['foo'] = ['another foo label'];
         $GLOBALS['TL_LANG']['tl_foo']['my_group_']['bar'] = ['another bar label'];
 
-        self::assertEquals(['another foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__1']['label']);
-        self::assertEquals(['another foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__2']['label']);
+        self::assertSame(['another foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__1']['label']);
+        self::assertSame(['another foo label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__foo__2']['label']);
 
-        self::assertEquals(['another bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__1']['label']);
-        self::assertEquals(['another bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__2']['label']);
+        self::assertSame(['another bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__1']['label']);
+        self::assertSame(['another bar label'], $GLOBALS['TL_DCA']['tl_foo']['fields']['my_group__bar__2']['label']);
     }
 
     public function testGetField(): void
@@ -354,7 +358,7 @@ class GroupTest extends TestCase
 
         $group->setStorage($storage);
 
-        self::assertEquals('data', $group->getField(123, 'bar'));
+        self::assertSame('data', $group->getField(123, 'bar'));
     }
 
     public function testSetField(): void
@@ -379,11 +383,9 @@ class GroupTest extends TestCase
 
         $storage = $this->createMock(StorageInterface::class);
 
-        // Simulate transition [1, 5, 3] with [2, 5, 1, -1] --> [5, 1, 6]
-        //  - should create new item (6)
-        //  - should remove item 3
-        //  - should ignore unmapped (2)
-        //  - should order (5, 1, 6)
+        // Simulate transition [1, 5, 3] with [2, 5, 1, -1] --> [5, 1, 6]  - should
+        // create new item (6)  - should remove item 3  - should ignore unmapped (2)  -
+        // should order (5, 1, 6)
 
         $storage
             ->method('getElements')
@@ -418,7 +420,6 @@ class GroupTest extends TestCase
         $group = $this->getDummyGroup(['min' => 3]);
 
         $storage = $this->createMock(StorageInterface::class);
-
         $storage
             ->method('getElements')
             ->willReturn([1])
@@ -440,7 +441,6 @@ class GroupTest extends TestCase
         $group = $this->getDummyGroup(['max' => 3]);
 
         $storage = $this->createMock(StorageInterface::class);
-
         $storage
             ->method('getElements')
             ->willReturn([1, 2, 3, 4, 5])
@@ -495,7 +495,7 @@ class GroupTest extends TestCase
                     'inputType' => 'group',
                     'palette' => ['foo'],
                 ],
-                $definition
+                $definition,
             ),
             'foo' => [
                 'inputType' => 'text',
@@ -506,7 +506,7 @@ class GroupTest extends TestCase
             $this->createMock(Environment::class),
             'tl_foo',
             123,
-            'my_group'
+            'my_group',
         );
     }
 }

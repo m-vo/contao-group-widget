@@ -15,7 +15,7 @@ interface StorageFactoryInterface
 {
     public static function getName(): string;
 
-    // TODO: make row id part of the storage interface in v2 and remove it from
-    //       being a property of the Group class
+    // TODO: make row id part of the storage interface in v2 and remove it from being
+    // a property of the Group class
     public function create(Group $group): StorageInterface;
 }

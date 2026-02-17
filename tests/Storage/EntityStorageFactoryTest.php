@@ -20,7 +20,7 @@ class EntityStorageFactoryTest extends TestCase
 {
     public function testName(): void
     {
-        self::assertEquals('entity', EntityStorageFactory::getName());
+        self::assertSame('entity', EntityStorageFactory::getName());
     }
 
     public function testCreateWithLocalEntity(): void
@@ -40,9 +40,9 @@ class EntityStorageFactoryTest extends TestCase
         $groupEntity = $instance->getGroupEntityProxy()->getReference();
 
         self::assertInstanceOf(Island::class, $groupEntity);
-        self::assertEquals('Monkey Island (2)', $groupEntity->getNameAndId());
+        self::assertSame('Monkey Island (2)', $groupEntity->getNameAndId());
 
-        self::assertEquals(Treasure::class, $instance->getElementEntityClass());
+        self::assertSame(Treasure::class, $instance->getElementEntityClass());
     }
 
     public function testCreateWithNewReferencedEntity(): void
@@ -57,10 +57,10 @@ class EntityStorageFactoryTest extends TestCase
         $groupEntity = $instance->getGroupEntityProxy()->getReference();
 
         self::assertInstanceOf(Map::class, $groupEntity);
-        self::assertEquals('tl_island', $groupEntity->getSourceTable());
-        self::assertEquals(2, $groupEntity->getSourceId());
+        self::assertSame('tl_island', $groupEntity->getSourceTable());
+        self::assertSame(2, $groupEntity->getSourceId());
 
-        self::assertEquals(Treasure::class, $instance->getElementEntityClass());
+        self::assertSame(Treasure::class, $instance->getElementEntityClass());
     }
 
     public function testCreateWithExistingReferencedEntity(): void
@@ -82,17 +82,16 @@ class EntityStorageFactoryTest extends TestCase
         $groupEntity = $instance->getGroupEntityProxy()->getReference();
 
         self::assertInstanceOf(Map::class, $groupEntity);
-        self::assertEquals('LeChuck', $groupEntity->author);
-        self::assertEquals('tl_island', $groupEntity->getSourceTable());
-        self::assertEquals(2, $groupEntity->getSourceId());
+        self::assertSame('LeChuck', $groupEntity->author);
+        self::assertSame('tl_island', $groupEntity->getSourceTable());
+        self::assertSame(2, $groupEntity->getSourceId());
 
-        self::assertEquals(Treasure::class, $instance->getElementEntityClass());
+        self::assertSame(Treasure::class, $instance->getElementEntityClass());
     }
 
-    private function getGroupMock(string $entityDefinition = null)
+    private function getGroupMock(?string $entityDefinition = null)
     {
         $group = $this->createMock(Group::class);
-
         $group
             ->method('getDefinition')
             ->with('entity')

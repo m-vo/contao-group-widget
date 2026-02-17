@@ -15,9 +15,9 @@ use Mvo\ContaoGroupWidget\Entity\AbstractGroupEntity;
 /**
  * Standalone group entity.
  *
- * This entity contains `sourceTable` and `sourceId` fields to soft-reference
- * a DCA table/row (see abstract base class). You can adjust the implementation
- * of the base class to your needs - there are no type hints in place.
+ * This entity contains `sourceTable` and `sourceId` fields to soft-reference a
+ * DCA table/row (see abstract base class). You can adjust the implementation of
+ * the base class to your needs - there are no type hints in place.
  *
  * @ORM\Entity()
  * @ORM\Table(name="Map")

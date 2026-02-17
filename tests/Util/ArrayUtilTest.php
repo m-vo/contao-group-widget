@@ -19,10 +19,10 @@ class ArrayUtilTest extends TestCase
      */
     public function testMergePropertiesRecursive(array $left, array $right, array $expected): void
     {
-        self::assertEquals($expected, ArrayUtil::mergePropertiesRecursive($left, $right));
+        self::assertSame($expected, ArrayUtil::mergePropertiesRecursive($left, $right));
     }
 
-    public function provideArrays(): \Generator
+    public static function provideArrays(): iterable
     {
         yield 'all empty' => [
             [], [], [],

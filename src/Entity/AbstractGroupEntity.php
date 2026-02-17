@@ -54,22 +54,21 @@ abstract class AbstractGroupEntity
         $this->elements = new ArrayCollection();
     }
 
-    // Implementing this method is optional
-    // (then a field named 'id' is required, though)
+    // Implementing this method is optional (then a field named 'id' is required, though)
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // Implementing this method is optional
-    // (then a field named 'sourceTable' is required, though)
+    // Implementing this method is optional (then a field named 'sourceTable' is
+    // required, though)
     public function getSourceTable(): ?string
     {
         return $this->sourceTable;
     }
 
-    // Implementing this method is optional
-    // (then a field named 'sourceId' is required, though)
+    // Implementing this method is optional (then a field named 'sourceId' is
+    // required, though)
     public function getSourceId(): ?int
     {
         return $this->sourceId;
@@ -83,7 +82,7 @@ abstract class AbstractGroupEntity
     public function addElement($element): void
     {
         if (!$element instanceof AbstractGroupElementEntity) {
-            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'.", __METHOD__, static::class));
+            throw new \RuntimeException(\sprintf("Please provide an implementation of the '%s' method for class '%s'.", __METHOD__, static::class));
         }
 
         if (!$this->elements->contains($element)) {
@@ -95,7 +94,7 @@ abstract class AbstractGroupEntity
     public function removeElement($element): void
     {
         if (!$element instanceof AbstractGroupElementEntity) {
-            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'", __METHOD__, static::class));
+            throw new \RuntimeException(\sprintf("Please provide an implementation of the '%s' method for class '%s'", __METHOD__, static::class));
         }
 
         if ($this->elements->removeElement($element)) {

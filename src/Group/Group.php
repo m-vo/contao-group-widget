@@ -23,20 +23,31 @@ class Group
     private Environment $twig;
 
     private string $name;
+
     private string $table;
+
     private int $rowId;
 
     private array $definition;
+
     private array $fields;
+
     private string $label;
+
     private string $description;
+
     private array $defaultWrapperDefinition = [];
+
     private int $min;
+
     private int $max;
+
     private bool $enableOrdering;
+
     private array $htmlAttributes;
 
     private ?StorageInterface $storage = null;
+
     private bool $changed = false;
 
     private array $expandedPalette = [];
@@ -62,7 +73,7 @@ class Group
 
         // Pull in referenced definitions
         foreach ($fields as $field => $fieldDefinition) {
-            if (0 === strpos($field, '&')) {
+            if (str_starts_with($field, '&')) {
                 $realFieldName = ltrim($field, '&');
 
                 if (null === ($referencedDefinition = $getReferencedDefinition($realFieldName))) {
@@ -204,8 +215,6 @@ class Group
 
     /**
      * @internal
-     *
-     * @return mixed
      */
     public function getDefinition(string $key)
     {
@@ -232,8 +241,6 @@ class Group
      * Returns the value of an element's field.
      *
      * (Delegate to storage engine.)
-     *
-     * @return mixed
      */
     public function getField(int $elementId, string $field)
     {
@@ -259,8 +266,7 @@ class Group
     }
 
     /**
-     * Defines the contained elements and their order by setting an array of
-     * element IDs.
+     * Defines the contained elements and their order by setting an array of element IDs.
      *
      * (Delegate to storage engine.)
      */
@@ -277,9 +283,8 @@ class Group
         $elementsToRemove = array_diff($existingElementIds, $newElementIds);
         $unmappedItems = array_diff($newElementIds, $existingElementIds, [-1]);
 
-        // In case there are no explicitly set new elements (id = -1), we
-        // assume the first unmatched ID to be a new element that was never
-        // stored due to validation errors
+        // In case there are no explicitly set new elements (id = -1), we assume the first
+        // unmatched ID to be a new element that was never stored due to validation errors
         if (empty($elementsToCreate) && !empty($unmappedItems)) {
             $key = array_key_first($unmappedItems);
 
@@ -426,21 +431,15 @@ class Group
         $type = $start ? 'start' : 'end';
         $newName = "{$this->name}__({$type})";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge(
-            $this->defaultWrapperDefinition,
-            [
-                'input_field_callback' => fn () => $this->twig->render(
-                    '@MvoContaoGroupWidget/widget_group.html.twig',
-                    [
-                        'group' => $this,
-                        'type' => $start,
-                        'order' => $this->enableOrdering,
-                        'htmlAttributes' => $this->htmlAttributes,
-                    ]
-                ),
-                'exclude' => false, // Do not apply user permissions
-            ]
-        );
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge($this->defaultWrapperDefinition, [
+            'input_field_callback' => fn () => $this->twig->render('@MvoContaoGroupWidget/widget_group.html.twig', [
+                'group' => $this,
+                'type' => $start,
+                'order' => $this->enableOrdering,
+                'htmlAttributes' => $this->htmlAttributes,
+            ]),
+            'exclude' => false, // Do not apply user permissions
+        ]);
 
         return $newName;
     }
@@ -450,20 +449,14 @@ class Group
         $type = $start ? 'el_start' : 'el_end';
         $newName = "{$this->name}__({$type})__{$id}";
 
-        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge(
-            $this->defaultWrapperDefinition,
-            [
-                'input_field_callback' => fn () => $this->twig->render(
-                    '@MvoContaoGroupWidget/widget_group_element.html.twig',
-                    [
-                        'group' => $this,
-                        'type' => $start,
-                        'id' => $id,
-                    ]
-                ),
-                'exclude' => false, // Do not apply user permissions
-            ]
-        );
+        $GLOBALS['TL_DCA'][$this->table]['fields'][$newName] = array_merge($this->defaultWrapperDefinition, [
+            'input_field_callback' => fn () => $this->twig->render('@MvoContaoGroupWidget/widget_group_element.html.twig', [
+                'group' => $this,
+                'type' => $start,
+                'id' => $id,
+            ]),
+            'exclude' => false, // Do not apply user permissions
+        ]);
 
         return $newName;
     }
@@ -473,16 +466,13 @@ class Group
         $newName = "{$this->name}__{$name}__{$id}";
 
         /** @var array{load_callback?: array<int, array>, save_callback?: array<int, array>} $definition */
-        $definition = ArrayUtil::mergePropertiesRecursive(
-            $definition,
-            [
-                'eval' => [
-                    'doNotSaveEmpty' => true,
-                ],
-                'exclude' => false, // Do not apply user permissions
-                'sql' => null,
-            ]
-        );
+        $definition = ArrayUtil::mergePropertiesRecursive($definition, [
+            'eval' => [
+                'doNotSaveEmpty' => true,
+            ],
+            'exclude' => false, // Do not apply user permissions
+            'sql' => null,
+        ]);
 
         // Install storage callbacks
         $definition['load_callback'] = [

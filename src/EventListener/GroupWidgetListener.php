@@ -23,7 +23,9 @@ use Twig\Environment;
 final class GroupWidgetListener
 {
     private RequestStack $requestStack;
+
     private Registry $registry;
+
     private Environment $twig;
 
     public function __construct(RequestStack $requestStack, Registry $registry, Environment $twig)
@@ -39,8 +41,8 @@ final class GroupWidgetListener
     public function initializeGroups(string $table): void
     {
         if (
-            null === ($request = $this->getRequest()) ||
-            empty($this->registry->getGroupFields($table))
+            null === ($request = $this->getRequest())
+            || empty($this->registry->getGroupFields($table))
         ) {
             return;
         }
@@ -60,8 +62,8 @@ final class GroupWidgetListener
     /**
      * Listener for the DCA onload_callback that gets registered dynamically.
      *
-     * Applies changes to group elements (reorder/delete/new) and expands the
-     * group palettes and fields by adding virtual nodes.
+     * Applies changes to group elements (reorder/delete/new) and expands the group
+     * palettes and fields by adding virtual nodes.
      */
     public function onLoadDataContainer(DataContainer $dc): void
     {
@@ -77,16 +79,13 @@ final class GroupWidgetListener
 
         if (empty($visibleGroupFields)) {
             foreach ($groupFields as $groupField) {
-                // If a group widget is located in a subpalette that isn't shown by
-                // default, we need to submit the form once the dummy widget gets
-                // injected so that the virtual fields can be built correctly.
+                // If a group widget is located in a subpalette that isn't shown by default, we
+                // need to submit the form once the dummy widget gets injected so that the
+                // virtual fields can be built correctly.
                 $GLOBALS['TL_DCA'][$table]['fields'][$groupField] = [
-                    'input_field_callback' => fn () => $this->twig->render(
-                        '@MvoContaoGroupWidget/widget_group_reloader.html.twig',
-                        [
-                            'table' => $table,
-                        ]
-                    ),
+                    'input_field_callback' => fn () => $this->twig->render('@MvoContaoGroupWidget/widget_group_reloader.html.twig', [
+                        'table' => $table,
+                    ]),
                 ];
             }
 
@@ -124,7 +123,7 @@ final class GroupWidgetListener
             ) {
                 $ids = array_map(
                     'intval',
-                    array_filter(explode(',', (string) $post))
+                    array_filter(explode(',', (string) $post)),
                 );
 
                 $group->setElements($ids);
@@ -171,8 +170,6 @@ final class GroupWidgetListener
      * Listener for a virtual field's save_callback that gets registered dynamically.
      *
      * Persists changes to the virtual fields.
-     *
-     * @return mixed
      */
     public function onLoadGroupField($_, DataContainer $dc)
     {
@@ -206,7 +203,6 @@ final class GroupWidgetListener
     {
         return method_exists($this->requestStack, 'getMainRequest') ?
             $this->requestStack->getMainRequest() :
-            $this->requestStack->getMasterRequest()
-        ;
+            $this->requestStack->getMasterRequest();
     }
 }
