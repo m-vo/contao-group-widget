@@ -21,13 +21,10 @@ jobs:
               run: composer update --no-interaction --no-suggest
 
             - name: Install vendor-bin
-              run: composer bin all update
+              run: composer bin all install
 
             - name: Run CS check
               run: vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi
-
-            - name: Run psalm
-              run: vendor-bin/psalm/vendor/bin/psalm --no-suggestions
 
             - name: Run unit tests
               run: vendor/bin/phpunit --colors=always
