@@ -19,7 +19,7 @@ final class ArrayUtil
      */
     public static function mergePropertiesRecursive(array $left, array $right): array
     {
-        $keys = array_merge(array_keys($left), array_keys($right));
+        $keys = array_unique(array_merge(array_keys($left), array_keys($right)));
         $result = [];
 
         foreach ($keys as $key) {
@@ -39,7 +39,7 @@ final class ArrayUtil
                         return $leftValue;
                     }
 
-                    if (\is_array($leftValue)) {
+                    if (\is_array($leftValue) && !array_is_list($leftValue)) {
                         return self::mergePropertiesRecursive($leftValue, (array) $rightValue);
                     }
 

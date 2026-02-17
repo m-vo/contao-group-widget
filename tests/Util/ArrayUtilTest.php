@@ -49,6 +49,7 @@ class ArrayUtilTest extends TestCase
         yield 'merge multi dimensional' => [
             [
                 'label' => ['foo', 'bar'],
+                'options' => ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
                 'eval' => [
                     'mandatory' => true,
                     'tl_class' => 'w50',
@@ -58,9 +59,11 @@ class ArrayUtilTest extends TestCase
                 'eval' => [
                     'mandatory' => false,
                 ],
+                'options' => ['h1', 'h2', 'h3'],
             ],
             [
                 'label' => ['foo', 'bar'],
+                'options' => ['h1', 'h2', 'h3'],
                 'eval' => [
                     'mandatory' => false,
                     'tl_class' => 'w50',
