@@ -82,7 +82,7 @@ abstract class AbstractGroupEntity
     public function addElement($element): void
     {
         if (!$element instanceof AbstractGroupElementEntity) {
-            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'.", __METHOD__, static::class));
+            throw new \RuntimeException(\sprintf("Please provide an implementation of the '%s' method for class '%s'.", __METHOD__, static::class));
         }
 
         if (!$this->elements->contains($element)) {
@@ -94,7 +94,7 @@ abstract class AbstractGroupEntity
     public function removeElement($element): void
     {
         if (!$element instanceof AbstractGroupElementEntity) {
-            throw new \RuntimeException(sprintf("Please provide an implementation of the '%s' method for class '%s'", __METHOD__, static::class));
+            throw new \RuntimeException(\sprintf("Please provide an implementation of the '%s' method for class '%s'", __METHOD__, static::class));
         }
 
         if ($this->elements->removeElement($element)) {
