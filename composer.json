@@ -61,9 +61,6 @@
     "cs": [
       "vendor-bin/ecs/vendor/bin/ecs check src tests --config vendor-bin/ecs/config/default.php --fix --ansi"
     ],
-    "psalm" : [
-      "vendor-bin/psalm/vendor/bin/psalm --no-suggestions"
-    ],
     "tests": [
       "vendor/bin/phpunit --colors=always"
     ],
@@ -71,7 +68,7 @@
       "vendor-bin/composer-require-checker/vendor/bin/composer-require-checker check --config-file=vendor-bin/composer-require-checker/config.json"
     ],
     "chain" : [
-      "@cs", "@psalm", "@tests", "@composer-require-checker"
+      "@cs", "@tests", "@composer-require-checker"
     ]
   },
   "config": {

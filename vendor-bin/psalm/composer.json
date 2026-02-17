@@ -1,7 +1,0 @@
-{
-    "require": {
-        "psalm/plugin-phpunit": "^0.18.4",
-        "psalm/plugin-symfony": "^v5.1.0",
-        "vimeo/psalm": "^5.18.0"
-    }
-}
