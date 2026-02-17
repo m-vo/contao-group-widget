@@ -56,7 +56,7 @@ class Treasure extends AbstractGroupElementEntity
      */
     public function getLocation(): string
     {
-        return \sprintf('%d, %d', $this->latitude, $this->longitude);
+        return sprintf('%d, %d', $this->latitude, $this->longitude);
     }
 
     /**

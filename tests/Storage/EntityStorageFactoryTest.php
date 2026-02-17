@@ -89,7 +89,7 @@ class EntityStorageFactoryTest extends TestCase
         self::assertSame(Treasure::class, $instance->getElementEntityClass());
     }
 
-    private function getGroupMock(?string $entityDefinition = null)
+    private function getGroupMock(string $entityDefinition = null)
     {
         $group = $this->createMock(Group::class);
         $group

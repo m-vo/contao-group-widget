@@ -91,7 +91,7 @@ class Registry
         );
     }
 
-    private function createGroup(string $table, int $rowId, string $name, ?StorageInterface $storage = null): Group
+    private function createGroup(string $table, int $rowId, string $name, StorageInterface $storage = null): Group
     {
         $group = new Group($this->twig, $table, $rowId, $name);
         $group->setStorage($storage ?? $this->createStorage($table, $name, $group));
@@ -145,7 +145,7 @@ class Registry
         $languageColumn = $GLOBALS['TL_DCA'][$table]['config']['langColumnName'] ?? 'language';
 
         $result = $this->connection->fetchOne(
-            \sprintf(
+            sprintf(
                 'SELECT id FROM %s WHERE %s=? AND %s=?',
                 $this->connection->quoteIdentifier($table),
                 $this->connection->quoteIdentifier($pidColumn),

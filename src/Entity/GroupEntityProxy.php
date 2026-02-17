@@ -38,19 +38,19 @@ class GroupEntityProxy
             $pluralSuffix = ucfirst($associationProperty);
             $singularSuffix = ucfirst($inflector->singularize($associationProperty));
 
-            $this->methodGet = \sprintf('get%s', $pluralSuffix);
-            $this->methodAdd = \sprintf('add%s', $singularSuffix);
-            $this->methodRemove = \sprintf('remove%s', $singularSuffix);
+            $this->methodGet = sprintf('get%s', $pluralSuffix);
+            $this->methodAdd = sprintf('add%s', $singularSuffix);
+            $this->methodRemove = sprintf('remove%s', $singularSuffix);
         } else {
             $suffix = ucfirst($associationProperty);
 
-            $this->methodGet = \sprintf('get%s', $suffix);
-            $this->methodSet = \sprintf('set%s', $suffix);
+            $this->methodGet = sprintf('get%s', $suffix);
+            $this->methodSet = sprintf('set%s', $suffix);
         }
 
         foreach (array_filter([$this->methodGet, $this->methodSet, $this->methodAdd, $this->methodRemove]) as $method) {
             if (!method_exists($groupEntity, $method)) {
-                throw new \LogicException(\sprintf("Group entity '%s' needs to have a method '%s' to be able to access the association '%s'.", $groupEntity::class, $method, $associationProperty));
+                throw new \LogicException(sprintf("Group entity '%s' needs to have a method '%s' to be able to access the association '%s'.", $groupEntity::class, $method, $associationProperty));
             }
         }
     }
