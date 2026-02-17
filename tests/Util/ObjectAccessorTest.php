@@ -83,7 +83,7 @@ class ObjectAccessorTest extends TestCase
         $accessor = new ObjectAccessor();
 
         $this->expectException(\ReflectionException::class);
-        $this->expectErrorMessage('Property class@anonymous::$foo does not exist');
+        $this->expectExceptionMessage('Property class@anonymous::$foo does not exist');
 
         $accessor->getValue($object, 'foo');
     }
@@ -97,7 +97,7 @@ class ObjectAccessorTest extends TestCase
         $accessor = new ObjectAccessor();
 
         $this->expectException(\ReflectionException::class);
-        $this->expectErrorMessage('Property class@anonymous::$foo does not exist');
+        $this->expectExceptionMessage('Property class@anonymous::$foo does not exist');
 
         $accessor->setValue($object, 'foo', 'foo');
     }
