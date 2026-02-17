@@ -63,11 +63,11 @@ class ArrayUtilTest extends TestCase
             ],
             [
                 'label' => ['foo', 'bar'],
+                'options' => ['h1', 'h2', 'h3'],
                 'eval' => [
                     'mandatory' => false,
                     'tl_class' => 'w50',
                 ],
-                'options' => ['h1', 'h2', 'h3'],
             ],
         ];
     }
