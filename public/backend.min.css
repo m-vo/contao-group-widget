@@ -26,26 +26,26 @@
       }
 
       &[data-up] {
-        background-image: url("../../../system/themes/flexible/icons/down.svg");
+        background-image: url("/bundles/mvocontaogroupwidget/icons/down.svg");
         scale: -1;
       }
 
       &[data-down] {
-        background-image: url("../../../system/themes/flexible/icons/down.svg");
+        background-image: url("/bundles/mvocontaogroupwidget/icons/down.svg");
       }
 
       &[data-drag] {
-        background-image: url("../../../system/themes/flexible/icons/drag.svg");
+        background-image: url("/bundles/mvocontaogroupwidget/icons/drag.svg");
         cursor: move;
       }
 
       &[data-remove] {
-        background-image: url("../../../system/themes/flexible/icons/delete.svg");
+        background-image: url("/bundles/mvocontaogroupwidget/icons/delete.svg");
       }
 
       &[data-add] {
         background-size: 18px 18px;
-        background-image: url("../../../system/themes/flexible/icons/new.svg");
+        background-image: url("/bundles/mvocontaogroupwidget/icons/new.svg");
       }
 
       &:disabled,
