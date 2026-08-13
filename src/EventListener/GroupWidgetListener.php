@@ -12,7 +12,6 @@ namespace Mvo\ContaoGroupWidget\EventListener;
 use Contao\DataContainer;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
 
