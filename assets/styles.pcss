@@ -7,10 +7,12 @@
     align-items: center;
 
     > * {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
       width: 24px;
       height: 24px;
-      background-size: 16px 16px;
-      background: none no-repeat center;
       border: none;
       border-radius: 50%;
       transition: all 0.1s;
@@ -26,26 +28,11 @@
       }
 
       &[data-up] {
-        background-image: url("/bundles/mvocontaogroupwidget/icons/down.svg");
         scale: -1;
       }
 
-      &[data-down] {
-        background-image: url("/bundles/mvocontaogroupwidget/icons/down.svg");
-      }
-
       &[data-drag] {
-        background-image: url("/bundles/mvocontaogroupwidget/icons/drag.svg");
         cursor: move;
-      }
-
-      &[data-remove] {
-        background-image: url("/bundles/mvocontaogroupwidget/icons/delete.svg");
-      }
-
-      &[data-add] {
-        background-size: 18px 18px;
-        background-image: url("/bundles/mvocontaogroupwidget/icons/new.svg");
       }
 
       &:disabled,

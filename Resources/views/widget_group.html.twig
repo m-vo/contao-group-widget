@@ -31,8 +31,8 @@
                         data-mvo--group-widget-target="addButton"
                         data-action="mvo--group-widget#add:prevent"
                         data-add
-                        title="{{ 'DCA.new.1'|trans({}, 'contao_default') }}"
                         class="controls--add">
+                    {{ backend_icon('new.svg', 'DCA.new.1'|trans({}, 'contao_default'), attributes: attrs().set('width', 18).set('height', 18)) }}
                 </button>
             </div>
         </div>
