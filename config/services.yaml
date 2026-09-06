@@ -11,6 +11,8 @@ services:
       - '@request_stack'
       - '@Mvo\ContaoGroupWidget\Group\Registry'
       - '@twig'
+    tags:
+      - { name: 'contao.hook', hook: 'loadDataContainer', method: 'initializeGroups', priority: -256 }
 
   Mvo\ContaoGroupWidget\Storage\SerializedStorageFactory:
     arguments:

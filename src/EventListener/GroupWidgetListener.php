@@ -9,11 +9,9 @@ declare(strict_types=1);
 
 namespace Mvo\ContaoGroupWidget\EventListener;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\DataContainer;
 use Mvo\ContaoGroupWidget\Group\Group;
 use Mvo\ContaoGroupWidget\Group\Registry;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
 
@@ -35,13 +33,10 @@ final class GroupWidgetListener
         $this->twig = $twig;
     }
 
-    /**
-     * @Hook("loadDataContainer", priority=-256)
-     */
     public function initializeGroups(string $table): void
     {
         if (
-            null === ($request = $this->getRequest())
+            null === ($request = $this->requestStack->getMainRequest())
             || empty($this->registry->getGroupFields($table))
         ) {
             return;
@@ -118,7 +113,7 @@ final class GroupWidgetListener
             $group = $this->registry->getGroup($table, $id, $name);
 
             if (
-                null !== ($request = $this->getRequest())
+                null !== ($request = $this->requestStack->getMainRequest())
                 && null !== ($post = $request->request->get("group-widget__$name"))
             ) {
                 $ids = array_map(
@@ -197,12 +192,5 @@ final class GroupWidgetListener
 
         // Prevent DC_Table from saving the record
         return null;
-    }
-
-    private function getRequest(): ?Request
-    {
-        return method_exists($this->requestStack, 'getMainRequest') ?
-            $this->requestStack->getMainRequest() :
-            $this->requestStack->getMasterRequest();
     }
 }
