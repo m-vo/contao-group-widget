@@ -195,7 +195,9 @@ final class EntityStorage implements StorageInterface
     private function getElementPosition(object $element): int
     {
         if ($this->objectAccessor->supports($element, 'position')) {
-            return $this->objectAccessor->getValue($element, 'position');
+            // If a class does implement getPosition() but returns null (like
+            // the AbstractGroupElementEntity), treat it as 0 as well.
+            return $this->objectAccessor->getValue($element, 'position') ?? 0;
         }
 
         return 0;
