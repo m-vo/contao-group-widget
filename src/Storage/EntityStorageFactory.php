@@ -12,7 +12,6 @@ namespace Mvo\ContaoGroupWidget\Storage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query\Parameter;
 use Mvo\ContaoGroupWidget\Entity\GroupEntityProxy;
 use Mvo\ContaoGroupWidget\Group\Group;
@@ -52,11 +51,14 @@ class EntityStorageFactory implements StorageFactoryInterface
         // association. The entity must have methods that follow a contract (either
         // 'get<Elements>'/'add<Element>'/'remove<Element>' or
         // 'get<Element>'/'set<Element>' in case of a one to one relation).
-        $oneToOneRelation = ClassMetadataInfo::ONE_TO_ONE === $targetMapping['type'];
-        $groupEntityProxy = new GroupEntityProxy($entity, $targetMapping['fieldName'], !$oneToOneRelation);
+        $oneToOneRelation = \is_array($targetMapping)
+            ? ClassMetadata::ONE_TO_ONE === $targetMapping['type']
+            : $targetMapping->isOneToOne();
+        $fieldName = \is_array($targetMapping) ? $targetMapping['fieldName'] : $targetMapping->fieldName;
+        $groupEntityProxy = new GroupEntityProxy($entity, $fieldName, !$oneToOneRelation);
 
         // Get the class of the element entity (the target in the association).
-        $elementEntity = $targetMapping['targetEntity'];
+        $elementEntity = \is_array($targetMapping) ? $targetMapping['targetEntity'] : $targetMapping->targetEntity;
 
         return new EntityStorage($this->entityManager, $groupEntityProxy, $elementEntity);
     }
